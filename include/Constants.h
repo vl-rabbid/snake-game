@@ -8,4 +8,5 @@ namespace SnakeGame
 	const int GRID_WIDTH = 21;
 	const int GRID_HEIGHT = 21;
 	const float INITIAL_SPEED = 8.f; // Cells per second
+	const int INITIAL_SEGMENT_NUMBER = 20;
 }

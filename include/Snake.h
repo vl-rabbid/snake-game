@@ -12,12 +12,18 @@ namespace SnakeGame
         Down
     };
 
-    struct Snake
+    struct SnakeSegment
     {
         Position2D position;
-        float speed = 0.f;
-        Direction direction{};
         sf::RectangleShape shape;
+        Direction direction{};
+    };
+
+    struct Snake
+    {
+        std::vector<SnakeSegment> segments;
+        float speed = 0.f;
+        Direction direction;
     };
 
     struct Game;
@@ -25,5 +31,7 @@ namespace SnakeGame
     void InitSnake(Snake &snake, const Game &game);
     void DrawSnake(Snake &snake, sf::RenderWindow &window);
     void UpdateSnake(Snake &snake, const float deltaTime);
+    void UpdateSegmentPosition(SnakeSegment &segment);
+    void UpdateHeadDirection(Snake &snake);
     void HandleSnakeImput(Snake &snake, const sf::Event &event);
 }

@@ -6,18 +6,26 @@ namespace SnakeGame
 {
     void InitSnake(Snake &snake, const Game &game)
     {
-        snake.position = {GRID_WIDTH / 2, GRID_HEIGHT / 2};
         snake.speed = INITIAL_SPEED;
-        snake.direction = Direction::Right;
 
-        snake.shape.setSize(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-        snake.shape.setFillColor(sf::Color::Blue);
+        snake.segments.clear();
+        snake.segments.resize(INITIAL_SEGMENT_NUMBER);
+        for (int i = 0; i < snake.segments.size(); i++)
+        {
+            snake.segments[i].position = {GRID_WIDTH / 2, (GRID_HEIGHT / 2) + i};
+            snake.segments[i].direction = Direction::Up;
+            snake.segments[i].shape.setSize(sf::Vector2f(CELL_SIZE - 2, CELL_SIZE - 2));
+            snake.segments[i].shape.setFillColor(sf::Color::Blue);
+        }
     }
 
     void DrawSnake(Snake &snake, sf::RenderWindow &window)
     {
-        snake.shape.setPosition(snake.position.x * CELL_SIZE, snake.position.y * CELL_SIZE);
-        window.draw(snake.shape);
+        for (int i = 0; i < snake.segments.size(); i++)
+        {
+            snake.segments[i].shape.setPosition(snake.segments[i].position.x * CELL_SIZE, snake.segments[i].position.y * CELL_SIZE);
+            window.draw(snake.segments[i].shape);
+        }
     }
 
     void UpdateSnake(Snake &snake, const float deltaTime)
@@ -28,49 +36,103 @@ namespace SnakeGame
         timer += deltaTime;
         if (timer >= interval)
         {
-            switch (snake.direction)
+            for (int i = snake.segments.size() - 1; i >= 0; i--)
             {
-            case Direction::Right:
-            {
-                snake.position.x++;
-                break;
+                UpdateSegmentPosition(snake.segments[i]);
+                if (i != 0)
+                {
+                    snake.segments[i].direction = snake.segments[i - 1].direction;
+                }
             }
-            case Direction::Up:
-            {
-                snake.position.y--;
-                break;
-            }
-            case Direction::Left:
-            {
-                snake.position.x--;
-                break;
-            }
-            case Direction::Down:
-            {
-                snake.position.y++;
-                break;
-            }
-            }
+            UpdateHeadDirection(snake);
             timer -= interval;
         }
+        for (int i = 0; i < snake.segments.size(); i++)
+        {
+            // Loop by x
+            if (snake.segments[i].position.x == GRID_WIDTH)
+            {
+                snake.segments[i].position.x -= GRID_WIDTH;
+            }
+            else if (snake.segments[i].position.x < 0)
+            {
+                snake.segments[i].position.x += GRID_WIDTH;
+            }
+            // Loop by y
+            if (snake.segments[i].position.y == GRID_HEIGHT)
+            {
+                snake.segments[i].position.y -= GRID_HEIGHT;
+            }
+            else if (snake.segments[i].position.y < 0)
+            {
+                snake.segments[i].position.y += GRID_HEIGHT;
+            }
+        }
+    }
 
-        // Loop by x
-        if (snake.position.x == GRID_WIDTH)
+    void UpdateSegmentPosition(SnakeSegment &segment)
+    {
+        switch (segment.direction)
         {
-            snake.position.x -= GRID_WIDTH;
+        case Direction::Right:
+        {
+            segment.position.x++;
+            break;
         }
-        else if (snake.position.x < 0)
+        case Direction::Up:
         {
-            snake.position.x += GRID_WIDTH;
+            segment.position.y--;
+            break;
         }
-        // Loop by y
-        if (snake.position.y == GRID_HEIGHT)
+        case Direction::Left:
         {
-            snake.position.y -= GRID_HEIGHT;
+            segment.position.x--;
+            break;
         }
-        else if (snake.position.y < 0)
+        case Direction::Down:
         {
-            snake.position.y += GRID_HEIGHT;
+            segment.position.y++;
+            break;
+        }
+        }
+    }
+
+    void UpdateHeadDirection(Snake &snake)
+    {
+        switch (snake.direction)
+        {
+        case Direction::Right:
+        {
+            if (snake.segments[0].direction != Direction::Left)
+            {
+                snake.segments[0].direction = snake.direction;
+            }
+            break;
+        }
+        case Direction::Up:
+        {
+            if (snake.segments[0].direction != Direction::Down)
+            {
+                snake.segments[0].direction = snake.direction;
+            }
+            break;
+        }
+        case Direction::Left:
+        {
+            if (snake.segments[0].direction != Direction::Right)
+            {
+                snake.segments[0].direction = snake.direction;
+            }
+            break;
+        }
+        case Direction::Down:
+        {
+            if (snake.segments[0].direction != Direction::Up)
+            {
+                snake.segments[0].direction = snake.direction;
+            }
+            break;
+        }
         }
     }
 
