@@ -1,6 +1,7 @@
 #pragma once
 #include "GameMath.h"
 #include <SFML/Graphics.hpp>
+#include <deque>
 
 namespace SnakeGame
 {
@@ -23,7 +24,7 @@ namespace SnakeGame
     {
         std::vector<SnakeSegment> segments;
         float speed = 0.f;
-        Direction direction;
+        std::deque<Direction> inputBuffer;
     };
 
     struct Game;
@@ -34,4 +35,5 @@ namespace SnakeGame
     void UpdateSegmentPosition(SnakeSegment &segment);
     void UpdateHeadDirection(Snake &snake);
     void HandleSnakeImput(Snake &snake, const sf::Event &event);
+    void AddImputToBuffer(Snake &snake, const Direction &direction);
 }

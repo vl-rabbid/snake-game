@@ -99,40 +99,27 @@ namespace SnakeGame
 
     void UpdateHeadDirection(Snake &snake)
     {
-        switch (snake.direction)
+        while (snake.inputBuffer.size() > 0)
         {
-        case Direction::Right:
-        {
-            if (snake.segments[0].direction != Direction::Left)
+            if (snake.inputBuffer.front() == Direction::Right || snake.inputBuffer.front() == Direction::Left)
             {
-                snake.segments[0].direction = snake.direction;
+                if (snake.segments[0].direction == Direction::Up || snake.segments[0].direction == Direction::Down)
+                {
+                    snake.segments[0].direction = snake.inputBuffer.front();
+                    snake.inputBuffer.pop_front();
+                    return;
+                }
             }
-            break;
-        }
-        case Direction::Up:
-        {
-            if (snake.segments[0].direction != Direction::Down)
+            else if (snake.inputBuffer.front() == Direction::Up || snake.inputBuffer.front() == Direction::Down)
             {
-                snake.segments[0].direction = snake.direction;
+                if (snake.segments[0].direction == Direction::Right || snake.segments[0].direction == Direction::Left)
+                {
+                    snake.segments[0].direction = snake.inputBuffer.front();
+                    snake.inputBuffer.pop_front();
+                    return;
+                }
             }
-            break;
-        }
-        case Direction::Left:
-        {
-            if (snake.segments[0].direction != Direction::Right)
-            {
-                snake.segments[0].direction = snake.direction;
-            }
-            break;
-        }
-        case Direction::Down:
-        {
-            if (snake.segments[0].direction != Direction::Up)
-            {
-                snake.segments[0].direction = snake.direction;
-            }
-            break;
-        }
+            snake.inputBuffer.pop_front();
         }
     }
 
@@ -140,19 +127,34 @@ namespace SnakeGame
     {
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
         {
-            snake.direction = Direction::Right;
+            AddImputToBuffer(snake, Direction::Right);
         }
         else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
         {
-            snake.direction = Direction::Up;
+            AddImputToBuffer(snake, Direction::Up);
         }
         else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
         {
-            snake.direction = Direction::Left;
+            AddImputToBuffer(snake, Direction::Left);
         }
         else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
         {
-            snake.direction = Direction::Down;
+            AddImputToBuffer(snake, Direction::Down);
+        }
+    }
+
+    void AddImputToBuffer(Snake &snake, const Direction &direction)
+    {
+        if (snake.inputBuffer.size() < INPUT_BUFFER_SIZE)
+        {
+            if (snake.inputBuffer.size() == 0)
+            {
+                snake.inputBuffer.push_back(direction);
+            }
+            else if (snake.inputBuffer.back() != direction)
+            {
+                snake.inputBuffer.push_back(direction);
+            }
         }
     }
 }
