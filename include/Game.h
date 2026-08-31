@@ -1,6 +1,7 @@
 #pragma once
 #include "Constants.h"
 #include <SFML/Graphics.hpp>
+#include "Snake.h"
 
 namespace SnakeGame
 {
@@ -16,6 +17,8 @@ namespace SnakeGame
 		int screenWidth;
 		int screenHeight;
 		GameState gameState;
+
+		Snake snake;
 	};
 
 	bool IsGameRunning(Game &game);
