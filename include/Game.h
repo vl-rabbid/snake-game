@@ -2,6 +2,7 @@
 #include "Constants.h"
 #include <SFML/Graphics.hpp>
 #include "Snake.h"
+#include "Level.h"
 
 namespace SnakeGame
 {
@@ -17,7 +18,7 @@ namespace SnakeGame
 		int screenWidth;
 		int screenHeight;
 		GameState gameState;
-
+		Level level;
 		Snake snake;
 		float speed;
 	};

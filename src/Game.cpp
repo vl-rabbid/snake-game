@@ -25,8 +25,8 @@ namespace SnakeGame
 		game.screenWidth = LEVEL_WIDTH * CELL_SIZE;
 
 		game.speed = INITIAL_SPEED;
-		InitSnake(game.snake, game);
-
+		InitSnake(game.snake);
+		InitLevel(game.level);
 		SetGameState(game, GameState::GameLoop);
 	}
 
@@ -56,6 +56,7 @@ namespace SnakeGame
 
 	void DrawGame(Game &game, sf::RenderWindow &window)
 	{
+		DrawLevel(game.level, window);
 		DrawSnake(game.snake, window);
 	}
 

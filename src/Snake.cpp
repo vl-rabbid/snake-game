@@ -4,7 +4,7 @@
 
 namespace SnakeGame
 {
-    void InitSnake(Snake &snake, const Game &game)
+    void InitSnake(Snake &snake)
     {
         snake.segments.clear();
         snake.segments.resize(INITIAL_SEGMENT_NUMBER);
@@ -13,7 +13,7 @@ namespace SnakeGame
             snake.segments[i].position = {LEVEL_WIDTH / 2, (LEVEL_HEIGHT / 2) + i};
             snake.segments[i].direction = Direction::Up;
             snake.segments[i].shape.setSize(sf::Vector2f(CELL_SIZE - 2, CELL_SIZE - 2));
-            snake.segments[i].shape.setFillColor(sf::Color::Blue);
+            snake.segments[i].shape.setFillColor(COLOR_SNAKE);
             SetShapePosition(snake.segments[i].shape, snake.segments[i].position);
         }
     }
@@ -28,6 +28,7 @@ namespace SnakeGame
 
     void UpdateSnake(Snake &snake)
     {
+        UpdateHeadDirection(snake);
         for (int i = snake.segments.size() - 1; i >= 0; i--)
         {
             UpdateSegmentPosition(snake.segments[i]);
@@ -36,7 +37,6 @@ namespace SnakeGame
                 snake.segments[i].direction = snake.segments[i - 1].direction;
             }
         }
-        UpdateHeadDirection(snake);
 
         for (int i = 0; i < snake.segments.size(); i++)
         {
