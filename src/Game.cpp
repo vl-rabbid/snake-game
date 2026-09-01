@@ -21,9 +21,10 @@ namespace SnakeGame
 		int seed = (int)time(nullptr);
 		srand(seed);
 
-		game.screenHeight = GRID_HEIGHT * CELL_SIZE;
-		game.screenWidth = GRID_WIDTH * CELL_SIZE;
+		game.screenHeight = LEVEL_HEIGHT * CELL_SIZE;
+		game.screenWidth = LEVEL_WIDTH * CELL_SIZE;
 
+		game.speed = INITIAL_SPEED;
 		InitSnake(game.snake, game);
 
 		SetGameState(game, GameState::GameLoop);
@@ -41,7 +42,16 @@ namespace SnakeGame
 
 	void UpdateGame(Game &game, const float deltaTime)
 	{
-		UpdateSnake(game.snake, deltaTime);
+		static float timer = 0.f;
+		float interval = 1.f / game.speed;
+
+		timer += deltaTime;
+		if (timer >= interval)
+		{
+			UpdateSnake(game.snake);
+
+			timer -= interval;
+		}
 	}
 
 	void DrawGame(Game &game, sf::RenderWindow &window)

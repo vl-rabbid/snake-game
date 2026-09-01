@@ -6,16 +6,15 @@ namespace SnakeGame
 {
     void InitSnake(Snake &snake, const Game &game)
     {
-        snake.speed = INITIAL_SPEED;
-
         snake.segments.clear();
         snake.segments.resize(INITIAL_SEGMENT_NUMBER);
         for (int i = 0; i < snake.segments.size(); i++)
         {
-            snake.segments[i].position = {GRID_WIDTH / 2, (GRID_HEIGHT / 2) + i};
+            snake.segments[i].position = {LEVEL_WIDTH / 2, (LEVEL_HEIGHT / 2) + i};
             snake.segments[i].direction = Direction::Up;
             snake.segments[i].shape.setSize(sf::Vector2f(CELL_SIZE - 2, CELL_SIZE - 2));
             snake.segments[i].shape.setFillColor(sf::Color::Blue);
+            SetShapePosition(snake.segments[i].shape, snake.segments[i].position);
         }
     }
 
@@ -23,50 +22,43 @@ namespace SnakeGame
     {
         for (int i = 0; i < snake.segments.size(); i++)
         {
-            snake.segments[i].shape.setPosition(snake.segments[i].position.x * CELL_SIZE, snake.segments[i].position.y * CELL_SIZE);
             window.draw(snake.segments[i].shape);
         }
     }
 
-    void UpdateSnake(Snake &snake, const float deltaTime)
+    void UpdateSnake(Snake &snake)
     {
-        static float timer = 0.f;
-        float interval = 1.f / snake.speed;
-
-        timer += deltaTime;
-        if (timer >= interval)
+        for (int i = snake.segments.size() - 1; i >= 0; i--)
         {
-            for (int i = snake.segments.size() - 1; i >= 0; i--)
+            UpdateSegmentPosition(snake.segments[i]);
+            if (i != 0)
             {
-                UpdateSegmentPosition(snake.segments[i]);
-                if (i != 0)
-                {
-                    snake.segments[i].direction = snake.segments[i - 1].direction;
-                }
+                snake.segments[i].direction = snake.segments[i - 1].direction;
             }
-            UpdateHeadDirection(snake);
-            timer -= interval;
         }
+        UpdateHeadDirection(snake);
+
         for (int i = 0; i < snake.segments.size(); i++)
         {
             // Loop by x
-            if (snake.segments[i].position.x == GRID_WIDTH)
+            if (snake.segments[i].position.x == LEVEL_WIDTH)
             {
-                snake.segments[i].position.x -= GRID_WIDTH;
+                snake.segments[i].position.x -= LEVEL_WIDTH;
             }
             else if (snake.segments[i].position.x < 0)
             {
-                snake.segments[i].position.x += GRID_WIDTH;
+                snake.segments[i].position.x += LEVEL_WIDTH;
             }
             // Loop by y
-            if (snake.segments[i].position.y == GRID_HEIGHT)
+            if (snake.segments[i].position.y == LEVEL_HEIGHT)
             {
-                snake.segments[i].position.y -= GRID_HEIGHT;
+                snake.segments[i].position.y -= LEVEL_HEIGHT;
             }
             else if (snake.segments[i].position.y < 0)
             {
-                snake.segments[i].position.y += GRID_HEIGHT;
+                snake.segments[i].position.y += LEVEL_HEIGHT;
             }
+            SetShapePosition(snake.segments[i].shape, snake.segments[i].position);
         }
     }
 

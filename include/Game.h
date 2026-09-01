@@ -19,6 +19,7 @@ namespace SnakeGame
 		GameState gameState;
 
 		Snake snake;
+		float speed;
 	};
 
 	bool IsGameRunning(Game &game);

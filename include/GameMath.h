@@ -1,10 +1,19 @@
+#pragma once
+#include <SFML/Graphics.hpp>
+#include "Constants.h"
+
 namespace SnakeGame
 {
-    struct VectorInt2D
+    struct Position2D
     {
         int x = 0;
         int y = 0;
+
+        bool operator==(const Position2D other) const
+        {
+            return x == other.x && y == other.y;
+        }
     };
 
-    typedef VectorInt2D Position2D;
+    void SetShapePosition(sf::RectangleShape &shape, const Position2D &position);
 }
