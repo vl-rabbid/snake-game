@@ -12,7 +12,7 @@ namespace SnakeGame
                 level.cells[x][y].type = CellType::Empty;
                 level.cells[x][y].shape.setSize(sf::Vector2f(CELL_SIZE, CELL_SIZE));
                 SetShapePosition(level.cells[x][y].shape, {x, y});
-                UpdateCellColor(level.cells[x][y], {x, y});
+                UpdateCellColor(level, {x, y});
             }
         }
     }
@@ -28,28 +28,33 @@ namespace SnakeGame
         }
     }
 
-    void UpdateCellColor(Cell &cell, Position2D position)
+    void UpdateCellColor(Level &level, Position2D position)
     {
-        switch (cell.type)
+        switch (level.cells[position.x][position.y].type)
         {
         case CellType::Empty:
             if ((position.x + position.y) % 2 == 1)
             {
-                cell.shape.setFillColor(COLOR_GRASS_LIGHT);
+                level.cells[position.x][position.y].shape.setFillColor(COLOR_GRASS_LIGHT);
             }
             else
             {
-                cell.shape.setFillColor(COLOR_GRASS_DARK);
+                level.cells[position.x][position.y].shape.setFillColor(COLOR_GRASS_DARK);
             }
             break;
         case CellType::Apple:
-            cell.shape.setFillColor(COLOR_APPLE);
+            level.cells[position.x][position.y].shape.setFillColor(COLOR_APPLE);
             break;
         case CellType::Wall:
-            cell.shape.setFillColor(COLOR_WALL);
+            level.cells[position.x][position.y].shape.setFillColor(COLOR_WALL);
             break;
         default:
             break;
         }
+    }
+
+    void SetCellType(Level &level, Position2D position, CellType cellType)
+    {
+        level.cells[position.x][position.y].type = cellType;
     }
 }

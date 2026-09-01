@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Level.h"
 
 namespace SnakeGame
 {
@@ -25,8 +26,12 @@ namespace SnakeGame
 		game.screenWidth = LEVEL_WIDTH * CELL_SIZE;
 
 		game.speed = INITIAL_SPEED;
-		InitSnake(game.snake);
 		InitLevel(game.level);
+		InitSnake(game.snake);
+		for (int i = 0; i < game.snake.segments.size(); i++)
+		{
+			SetCellType(game.level, game.snake.segments[i].position, CellType::SnakeCell);
+		}
 		SetGameState(game, GameState::GameLoop);
 	}
 
@@ -48,7 +53,9 @@ namespace SnakeGame
 		timer += deltaTime;
 		if (timer >= interval)
 		{
+			SetCellType(game.level, game.snake.segments.back().position, CellType::Empty);
 			UpdateSnake(game.snake);
+			SetCellType(game.level, game.snake.segments[0].position, CellType::SnakeCell);
 
 			timer -= interval;
 		}

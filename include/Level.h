@@ -25,6 +25,7 @@ namespace SnakeGame
 
     void InitLevel(Level &level);
     void DrawLevel(Level &level, sf::RenderWindow &window);
-    void UpdateCellColor(Cell &cell, Position2D position);
+    void UpdateCellColor(Level &level, Position2D position);
+    void SetCellType(Level &level, Position2D position, CellType cellType);
 
 }
