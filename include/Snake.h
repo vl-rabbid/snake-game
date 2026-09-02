@@ -29,6 +29,7 @@ namespace SnakeGame
     struct Game;
 
     void InitSnake(Snake &snake);
+    void AddSnakeSegment(Snake &snake, SnakeSegment &segment);
     void DrawSnake(Snake &snake, sf::RenderWindow &window);
     void UpdateSnake(Snake &snake);
     void UpdateSegmentPosition(SnakeSegment &segment);

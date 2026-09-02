@@ -16,4 +16,6 @@ namespace SnakeGame
     };
 
     void SetShapePosition(sf::RectangleShape &shape, const Position2D &position);
+    int GetRandomInt(int minValue, int maxValue);
+    Position2D GetRandomPositionOnLevel(float levelWidth, float levelHeight);
 }

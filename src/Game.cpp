@@ -32,6 +32,7 @@ namespace SnakeGame
 		{
 			SetCellType(game.level, game.snake.segments[i].position, CellType::SnakeCell);
 		}
+		SpawnApple(game.level);
 		SetGameState(game, GameState::GameLoop);
 	}
 
@@ -53,10 +54,22 @@ namespace SnakeGame
 		timer += deltaTime;
 		if (timer >= interval)
 		{
-			SetCellType(game.level, game.snake.segments.back().position, CellType::Empty);
+			SnakeSegment snakeTail = game.snake.segments.back();
 			UpdateSnake(game.snake);
-			SetCellType(game.level, game.snake.segments[0].position, CellType::SnakeCell);
+			SnakeSegment snakeHead = game.snake.segments.front();
 
+			if (GetCellType(game.level, snakeHead.position) == CellType::Apple)
+			{
+				AddSnakeSegment(game.snake, snakeTail);
+				SetCellType(game.level, snakeHead.position, CellType::SnakeCell);
+				UpdateCellColor(game.level, snakeHead.position);
+				SpawnApple(game.level);
+			}
+			else
+			{
+				SetCellType(game.level, snakeTail.position, CellType::Empty);
+				SetCellType(game.level, snakeHead.position, CellType::SnakeCell);
+			}
 			timer -= interval;
 		}
 	}

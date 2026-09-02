@@ -18,6 +18,11 @@ namespace SnakeGame
         }
     }
 
+    void AddSnakeSegment(Snake &snake, SnakeSegment &segment)
+    {
+        snake.segments.push_back(segment);
+    }
+
     void DrawSnake(Snake &snake, sf::RenderWindow &window)
     {
         for (int i = 0; i < snake.segments.size(); i++)
