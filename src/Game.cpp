@@ -5,7 +5,7 @@ namespace SnakeGame
 {
 	bool IsGameRunning(Game &game)
 	{
-		if (game.gameState == GameState::ExitGame)
+		if (game.gameState == GameState::Exit)
 		{
 			return false;
 		}
@@ -30,7 +30,7 @@ namespace SnakeGame
 		InitSnake(game.snake);
 		for (int i = 0; i < game.snake.segments.size(); i++)
 		{
-			SetCellType(game.level, game.snake.segments[i].position, CellType::SnakeCell);
+			SetCellType(game.level, game.snake.segments[i].position, CellType::Snake);
 		}
 		SpawnApple(game.level);
 		SetGameState(game, GameState::GameLoop);
@@ -40,7 +40,7 @@ namespace SnakeGame
 	{
 		if (event.type == sf::Event::Closed)
 		{
-			SetGameState(game, GameState::ExitGame);
+			SetGameState(game, GameState::Exit);
 			return;
 		}
 		HandleSnakeImput(game.snake, event);
@@ -61,14 +61,14 @@ namespace SnakeGame
 			if (GetCellType(game.level, snakeHead.position) == CellType::Apple)
 			{
 				AddSnakeSegment(game.snake, snakeTail);
-				SetCellType(game.level, snakeHead.position, CellType::SnakeCell);
+				SetCellType(game.level, snakeHead.position, CellType::Snake);
 				UpdateCellColor(game.level, snakeHead.position);
 				SpawnApple(game.level);
 			}
 			else
 			{
 				SetCellType(game.level, snakeTail.position, CellType::Empty);
-				SetCellType(game.level, snakeHead.position, CellType::SnakeCell);
+				SetCellType(game.level, snakeHead.position, CellType::Snake);
 			}
 			timer -= interval;
 		}

@@ -3,16 +3,10 @@
 #include <SFML/Graphics.hpp>
 #include "Snake.h"
 #include "Level.h"
+#include "GameState.h"
 
 namespace SnakeGame
 {
-	enum class GameState
-	{
-		MainMenu = 0,
-		GameLoop,
-		ExitGame
-	};
-
 	struct Game
 	{
 		int screenWidth;

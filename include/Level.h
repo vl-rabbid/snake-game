@@ -4,10 +4,10 @@
 
 namespace SnakeGame
 {
-    enum CellType
+    enum class CellType
     {
         Empty = 0,
-        SnakeCell,
+        Snake,
         Apple,
         Wall
     };
