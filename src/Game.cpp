@@ -12,11 +12,6 @@ namespace SnakeGame
 		return true;
 	}
 
-	void SetGameState(Game &game, const GameState &gameState)
-	{
-		game.gameState = gameState;
-	}
-
 	void InitGame(Game &game)
 	{
 		int seed = (int)time(nullptr);
@@ -25,15 +20,9 @@ namespace SnakeGame
 		game.screenHeight = LEVEL_HEIGHT * CELL_SIZE;
 		game.screenWidth = LEVEL_WIDTH * CELL_SIZE;
 
-		game.speed = INITIAL_SPEED;
-		InitLevel(game.level);
-		InitSnake(game.snake);
-		for (int i = 0; i < game.snake.segments.size(); i++)
-		{
-			SetCellType(game.level, game.snake.segments[i].position, CellType::Snake);
-		}
-		SpawnApple(game.level);
-		SetGameState(game, GameState::GameLoop);
+		InitMenues(game.menus);
+		InitUI(game.ui);
+		SetGameState(game, GameState::MainMenu);
 	}
 
 	void HandleImputAndEvents(Game &game, const sf::Event &event)
@@ -43,10 +32,93 @@ namespace SnakeGame
 			SetGameState(game, GameState::Exit);
 			return;
 		}
-		HandleSnakeImput(game.snake, event);
+		switch (game.gameState)
+		{
+		case GameState::MainMenu:
+			HandleMenuImput(game, event);
+			break;
+		case GameState::GameLoop:
+			HandleSnakeImput(game.snake, event);
+			break;
+		default:
+			break;
+		}
 	}
 
 	void UpdateGame(Game &game, const float deltaTime)
+	{
+		switch (game.gameState)
+		{
+		case GameState::MainMenu:
+			break;
+		case GameState::GameLoop:
+			UpdateGameLoop(game, deltaTime);
+			break;
+		default:
+			break;
+		}
+	}
+
+	void DrawGame(Game &game, sf::RenderWindow &window)
+	{
+		switch (game.gameState)
+		{
+		case GameState::MainMenu:
+			DrawMenuUI(game.ui, game.currentMenu, window);
+			break;
+		case GameState::GameLoop:
+			DrawLevel(game.level, window);
+			DrawSnake(game.snake, window);
+			break;
+		default:
+			break;
+		}
+	}
+
+	void DeinitializeGame(Game &game, sf::RenderWindow &window)
+	{
+		window.close();
+	}
+
+	void SetGameState(Game &game, const GameState &gameState)
+	{
+		switch (gameState)
+		{
+		case GameState::MainMenu:
+			SetMenuState(game, MenuState::Main);
+			break;
+		case GameState::GameLoop:
+			StartGameLoop(game);
+			break;
+		case GameState::GameOver:
+			SetMenuState(game, MenuState::GameOver);
+			break;
+		default:
+			break;
+		}
+		game.gameState = gameState;
+	}
+
+	void SetMenuState(Game &game, const MenuState &menuState)
+	{
+		game.currentMenu = game.menus[menuState];
+		game.currentMenu.selected = 0;
+		UpdateMenuUI(game.ui, game.currentMenu);
+	}
+
+	void StartGameLoop(Game &game)
+	{
+		game.speed = INITIAL_SPEED;
+		InitLevel(game.level);
+		InitSnake(game.snake);
+		for (int i = 0; i < game.snake.segments.size(); i++)
+		{
+			SetCellType(game.level, game.snake.segments[i].position, CellType::Snake);
+		}
+		SpawnApple(game.level);
+	}
+
+	void UpdateGameLoop(Game &game, const float deltaTime)
 	{
 		static float timer = 0.f;
 		float interval = 1.f / game.speed;
@@ -74,15 +146,37 @@ namespace SnakeGame
 		}
 	}
 
-	void DrawGame(Game &game, sf::RenderWindow &window)
+	void HandleMenuImput(Game &game, const sf::Event &event)
 	{
-		DrawLevel(game.level, window);
-		DrawSnake(game.snake, window);
-	}
-
-	void DeinitializeGame(Game &game, sf::RenderWindow &window)
-	{
-		window.close();
+		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
+		{
+			game.currentMenu.selected -= 1;
+			if (game.currentMenu.selected < 0)
+			{
+				game.currentMenu.selected = game.currentMenu.items.size() - 1;
+			}
+			UpdateSelectedItem(game.ui, game.currentMenu);
+		}
+		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
+		{
+			game.currentMenu.selected += 1;
+			if (game.currentMenu.selected > game.currentMenu.items.size() - 1)
+			{
+				game.currentMenu.selected = 0;
+			}
+			UpdateSelectedItem(game.ui, game.currentMenu);
+		}
+		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter)
+		{
+			switch (game.currentMenu.items[game.currentMenu.selected].actionType)
+			{
+			case MenuActionType::SwitchGameState:
+				SetGameState(game, static_cast<GameState>(game.currentMenu.items[game.currentMenu.selected].actionTarget));
+				break;
+			default:
+				break;
+			}
+		};
 	}
 
 }
