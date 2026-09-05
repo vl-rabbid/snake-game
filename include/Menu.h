@@ -15,7 +15,7 @@ namespace SnakeGame
     {
         SwitchMenuState = 0,
         SwitchGameState,
-        RestartGame
+        StartGame
     };
 
     struct MenuItem

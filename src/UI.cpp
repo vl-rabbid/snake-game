@@ -13,7 +13,6 @@ namespace SnakeGame
         ui.menuLabel.setStyle(sf::Text::Bold);
         ui.menuLabel.setCharacterSize(100);
         ui.menuLabel.setFillColor(sf::Color::White);
-        SetTextRelativeOrigin(ui.menuLabel, 0.5f, 0.5f);
         SetTextRelativePosition(ui.menuLabel, LEVEL_WIDTH, LEVEL_HEIGHT, 0.5f, 0.2f);
 
         ui.menuButtons.clear();
@@ -27,11 +26,15 @@ namespace SnakeGame
             SetTextRelativePosition(ui.menuButtons[i].label, LEVEL_WIDTH, LEVEL_HEIGHT, 0.5f, 0.6f);
             ShiftTextPozition(ui.menuButtons[i].label, 0.f, 50.f * i);
         }
+
+        ui.tint.setFillColor(sf::Color(0, 0, 0, 180));
+        ui.tint.setSize(sf::Vector2f(LEVEL_WIDTH * CELL_SIZE, LEVEL_HEIGHT * CELL_SIZE));
     }
 
     void UpdateMenuUI(UI &ui, Menu &menu)
     {
         ui.menuLabel.setString(menu.label);
+        SetTextRelativeOrigin(ui.menuLabel, 0.5f, 0.5f);
         for (int i = 0; i < ui.menuButtons.size(); i++)
         {
             if (i < menu.items.size())
@@ -60,6 +63,7 @@ namespace SnakeGame
 
     void DrawMenuUI(UI &ui, Menu &menu, sf::RenderWindow &window)
     {
+        window.draw(ui.tint);
         window.draw(ui.menuLabel);
         for (int i = 0; i < menu.items.size(); ++i)
         {

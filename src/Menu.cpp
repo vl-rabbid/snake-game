@@ -9,8 +9,8 @@ namespace SnakeGame
             {
                 "Snake Game",
                 {{"Play",
-                  MenuActionType::SwitchGameState,
-                  static_cast<int>(GameState::GameLoop)},
+                  MenuActionType::StartGame,
+                  0},
                  {"Exit Game",
                   MenuActionType::SwitchGameState,
                   static_cast<int>(GameState::Exit)}}};
@@ -21,15 +21,18 @@ namespace SnakeGame
                 {{"Resume",
                   MenuActionType::SwitchGameState,
                   static_cast<int>(GameState::GameLoop)},
+                 {"Restart",
+                  MenuActionType::StartGame,
+                  0},
                  {"Back to main menu",
                   MenuActionType::SwitchGameState,
                   static_cast<int>(GameState::MainMenu)}}};
 
         menus[MenuState::GameOver] =
             {
-                "Pause",
+                "GAME OVER",
                 {{"Restart",
-                  MenuActionType::RestartGame,
+                  MenuActionType::StartGame,
                   0},
                  {"Back to main menu",
                   MenuActionType::SwitchGameState,

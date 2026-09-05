@@ -15,6 +15,7 @@ namespace SnakeGame
         std::vector<Button> menuButtons;
         sf::Text menuLabel;
         sf::Font font;
+        sf::RectangleShape tint;
     };
 
     void InitUI(UI &ui);

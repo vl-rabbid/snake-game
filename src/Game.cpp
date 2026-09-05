@@ -38,7 +38,21 @@ namespace SnakeGame
 			HandleMenuImput(game, event);
 			break;
 		case GameState::GameLoop:
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
+			{
+				SetGameState(game, GameState::Pause);
+			}
 			HandleSnakeImput(game.snake, event);
+			break;
+		case GameState::Pause:
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
+			{
+				SetGameState(game, GameState::GameLoop);
+			}
+			HandleMenuImput(game, event);
+			break;
+		case GameState::GameOver:
+			HandleMenuImput(game, event);
 			break;
 		default:
 			break;
@@ -70,6 +84,14 @@ namespace SnakeGame
 			DrawLevel(game.level, window);
 			DrawSnake(game.snake, window);
 			break;
+		case GameState::GameOver:
+			DrawLevel(game.level, window);
+			DrawSnake(game.snake, window);
+			DrawMenuUI(game.ui, game.currentMenu, window);
+		case GameState::Pause:
+			DrawLevel(game.level, window);
+			DrawSnake(game.snake, window);
+			DrawMenuUI(game.ui, game.currentMenu, window);
 		default:
 			break;
 		}
@@ -88,7 +110,9 @@ namespace SnakeGame
 			SetMenuState(game, MenuState::Main);
 			break;
 		case GameState::GameLoop:
-			StartGameLoop(game);
+			break;
+		case GameState::Pause:
+			SetMenuState(game, MenuState::Pause);
 			break;
 		case GameState::GameOver:
 			SetMenuState(game, MenuState::GameOver);
@@ -137,6 +161,10 @@ namespace SnakeGame
 				UpdateCellColor(game.level, snakeHead.position);
 				SpawnApple(game.level);
 			}
+			else if (GetCellType(game.level, snakeHead.position) == CellType::Snake || GetCellType(game.level, snakeHead.position) == CellType::Wall)
+			{
+				SetGameState(game, GameState::GameOver);
+			}
 			else
 			{
 				SetCellType(game.level, snakeTail.position, CellType::Empty);
@@ -173,6 +201,9 @@ namespace SnakeGame
 			case MenuActionType::SwitchGameState:
 				SetGameState(game, static_cast<GameState>(game.currentMenu.items[game.currentMenu.selected].actionTarget));
 				break;
+			case MenuActionType::StartGame:
+				SetGameState(game, GameState::GameLoop);
+				StartGameLoop(game);
 			default:
 				break;
 			}
