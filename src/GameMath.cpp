@@ -4,7 +4,7 @@ namespace SnakeGame
 {
     void SetShapePosition(sf::RectangleShape &shape, const Position2D &position)
     {
-        shape.setPosition(position.x * CELL_SIZE, position.y * CELL_SIZE);
+        shape.setPosition(position.x * CELL_SIZE, (position.y + UI_HEIGHT) * CELL_SIZE);
     }
 
     int GetRandomInt(int minValue, int maxValue)
@@ -27,9 +27,9 @@ namespace SnakeGame
         text.setOrigin(origin);
     }
 
-    void SetTextRelativePosition(sf::Text &text, int levelWidth, int levelHeight, float relativePositionX, float relativePositionY)
+    void SetTextRelativePosition(sf::Text &text, float relativePositionX, float relativePositionY)
     {
-        sf::Vector2f position = {levelWidth * CELL_SIZE * relativePositionX, levelHeight * CELL_SIZE * relativePositionY};
+        sf::Vector2f position = {LEVEL_WIDTH * CELL_SIZE * relativePositionX, (LEVEL_HEIGHT + UI_HEIGHT) * CELL_SIZE * relativePositionY};
         text.setPosition(position);
     }
 

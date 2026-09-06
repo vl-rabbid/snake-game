@@ -11,9 +11,9 @@ namespace SnakeGame
         ui.menuLabel.setString("menuLabel");
         ui.menuLabel.setFont(ui.font);
         ui.menuLabel.setStyle(sf::Text::Bold);
-        ui.menuLabel.setCharacterSize(100);
+        ui.menuLabel.setCharacterSize(30);
         ui.menuLabel.setFillColor(sf::Color::White);
-        SetTextRelativePosition(ui.menuLabel, LEVEL_WIDTH, LEVEL_HEIGHT, 0.5f, 0.2f);
+        SetTextRelativePosition(ui.menuLabel, 0.5f, 0.2f);
 
         ui.menuButtons.clear();
         ui.menuButtons.resize(NUM_MENU_BUTTONS);
@@ -21,14 +21,14 @@ namespace SnakeGame
         {
             ui.menuButtons[i].label.setString("button " + std::to_string(i));
             ui.menuButtons[i].label.setFont(ui.font);
-            ui.menuButtons[i].label.setCharacterSize(32);
+            ui.menuButtons[i].label.setCharacterSize(13);
             ui.menuButtons[i].label.setFillColor(sf::Color::White);
-            SetTextRelativePosition(ui.menuButtons[i].label, LEVEL_WIDTH, LEVEL_HEIGHT, 0.5f, 0.6f);
-            ShiftTextPozition(ui.menuButtons[i].label, 0.f, 50.f * i);
+            SetTextRelativePosition(ui.menuButtons[i].label, 0.5f, 0.6f);
+            ShiftTextPozition(ui.menuButtons[i].label, 0.f, 20.f * i);
         }
 
         ui.tint.setFillColor(sf::Color(0, 0, 0, 180));
-        ui.tint.setSize(sf::Vector2f(LEVEL_WIDTH * CELL_SIZE, LEVEL_HEIGHT * CELL_SIZE));
+        ui.tint.setSize(sf::Vector2f(LEVEL_WIDTH * CELL_SIZE, (LEVEL_HEIGHT + UI_HEIGHT) * CELL_SIZE));
     }
 
     void UpdateMenuUI(UI &ui, Menu &menu)
@@ -61,13 +61,13 @@ namespace SnakeGame
         };
     }
 
-    void DrawMenuUI(UI &ui, Menu &menu, sf::RenderWindow &window)
+    void DrawMenuUI(UI &ui, Menu &menu, sf::RenderTexture &texture)
     {
-        window.draw(ui.tint);
-        window.draw(ui.menuLabel);
+        texture.draw(ui.tint);
+        texture.draw(ui.menuLabel);
         for (int i = 0; i < menu.items.size(); ++i)
         {
-            window.draw(ui.menuButtons[i].label);
+            texture.draw(ui.menuButtons[i].label);
         }
     }
 

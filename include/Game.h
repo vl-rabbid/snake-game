@@ -11,8 +11,10 @@ namespace SnakeGame
 {
 	struct Game
 	{
-		int screenWidth;
-		int screenHeight;
+		int gameWidth;
+		int gameHeight;
+		int screenScale;
+
 		GameState gameState;
 		Level level;
 		Snake snake;
@@ -27,7 +29,7 @@ namespace SnakeGame
 	void InitGame(Game &game);
 	void HandleImputAndEvents(Game &game, const sf::Event &event);
 	void UpdateGame(Game &game, const float deltaTime);
-	void DrawGame(Game &game, sf::RenderWindow &window);
+	void DrawGame(Game &game, sf::RenderTexture &texture);
 	void DeinitializeGame(Game &game, sf::RenderWindow &window);
 	void SetGameState(Game &game, const GameState &gameState);
 	void SetMenuState(Game &game, const MenuState &menuState);

@@ -28,13 +28,13 @@ namespace SnakeGame
         UpdateCellColor(level, position);
     }
 
-    void DrawLevel(Level &level, sf::RenderWindow &window)
+    void DrawLevel(Level &level, sf::RenderTexture &texture)
     {
         for (int x = 0; x < LEVEL_WIDTH; x++)
         {
             for (int y = 0; y < LEVEL_HEIGHT; y++)
             {
-                window.draw(level.cells[x][y].shape);
+                texture.draw(level.cells[x][y].shape);
             }
         }
     }

@@ -6,28 +6,28 @@ int main()
 {
 	using namespace SnakeGame;
 
-	// Game initialization
 	Game game;
 	InitGame(game);
 
-	// Init window
-	sf::RenderWindow window(sf::VideoMode(game.screenWidth, game.screenHeight), "Snake game!");
+	sf::RenderWindow window(sf::VideoMode(game.gameWidth * game.screenScale, game.gameHeight * game.screenScale), "Snake game!");
+	window.setFramerateLimit(60);
+	sf::RenderTexture gameTexture;
+	gameTexture.create(game.gameWidth, game.gameHeight);
+	gameTexture.setSmooth(false);
+	sf::Sprite gameSprite;
+	gameSprite.setTexture(gameTexture.getTexture());
+	gameSprite.setTextureRect(sf::IntRect(0, 0, game.gameWidth, game.gameHeight));
+	gameSprite.setScale(game.screenScale, game.screenScale);
 
-	// Init game clocks
 	sf::Clock gameClock;
 	float lastTime = gameClock.getElapsedTime().asSeconds();
 
 	while (IsGameRunning(game))
 	{
-		// Reduce frame rate to not spam CPU and GPU
-		sf::sleep(sf::microseconds(16));
-
-		// Calculate delta time
 		float currentTime = gameClock.getElapsedTime().asSeconds();
 		float deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 
-		// Read events
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -36,13 +36,14 @@ int main()
 
 		UpdateGame(game, deltaTime);
 
-		// Draw game graphics
+		gameTexture.clear();
+		DrawGame(game, gameTexture);
+		gameTexture.display();
+
 		window.clear();
-		DrawGame(game, window);
+		window.draw(gameSprite);
 		window.display();
 	}
-
-	// Deinitialization
 	DeinitializeGame(game, window);
 
 	return 0;

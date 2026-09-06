@@ -17,8 +17,9 @@ namespace SnakeGame
 		int seed = (int)time(nullptr);
 		srand(seed);
 
-		game.screenHeight = LEVEL_HEIGHT * CELL_SIZE;
-		game.screenWidth = LEVEL_WIDTH * CELL_SIZE;
+		game.gameHeight = (LEVEL_HEIGHT + UI_HEIGHT) * CELL_SIZE;
+		game.gameWidth = LEVEL_WIDTH * CELL_SIZE;
+		game.screenScale = SCREEN_SCALE;
 
 		InitMenues(game.menus);
 		InitUI(game.ui);
@@ -73,25 +74,25 @@ namespace SnakeGame
 		}
 	}
 
-	void DrawGame(Game &game, sf::RenderWindow &window)
+	void DrawGame(Game &game, sf::RenderTexture &texture)
 	{
 		switch (game.gameState)
 		{
 		case GameState::MainMenu:
-			DrawMenuUI(game.ui, game.currentMenu, window);
+			DrawMenuUI(game.ui, game.currentMenu, texture);
 			break;
 		case GameState::GameLoop:
-			DrawLevel(game.level, window);
-			DrawSnake(game.snake, window);
+			DrawLevel(game.level, texture);
+			DrawSnake(game.snake, texture);
 			break;
 		case GameState::GameOver:
-			DrawLevel(game.level, window);
-			DrawSnake(game.snake, window);
-			DrawMenuUI(game.ui, game.currentMenu, window);
+			DrawLevel(game.level, texture);
+			DrawSnake(game.snake, texture);
+			DrawMenuUI(game.ui, game.currentMenu, texture);
 		case GameState::Pause:
-			DrawLevel(game.level, window);
-			DrawSnake(game.snake, window);
-			DrawMenuUI(game.ui, game.currentMenu, window);
+			DrawLevel(game.level, texture);
+			DrawSnake(game.snake, texture);
+			DrawMenuUI(game.ui, game.currentMenu, texture);
 		default:
 			break;
 		}

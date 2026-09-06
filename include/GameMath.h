@@ -19,6 +19,6 @@ namespace SnakeGame
     int GetRandomInt(int minValue, int maxValue);
     Position2D GetRandomPositionOnLevel(int levelWidth, int levelHeight);
     void SetTextRelativeOrigin(sf::Text &text, float originX, float originY);
-    void SetTextRelativePosition(sf::Text &text, int levelWidth, int levelHeight, float relativePositionX, float relativePositionY);
+    void SetTextRelativePosition(sf::Text &text, float relativePositionX, float relativePositionY);
     void ShiftTextPozition(sf::Text &text, float shiftX, float shiftY);
 }

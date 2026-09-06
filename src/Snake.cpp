@@ -12,7 +12,7 @@ namespace SnakeGame
         {
             snake.segments[i].position = {LEVEL_WIDTH / 2, (LEVEL_HEIGHT / 2) + i};
             snake.segments[i].direction = Direction::Up;
-            snake.segments[i].shape.setSize(sf::Vector2f(CELL_SIZE - 2, CELL_SIZE - 2));
+            snake.segments[i].shape.setSize(sf::Vector2f(CELL_SIZE - 1, CELL_SIZE - 1));
             snake.segments[i].shape.setFillColor(COLOR_SNAKE);
             SetShapePosition(snake.segments[i].shape, snake.segments[i].position);
         }
@@ -23,11 +23,11 @@ namespace SnakeGame
         snake.segments.push_back(segment);
     }
 
-    void DrawSnake(Snake &snake, sf::RenderWindow &window)
+    void DrawSnake(Snake &snake, sf::RenderTexture &texture)
     {
         for (int i = 0; i < snake.segments.size(); i++)
         {
-            window.draw(snake.segments[i].shape);
+            texture.draw(snake.segments[i].shape);
         }
     }
 

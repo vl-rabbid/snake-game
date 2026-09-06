@@ -21,5 +21,5 @@ namespace SnakeGame
     void InitUI(UI &ui);
     void UpdateMenuUI(UI &ui, Menu &menu);
     void UpdateSelectedItem(UI &ui, Menu &menu);
-    void DrawMenuUI(UI &ui, Menu &menu, sf::RenderWindow &window);
+    void DrawMenuUI(UI &ui, Menu &menu, sf::RenderTexture &texture);
 }

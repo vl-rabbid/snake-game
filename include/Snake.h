@@ -30,7 +30,7 @@ namespace SnakeGame
 
     void InitSnake(Snake &snake);
     void AddSnakeSegment(Snake &snake, SnakeSegment &segment);
-    void DrawSnake(Snake &snake, sf::RenderWindow &window);
+    void DrawSnake(Snake &snake, sf::RenderTexture &texture);
     void UpdateSnake(Snake &snake);
     void UpdateSegmentPosition(SnakeSegment &segment);
     void UpdateHeadDirection(Snake &snake);
