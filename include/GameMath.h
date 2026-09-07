@@ -16,6 +16,7 @@ namespace SnakeGame
     };
 
     void SetShapePosition(sf::RectangleShape &shape, const Position2D &position);
+    void SetSpritePosition(sf::Sprite &sprite, const Position2D &position);
     int GetRandomInt(int minValue, int maxValue);
     Position2D GetRandomPositionOnLevel(int levelWidth, int levelHeight);
     void SetTextRelativeOrigin(sf::Text &text, float originX, float originY);

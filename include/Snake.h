@@ -2,6 +2,7 @@
 #include "GameMath.h"
 #include <SFML/Graphics.hpp>
 #include <deque>
+#include "Resources.h"
 
 namespace SnakeGame
 {
@@ -16,8 +17,8 @@ namespace SnakeGame
     struct SnakeSegment
     {
         Position2D position;
-        sf::RectangleShape shape;
         Direction direction{};
+        sf::Sprite sprite;
     };
 
     struct Snake
@@ -28,11 +29,15 @@ namespace SnakeGame
 
     struct Game;
 
-    void InitSnake(Snake &snake);
+    void InitSnake(Snake &snake, Resources &resources);
     void AddSnakeSegment(Snake &snake, SnakeSegment &segment);
     void DrawSnake(Snake &snake, sf::RenderTexture &texture);
     void UpdateSnake(Snake &snake);
     void UpdateSegmentPosition(SnakeSegment &segment);
+    void UpdateSnakeTexture(Snake &snake);
+    void UpdateHeadTexture(SnakeSegment &segment);
+    void UpdateBodyTexture(SnakeSegment &segment, SnakeSegment &head);
+    void UpdateTailTexture(SnakeSegment &segment);
     void UpdateHeadDirection(Snake &snake);
     void HandleSnakeImput(Snake &snake, const sf::Event &event);
     void AddImputToBuffer(Snake &snake, const Direction &direction);

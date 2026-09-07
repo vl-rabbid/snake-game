@@ -7,6 +7,11 @@ namespace SnakeGame
         shape.setPosition(position.x * CELL_SIZE, (position.y + UI_HEIGHT) * CELL_SIZE);
     }
 
+    void SetSpritePosition(sf::Sprite &sprite, const Position2D &position)
+    {
+        sprite.setPosition(position.x * CELL_SIZE, (position.y + UI_HEIGHT) * CELL_SIZE);
+    }
+
     int GetRandomInt(int minValue, int maxValue)
     {
         return minValue + rand() % (maxValue - minValue + 1);

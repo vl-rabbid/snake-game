@@ -4,7 +4,7 @@
 
 namespace SnakeGame
 {
-    void InitSnake(Snake &snake)
+    void InitSnake(Snake &snake, Resources &resources)
     {
         snake.segments.clear();
         snake.segments.resize(INITIAL_SEGMENT_NUMBER);
@@ -12,22 +12,21 @@ namespace SnakeGame
         {
             snake.segments[i].position = {LEVEL_WIDTH / 2, (LEVEL_HEIGHT / 2) + i};
             snake.segments[i].direction = Direction::Up;
-            snake.segments[i].shape.setSize(sf::Vector2f(CELL_SIZE - 1, CELL_SIZE - 1));
-            snake.segments[i].shape.setFillColor(COLOR_SNAKE);
-            SetShapePosition(snake.segments[i].shape, snake.segments[i].position);
+            snake.segments[i].sprite.setTexture(resources.atlas);
         }
+        UpdateSnakeTexture(snake);
     }
 
-    void AddSnakeSegment(Snake &snake, SnakeSegment &segment)
+    void AddSnakeSegment(Snake &snake, SnakeSegment &previous)
     {
-        snake.segments.push_back(segment);
+        snake.segments.push_back(previous);
     }
 
     void DrawSnake(Snake &snake, sf::RenderTexture &texture)
     {
-        for (int i = 0; i < snake.segments.size(); i++)
+        for (int i = snake.segments.size() - 1; i >= 0; i--)
         {
-            texture.draw(snake.segments[i].shape);
+            texture.draw(snake.segments[i].sprite);
         }
     }
 
@@ -63,32 +62,146 @@ namespace SnakeGame
             {
                 snake.segments[i].position.y += LEVEL_HEIGHT;
             }
-            SetShapePosition(snake.segments[i].shape, snake.segments[i].position);
         }
     }
 
-    void UpdateSegmentPosition(SnakeSegment &segment)
+    void UpdateSegmentPosition(SnakeSegment &previous)
     {
-        switch (segment.direction)
+        switch (previous.direction)
         {
         case Direction::Right:
         {
-            segment.position.x++;
+            previous.position.x++;
             break;
         }
         case Direction::Up:
         {
-            segment.position.y--;
+            previous.position.y--;
             break;
         }
         case Direction::Left:
         {
-            segment.position.x--;
+            previous.position.x--;
             break;
         }
         case Direction::Down:
         {
-            segment.position.y++;
+            previous.position.y++;
+            break;
+        }
+        }
+    }
+
+    void UpdateSnakeTexture(Snake &snake)
+    {
+        for (int i = snake.segments.size() - 1; i >= 0; i--)
+        {
+            SetSpritePosition(snake.segments[i].sprite, snake.segments[i].position);
+
+            if (i == 0)
+            {
+                UpdateHeadTexture(snake.segments[i]);
+            }
+            else if (i == snake.segments.size() - 1)
+            {
+                UpdateTailTexture(snake.segments[i]);
+            }
+            else if (i - 1 == 0)
+            {
+                UpdateBodyTexture(snake.segments[i], snake.segments[i + 1]);
+            }
+            else
+            {
+                snake.segments[i].sprite.setTextureRect(snake.segments[i - 1].sprite.getTextureRect());
+            }
+        }
+    }
+
+    void UpdateHeadTexture(SnakeSegment &previous)
+    {
+        switch (previous.direction)
+        {
+        case Direction::Right:
+        {
+            previous.sprite.setTextureRect(GetTextureRect(TextureID::SnakeHeadRight));
+            break;
+        }
+        case Direction::Up:
+        {
+            previous.sprite.setTextureRect(GetTextureRect(TextureID::SnakeHeadUp));
+            break;
+        }
+        case Direction::Left:
+        {
+            previous.sprite.setTextureRect(GetTextureRect(TextureID::SnakeHeadLeft));
+            break;
+        }
+        case Direction::Down:
+        {
+            previous.sprite.setTextureRect(GetTextureRect(TextureID::SnakeHeadDown));
+            break;
+        }
+        }
+    }
+
+    void UpdateBodyTexture(SnakeSegment &currentSegment, SnakeSegment &previousSegment)
+    {
+        if (previousSegment.direction == Direction::Up && currentSegment.direction == Direction::Right || previousSegment.direction == Direction::Left && currentSegment.direction == Direction::Down)
+        {
+            currentSegment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeCornerUpRight));
+        }
+        else if (previousSegment.direction == Direction::Up && currentSegment.direction == Direction::Left || previousSegment.direction == Direction::Right && currentSegment.direction == Direction::Down)
+        {
+            currentSegment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeCornerUpLeft));
+        }
+        else if (previousSegment.direction == Direction::Down && currentSegment.direction == Direction::Right || previousSegment.direction == Direction::Left && currentSegment.direction == Direction::Up)
+        {
+            currentSegment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeCornerDownRight));
+        }
+        else if (previousSegment.direction == Direction::Down && currentSegment.direction == Direction::Left || previousSegment.direction == Direction::Right && currentSegment.direction == Direction::Up)
+        {
+            currentSegment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeCornerDownLeft));
+        }
+        else if (previousSegment.direction == Direction::Right)
+        {
+            currentSegment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeBodyRight));
+        }
+        else if (previousSegment.direction == Direction::Up)
+        {
+            currentSegment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeBodyUp));
+        }
+        else if (previousSegment.direction == Direction::Left)
+        {
+            currentSegment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeBodyLeft));
+        }
+        else if (previousSegment.direction == Direction::Down)
+        {
+            currentSegment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeBodyDown));
+        }
+    }
+
+    void UpdateTailTexture(SnakeSegment &previous)
+    {
+        switch (previous.direction)
+        {
+        case Direction::Right:
+        {
+            previous.sprite.setTextureRect(GetTextureRect(TextureID::SnakeTailRight));
+            break;
+        }
+        case Direction::Up:
+        {
+            previous.sprite.setTextureRect(GetTextureRect(TextureID::SnakeTailUp));
+            break;
+        }
+        case Direction::Left:
+        {
+            previous.sprite.setTextureRect(GetTextureRect(TextureID::SnakeTailLeft));
+            break;
+        }
+        case Direction::Down:
+        {
+            previous.sprite.setTextureRect(GetTextureRect(TextureID::SnakeTailDown));
             break;
         }
         }
