@@ -164,14 +164,17 @@ namespace SnakeGame
 				UpdateCellColor(game.level, snakeHead.position);
 				SpawnApple(game.level);
 			}
-			else if (GetCellType(game.level, snakeHead.position) == CellType::Snake || GetCellType(game.level, snakeHead.position) == CellType::Wall)
-			{
-				SetGameState(game, GameState::GameOver);
-			}
 			else
 			{
 				SetCellType(game.level, snakeTail.position, CellType::Empty);
-				SetCellType(game.level, snakeHead.position, CellType::Snake);
+				if (GetCellType(game.level, snakeHead.position) == CellType::Snake || GetCellType(game.level, snakeHead.position) == CellType::Wall)
+				{
+					SetGameState(game, GameState::GameOver);
+				}
+				else
+				{
+					SetCellType(game.level, snakeHead.position, CellType::Snake);
+				}
 			}
 			UpdateSnakeTexture(game.snake);
 			timer -= interval;
