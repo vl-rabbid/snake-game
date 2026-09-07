@@ -6,6 +6,7 @@
 #include "GameState.h"
 #include "UI.h"
 #include "Menu.h"
+#include "Resources.h"
 
 namespace SnakeGame
 {
@@ -14,6 +15,8 @@ namespace SnakeGame
 		int gameWidth;
 		int gameHeight;
 		int screenScale;
+
+		Resources resources;
 
 		GameState gameState;
 		Level level;

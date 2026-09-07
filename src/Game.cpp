@@ -17,12 +17,14 @@ namespace SnakeGame
 		int seed = (int)time(nullptr);
 		srand(seed);
 
+		InitResources(game.resources);
+
 		game.gameHeight = (LEVEL_HEIGHT + UI_HEIGHT) * CELL_SIZE;
 		game.gameWidth = LEVEL_WIDTH * CELL_SIZE;
 		game.screenScale = SCREEN_SCALE;
 
 		InitMenues(game.menus);
-		InitUI(game.ui);
+		InitUI(game.ui, game.resources);
 		SetGameState(game, GameState::MainMenu);
 	}
 

@@ -1,15 +1,12 @@
 #include "UI.h"
 #include "GameMath.h"
-#include <cassert>
 
 namespace SnakeGame
 {
-    void InitUI(UI &ui)
+    void InitUI(UI &ui, Resources &resources)
     {
-        assert(ui.font.loadFromFile(std::string(RESOURCES_PATH) + "/Fonts/Roboto-Regular.ttf"));
-
         ui.menuLabel.setString("menuLabel");
-        ui.menuLabel.setFont(ui.font);
+        ui.menuLabel.setFont(resources.font);
         ui.menuLabel.setStyle(sf::Text::Bold);
         ui.menuLabel.setCharacterSize(30);
         ui.menuLabel.setFillColor(sf::Color::White);
@@ -20,7 +17,7 @@ namespace SnakeGame
         for (size_t i = 0; i < ui.menuButtons.size(); ++i)
         {
             ui.menuButtons[i].label.setString("button " + std::to_string(i));
-            ui.menuButtons[i].label.setFont(ui.font);
+            ui.menuButtons[i].label.setFont(resources.font);
             ui.menuButtons[i].label.setCharacterSize(13);
             ui.menuButtons[i].label.setFillColor(sf::Color::White);
             SetTextRelativePosition(ui.menuButtons[i].label, 0.5f, 0.6f);

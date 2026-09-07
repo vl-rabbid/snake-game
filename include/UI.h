@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "Menu.h"
 #include "Constants.h"
+#include "Resources.h"
 
 namespace SnakeGame
 {
@@ -14,11 +15,10 @@ namespace SnakeGame
     {
         std::vector<Button> menuButtons;
         sf::Text menuLabel;
-        sf::Font font;
         sf::RectangleShape tint;
     };
 
-    void InitUI(UI &ui);
+    void InitUI(UI &ui, Resources &resources);
     void UpdateMenuUI(UI &ui, Menu &menu);
     void UpdateSelectedItem(UI &ui, Menu &menu);
     void DrawMenuUI(UI &ui, Menu &menu, sf::RenderTexture &texture);
