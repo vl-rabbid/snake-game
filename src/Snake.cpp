@@ -14,7 +14,7 @@ namespace SnakeGame
             snake.segments[i].direction = Direction::Up;
             snake.segments[i].sprite.setTexture(resources.atlas);
         }
-        UpdateSnakeTexture(snake, false);
+        UpdateSnakeTexture(snake, false, false);
     }
 
     void AddSnakeSegment(Snake &snake, SnakeSegment &previous)
@@ -92,7 +92,7 @@ namespace SnakeGame
         }
     }
 
-    void UpdateSnakeTexture(Snake &snake, bool isMouthOpen)
+    void UpdateSnakeTexture(Snake &snake, bool isDead, bool isMouthOpen)
     {
         for (int i = snake.segments.size() - 1; i >= 0; i--)
         {
@@ -100,7 +100,7 @@ namespace SnakeGame
 
             if (i == 0)
             {
-                UpdateHeadTexture(snake.segments[i], isMouthOpen);
+                UpdateHeadTexture(snake.segments[i], isDead, isMouthOpen);
             }
             else if (i == snake.segments.size() - 1)
             {
@@ -117,13 +117,15 @@ namespace SnakeGame
         }
     }
 
-    void UpdateHeadTexture(SnakeSegment &segment, bool isMouthOpen)
+    void UpdateHeadTexture(SnakeSegment &segment, bool isDead, bool isMouthOpen)
     {
         switch (segment.direction)
         {
         case Direction::Right:
         {
-            if (isMouthOpen)
+            if (isDead)
+                segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeDeadRight));
+            else if (isMouthOpen)
                 segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeMouthRight));
             else
                 segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeHeadRight));
@@ -131,7 +133,9 @@ namespace SnakeGame
         }
         case Direction::Up:
         {
-            if (isMouthOpen)
+            if (isDead)
+                segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeDeadUp));
+            else if (isMouthOpen)
                 segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeMouthUp));
             else
                 segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeHeadUp));
@@ -139,7 +143,9 @@ namespace SnakeGame
         }
         case Direction::Left:
         {
-            if (isMouthOpen)
+            if (isDead)
+                segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeDeadLeft));
+            else if (isMouthOpen)
                 segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeMouthLeft));
             else
                 segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeHeadLeft));
@@ -147,7 +153,9 @@ namespace SnakeGame
         }
         case Direction::Down:
         {
-            if (isMouthOpen)
+            if (isDead)
+                segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeDeadDown));
+            else if (isMouthOpen)
                 segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeMouthDown));
             else
                 segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeHeadDown));

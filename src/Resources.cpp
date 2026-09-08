@@ -79,6 +79,19 @@ namespace SnakeGame
             return sf::IntRect(84, 12, 12, 12);
             break;
 
+        case TextureID::SnakeDeadUp:
+            return sf::IntRect(96, 12, 12, 12);
+            break;
+        case TextureID::SnakeDeadDown:
+            return sf::IntRect(108, 12, 12, 12);
+            break;
+        case TextureID::SnakeDeadLeft:
+            return sf::IntRect(120, 12, 12, 12);
+            break;
+        case TextureID::SnakeDeadRight:
+            return sf::IntRect(132, 12, 12, 12);
+            break;
+
         case TextureID::Apple:
             return sf::IntRect(0, 24, 12, 12);
             break;

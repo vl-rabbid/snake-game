@@ -153,6 +153,8 @@ namespace SnakeGame
 		timer += deltaTime;
 		if (timer >= interval)
 		{
+			bool isDead = false;
+
 			SnakeSegment snakeTail = game.snake.segments.back();
 			UpdateSnake(game.snake);
 			SnakeSegment snakeHead = game.snake.segments.front();
@@ -170,6 +172,7 @@ namespace SnakeGame
 				if (GetCellType(game.level, snakeHead.position) == CellType::Snake || GetCellType(game.level, snakeHead.position) == CellType::Wall)
 				{
 					SetGameState(game, GameState::GameOver);
+					isDead = true;
 				}
 				else
 				{
@@ -177,7 +180,7 @@ namespace SnakeGame
 				}
 			}
 			bool isMouthOpen = CellsBetween(snakeHead.position, game.level.apple.position) <= 2;
-			UpdateSnakeTexture(game.snake, isMouthOpen);
+			UpdateSnakeTexture(game.snake, isDead, isMouthOpen);
 			timer -= interval;
 		}
 	}

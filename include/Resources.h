@@ -30,6 +30,11 @@ namespace SnakeGame
         SnakeCornerDownRight,
         SnakeCornerDownLeft,
 
+        SnakeDeadUp,
+        SnakeDeadDown,
+        SnakeDeadLeft,
+        SnakeDeadRight,
+
         Apple,
     };
 
