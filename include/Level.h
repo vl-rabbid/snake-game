@@ -1,6 +1,7 @@
 #pragma once
 #include "Constants.h"
 #include "GameMath.h"
+#include "Resources.h"
 
 namespace SnakeGame
 {
@@ -18,12 +19,19 @@ namespace SnakeGame
         sf::RectangleShape shape;
     };
 
+    struct Apple
+    {
+        Position2D position;
+        sf::Sprite sprite;
+    };
+
     struct Level
     {
         Cell cells[LEVEL_WIDTH][LEVEL_HEIGHT];
+        Apple apple;
     };
 
-    void InitLevel(Level &level);
+    void InitLevel(Level &level, Resources &resources);
     void SpawnApple(Level &level);
     void DrawLevel(Level &level, sf::RenderTexture &texture);
     void UpdateCellColor(Level &level, Position2D position);

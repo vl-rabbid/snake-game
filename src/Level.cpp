@@ -1,9 +1,10 @@
 #include "Level.h"
 #include "GameMath.h"
+#include "Resources.h"
 
 namespace SnakeGame
 {
-    void InitLevel(Level &level)
+    void InitLevel(Level &level, Resources &resources)
     {
         for (int x = 0; x < LEVEL_WIDTH; x++)
         {
@@ -15,6 +16,8 @@ namespace SnakeGame
                 UpdateCellColor(level, {x, y});
             }
         }
+        level.apple.sprite.setTexture(resources.atlas);
+        level.apple.sprite.setTextureRect(GetTextureRect(TextureID::Apple));
     }
 
     void SpawnApple(Level &level)
@@ -24,7 +27,10 @@ namespace SnakeGame
         {
             position = GetRandomPositionOnLevel(LEVEL_WIDTH, LEVEL_HEIGHT);
         } while (level.cells[position.x][position.y].type != CellType::Empty);
+
+        level.apple.position = position;
         level.cells[position.x][position.y].type = CellType::Apple;
+        SetSpritePosition(level.apple.sprite, position);
         UpdateCellColor(level, position);
     }
 
@@ -37,15 +43,13 @@ namespace SnakeGame
                 texture.draw(level.cells[x][y].shape);
             }
         }
+        texture.draw(level.apple.sprite);
     }
 
     void UpdateCellColor(Level &level, Position2D position)
     {
         switch (GetCellType(level, position))
         {
-        case CellType::Apple:
-            level.cells[position.x][position.y].shape.setFillColor(COLOR_APPLE);
-            break;
         case CellType::Wall:
             level.cells[position.x][position.y].shape.setFillColor(COLOR_WALL);
             break;

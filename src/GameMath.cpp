@@ -45,4 +45,11 @@ namespace SnakeGame
         position.y += shiftY;
         text.setPosition(position);
     }
+
+    int CellsBetween(Position2D &firstPosition, Position2D &secondPosition)
+    {
+        int dx = std::abs(secondPosition.x - firstPosition.x);
+        int dy = std::abs(secondPosition.y - firstPosition.y);
+        return std::max(dx, dy);
+    }
 }

@@ -34,8 +34,8 @@ namespace SnakeGame
     void DrawSnake(Snake &snake, sf::RenderTexture &texture);
     void UpdateSnake(Snake &snake);
     void UpdateSegmentPosition(SnakeSegment &segment);
-    void UpdateSnakeTexture(Snake &snake);
-    void UpdateHeadTexture(SnakeSegment &segment);
+    void UpdateSnakeTexture(Snake &snake, bool isMouthOpen);
+    void UpdateHeadTexture(SnakeSegment &segment, bool isMouthOpen);
     void UpdateBodyTexture(SnakeSegment &segment, SnakeSegment &head);
     void UpdateTailTexture(SnakeSegment &segment);
     void UpdateHeadDirection(Snake &snake);

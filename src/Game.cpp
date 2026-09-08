@@ -136,7 +136,7 @@ namespace SnakeGame
 	void StartGameLoop(Game &game)
 	{
 		game.speed = INITIAL_SPEED;
-		InitLevel(game.level);
+		InitLevel(game.level, game.resources);
 		InitSnake(game.snake, game.resources);
 		for (int i = 0; i < game.snake.segments.size(); i++)
 		{
@@ -176,7 +176,8 @@ namespace SnakeGame
 					SetCellType(game.level, snakeHead.position, CellType::Snake);
 				}
 			}
-			UpdateSnakeTexture(game.snake);
+			bool isMouthOpen = CellsBetween(snakeHead.position, game.level.apple.position) <= 2;
+			UpdateSnakeTexture(game.snake, isMouthOpen);
 			timer -= interval;
 		}
 	}
