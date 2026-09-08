@@ -7,6 +7,7 @@ namespace SnakeGame
     void InitResources(Resources &resources)
     {
         assert(resources.atlas.loadFromFile(std::string(RESOURCES_PATH) + "/graphics/atlas.png"));
+        assert(resources.background.loadFromFile(std::string(RESOURCES_PATH) + "/graphics/background.png"));
         assert(resources.font.loadFromFile(std::string(RESOURCES_PATH) + "/fonts/monogram.ttf"));
     }
 

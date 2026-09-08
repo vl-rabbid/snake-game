@@ -41,6 +41,7 @@ namespace SnakeGame
     struct Resources
     {
         sf::Texture atlas;
+        sf::Texture background;
         sf::Font font;
     };
 

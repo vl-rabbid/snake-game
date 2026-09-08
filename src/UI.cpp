@@ -5,6 +5,9 @@ namespace SnakeGame
 {
     void InitUI(UI &ui, Resources &resources)
     {
+        ui.hudBackground.setFillColor(COLOR_BASE);
+        ui.hudBackground.setSize(sf::Vector2f(LEVEL_WIDTH * CELL_SIZE, 24.f));
+
         ui.menuLabel.setString("menuLabel");
         ui.menuLabel.setFont(resources.font);
         ui.menuLabel.setStyle(sf::Text::Bold);
@@ -66,6 +69,11 @@ namespace SnakeGame
         {
             texture.draw(ui.menuButtons[i].label);
         }
+    }
+
+    void DrawHud(UI &ui, sf::RenderTexture &texture)
+    {
+        texture.draw(ui.hudBackground);
     }
 
 }

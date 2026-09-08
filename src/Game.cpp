@@ -86,14 +86,17 @@ namespace SnakeGame
 		case GameState::GameLoop:
 			DrawLevel(game.level, texture);
 			DrawSnake(game.snake, texture);
+			DrawHud(game.ui, texture);
 			break;
 		case GameState::GameOver:
 			DrawLevel(game.level, texture);
 			DrawSnake(game.snake, texture);
+			DrawHud(game.ui, texture);
 			DrawMenuUI(game.ui, game.currentMenu, texture);
 		case GameState::Pause:
 			DrawLevel(game.level, texture);
 			DrawSnake(game.snake, texture);
+			DrawHud(game.ui, texture);
 			DrawMenuUI(game.ui, game.currentMenu, texture);
 		default:
 			break;
@@ -163,7 +166,6 @@ namespace SnakeGame
 			{
 				AddSnakeSegment(game.snake, snakeTail);
 				SetCellType(game.level, snakeHead.position, CellType::Snake);
-				UpdateCellColor(game.level, snakeHead.position);
 				SpawnApple(game.level);
 			}
 			else

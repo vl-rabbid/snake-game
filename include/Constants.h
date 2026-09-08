@@ -15,11 +15,6 @@ namespace SnakeGame
 	const int INPUT_BUFFER_SIZE = 2;
 	const int NUM_MENU_BUTTONS = 3;
 
-	const sf::Color COLOR_GRASS_LIGHT(169, 215, 82);
-	const sf::Color COLOR_GRASS_DARK(163, 208, 75);
-	const sf::Color COLOR_SNAKE(70, 112, 229);
-	const sf::Color COLOR_APPLE(230, 74, 32);
-	const sf::Color COLOR_WALL(75, 117, 40);
-	const sf::Color COLOR_TINT(0, 0, 0, 180);
+	const sf::Color COLOR_TINT(0, 0, 0, 100);
 	const sf::Color COLOR_BASE(17, 41, 41);
 }
