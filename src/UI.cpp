@@ -8,9 +8,9 @@ namespace SnakeGame
         ui.menuLabel.setString("menuLabel");
         ui.menuLabel.setFont(resources.font);
         ui.menuLabel.setStyle(sf::Text::Bold);
-        ui.menuLabel.setCharacterSize(30);
+        ui.menuLabel.setCharacterSize(48);
         ui.menuLabel.setFillColor(sf::Color::White);
-        SetTextRelativePosition(ui.menuLabel, 0.5f, 0.2f);
+        SetTextRelativePosition(ui.menuLabel, 0.5f, 0.1f);
 
         ui.menuButtons.clear();
         ui.menuButtons.resize(NUM_MENU_BUTTONS);
@@ -18,13 +18,13 @@ namespace SnakeGame
         {
             ui.menuButtons[i].label.setString("button " + std::to_string(i));
             ui.menuButtons[i].label.setFont(resources.font);
-            ui.menuButtons[i].label.setCharacterSize(13);
+            ui.menuButtons[i].label.setCharacterSize(16);
             ui.menuButtons[i].label.setFillColor(sf::Color::White);
-            SetTextRelativePosition(ui.menuButtons[i].label, 0.5f, 0.6f);
-            ShiftTextPozition(ui.menuButtons[i].label, 0.f, 20.f * i);
+            SetTextRelativePosition(ui.menuButtons[i].label, 0.5f, 0.5f);
+            ShiftTextPozition(ui.menuButtons[i].label, 0.f, 16.f * i);
         }
 
-        ui.tint.setFillColor(sf::Color(0, 0, 0, 180));
+        ui.tint.setFillColor(COLOR_TINT);
         ui.tint.setSize(sf::Vector2f(LEVEL_WIDTH * CELL_SIZE, (LEVEL_HEIGHT + UI_HEIGHT) * CELL_SIZE));
     }
 

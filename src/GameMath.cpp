@@ -1,4 +1,5 @@
 #include "GameMath.h"
+#include <cmath>
 
 namespace SnakeGame
 {
@@ -28,13 +29,13 @@ namespace SnakeGame
     void SetTextRelativeOrigin(sf::Text &text, float originX, float originY)
     {
         sf::FloatRect spriteRect = text.getLocalBounds();
-        sf::Vector2f origin = {spriteRect.width * originX, spriteRect.height * originY};
+        sf::Vector2f origin = {std::round(spriteRect.width * originX), std::round(spriteRect.height * originY)};
         text.setOrigin(origin);
     }
 
     void SetTextRelativePosition(sf::Text &text, float relativePositionX, float relativePositionY)
     {
-        sf::Vector2f position = {LEVEL_WIDTH * CELL_SIZE * relativePositionX, (LEVEL_HEIGHT + UI_HEIGHT) * CELL_SIZE * relativePositionY};
+        sf::Vector2f position = {std::round(LEVEL_WIDTH * CELL_SIZE * relativePositionX), std::round((LEVEL_HEIGHT + UI_HEIGHT) * CELL_SIZE * relativePositionY)};
         text.setPosition(position);
     }
 

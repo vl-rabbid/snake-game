@@ -36,7 +36,7 @@ int main()
 
 		UpdateGame(game, deltaTime);
 
-		gameTexture.clear();
+		gameTexture.clear(COLOR_BASE);
 		DrawGame(game, gameTexture);
 		gameTexture.display();
 

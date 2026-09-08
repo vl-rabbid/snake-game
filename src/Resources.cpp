@@ -7,7 +7,7 @@ namespace SnakeGame
     void InitResources(Resources &resources)
     {
         assert(resources.atlas.loadFromFile(std::string(RESOURCES_PATH) + "/graphics/atlas.png"));
-        assert(resources.font.loadFromFile(std::string(RESOURCES_PATH) + "/Fonts/Roboto-Regular.ttf"));
+        assert(resources.font.loadFromFile(std::string(RESOURCES_PATH) + "/fonts/monogram.ttf"));
     }
 
     sf::IntRect GetTextureRect(TextureID id)
@@ -99,5 +99,6 @@ namespace SnakeGame
         default:
             break;
         }
+        return sf::IntRect(0, 0, 12, 12);
     }
 }
