@@ -9,6 +9,8 @@ namespace SnakeGame
         assert(resources.atlas.loadFromFile(std::string(RESOURCES_PATH) + "/graphics/atlas.png"));
         assert(resources.background.loadFromFile(std::string(RESOURCES_PATH) + "/graphics/background.png"));
         assert(resources.font.loadFromFile(std::string(RESOURCES_PATH) + "/fonts/monogram.ttf"));
+
+        resources.button = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame1), 83, 19);
     }
 
     sf::IntRect GetTextureRect(TextureID id)
@@ -97,9 +99,76 @@ namespace SnakeGame
             return sf::IntRect(0, 24, 12, 12);
             break;
 
+        case TextureID::UIFrame1:
+            return sf::IntRect(0, 48, 12, 12);
+            break;
+        case TextureID::UIFrame2:
+            return sf::IntRect(12, 48, 12, 12);
+            break;
+        case TextureID::UIFrame3:
+            return sf::IntRect(24, 48, 12, 12);
+
         default:
             break;
         }
         return sf::IntRect(0, 0, 12, 12);
+    }
+
+    sf::Texture CreateNineSliceTexture(const sf::Texture &atlas, sf::IntRect rect, unsigned int width, unsigned int height)
+    {
+        const unsigned int borderLeft = 4;
+        const unsigned int borderRight = 4;
+        const unsigned int borderTop = 4;
+        const unsigned int borderBottom = 6;
+        unsigned int centralWidth = rect.width - borderLeft - borderRight;
+        unsigned int centralHeight = rect.height - borderTop - borderBottom;
+
+        sf::Texture resultTexture;
+        sf::RenderTexture renderTexture;
+        renderTexture.create(width, height);
+        renderTexture.clear(sf::Color::Transparent);
+
+        auto drawPart = [&](int sourceX, int sourceY, int sourceWidth, int sourceHight,
+                            float destinationX, float destinationY, float destinationWidth, float destinationHight)
+        {
+            sf::Sprite sprite;
+            sprite.setTexture(atlas);
+            sprite.setTextureRect(sf::IntRect(rect.left + sourceX, rect.top + sourceY, sourceWidth, sourceHight));
+            sprite.setPosition(destinationX, destinationY);
+            sprite.setScale(destinationWidth / sourceWidth, destinationHight / sourceHight);
+            renderTexture.draw(sprite);
+        };
+
+        unsigned int centralTargetWidth = width - borderLeft - borderRight;
+        unsigned int centralTargetHeight = height - borderTop - borderBottom;
+
+        // Top
+        drawPart(0, 0, borderLeft, borderTop,
+                 0, 0, borderLeft, borderTop);
+        drawPart(borderLeft, 0, centralWidth, borderTop,
+                 borderLeft, 0, centralTargetWidth, borderTop);
+        drawPart(borderLeft + centralWidth, 0, borderRight, borderTop,
+                 borderLeft + centralTargetWidth, 0, borderRight, borderTop);
+        // Center
+        drawPart(0, borderTop, borderLeft, centralHeight,
+                 0, borderTop, borderLeft, centralTargetHeight);
+        drawPart(borderLeft, borderTop, centralWidth, centralHeight,
+                 borderLeft, borderTop, centralTargetWidth, centralTargetHeight);
+        drawPart(borderLeft + centralWidth, borderTop, borderRight, centralHeight,
+                 borderLeft + centralTargetWidth, borderTop, borderRight, centralTargetHeight);
+        // Bottom
+        drawPart(0, borderTop + centralHeight, borderLeft, borderBottom,
+                 0, borderTop + centralTargetHeight, borderLeft, borderBottom);
+        drawPart(borderLeft, borderTop + centralHeight, centralWidth, borderBottom,
+                 borderLeft, borderTop + centralTargetHeight, centralTargetWidth, borderBottom);
+        drawPart(borderLeft + centralWidth, borderTop + centralHeight, borderRight, borderBottom,
+                 borderLeft + centralTargetWidth, borderTop + centralTargetHeight, borderRight, borderBottom);
+
+        renderTexture.display();
+        sf::Image image;
+        image = renderTexture.getTexture().copyToImage();
+        resultTexture.loadFromImage(image);
+        resultTexture.setSmooth(false);
+        return resultTexture;
     }
 }

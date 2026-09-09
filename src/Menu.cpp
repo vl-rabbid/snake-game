@@ -24,7 +24,7 @@ namespace SnakeGame
                  {"Restart",
                   MenuActionType::StartGame,
                   0},
-                 {"Back to main menu",
+                 {"Back to menu",
                   MenuActionType::SwitchGameState,
                   static_cast<int>(GameState::MainMenu)}}};
 
@@ -34,7 +34,7 @@ namespace SnakeGame
                 {{"Restart",
                   MenuActionType::StartGame,
                   0},
-                 {"Back to main menu",
+                 {"Back to menu",
                   MenuActionType::SwitchGameState,
                   static_cast<int>(GameState::MainMenu)}}};
     }

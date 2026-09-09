@@ -21,6 +21,5 @@ namespace SnakeGame
     Position2D GetRandomPositionOnLevel(int levelWidth, int levelHeight);
     void SetTextRelativeOrigin(sf::Text &text, float originX, float originY);
     void SetTextRelativePosition(sf::Text &text, float relativePositionX, float relativePositionY);
-    void ShiftTextPozition(sf::Text &text, float shiftX, float shiftY);
     int CellsBetween(Position2D &firstPosition, Position2D &secondPosition);
 }

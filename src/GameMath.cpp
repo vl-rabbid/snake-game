@@ -39,14 +39,6 @@ namespace SnakeGame
         text.setPosition(position);
     }
 
-    void ShiftTextPozition(sf::Text &text, float shiftX, float shiftY)
-    {
-        sf::Vector2f position = text.getPosition();
-        position.x += shiftX;
-        position.y += shiftY;
-        text.setPosition(position);
-    }
-
     int CellsBetween(Position2D &firstPosition, Position2D &secondPosition)
     {
         int dx = std::abs(secondPosition.x - firstPosition.x);

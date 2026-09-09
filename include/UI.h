@@ -8,6 +8,7 @@ namespace SnakeGame
 {
     struct Button
     {
+        sf::Sprite sprite;
         sf::Text label;
     };
 
@@ -25,4 +26,7 @@ namespace SnakeGame
     void UpdateSelectedItem(UI &ui, Menu &menu);
     void DrawMenuUI(UI &ui, Menu &menu, sf::RenderTexture &texture);
     void DrawHud(UI &ui, sf::RenderTexture &texture);
+    void InitMenuButton(Button &button, Resources &resources);
+    void UpdateMenuBottonPosition(Button &button, int positionY);
+    void UpdateMenuBottonText(Button &button, std::string text);
 }

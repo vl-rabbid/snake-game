@@ -36,6 +36,10 @@ namespace SnakeGame
         SnakeDeadRight,
 
         Apple,
+
+        UIFrame1,
+        UIFrame2,
+        UIFrame3
     };
 
     struct Resources
@@ -43,8 +47,11 @@ namespace SnakeGame
         sf::Texture atlas;
         sf::Texture background;
         sf::Font font;
+
+        sf::Texture button;
     };
 
     void InitResources(Resources &resources);
     sf::IntRect GetTextureRect(TextureID id);
+    sf::Texture CreateNineSliceTexture(const sf::Texture &atlas, sf::IntRect rect, unsigned int width, unsigned int height);
 }

@@ -1,5 +1,6 @@
 #include "UI.h"
 #include "GameMath.h"
+#include <cmath>
 
 namespace SnakeGame
 {
@@ -19,12 +20,8 @@ namespace SnakeGame
         ui.menuButtons.resize(NUM_MENU_BUTTONS);
         for (size_t i = 0; i < ui.menuButtons.size(); ++i)
         {
-            ui.menuButtons[i].label.setString("button " + std::to_string(i));
-            ui.menuButtons[i].label.setFont(resources.font);
-            ui.menuButtons[i].label.setCharacterSize(16);
-            ui.menuButtons[i].label.setFillColor(sf::Color::White);
-            SetTextRelativePosition(ui.menuButtons[i].label, 0.5f, 0.5f);
-            ShiftTextPozition(ui.menuButtons[i].label, 0.f, 16.f * i);
+            InitMenuButton(ui.menuButtons[i], resources);
+            UpdateMenuBottonPosition(ui.menuButtons[i], 83 + (i * 21));
         }
 
         ui.tint.setFillColor(COLOR_TINT);
@@ -39,8 +36,7 @@ namespace SnakeGame
         {
             if (i < menu.items.size())
             {
-                ui.menuButtons[i].label.setString(menu.items[i].label);
-                SetTextRelativeOrigin(ui.menuButtons[i].label, 0.5f, 0.5f);
+                UpdateMenuBottonText(ui.menuButtons[i], menu.items[i].label);
             }
         }
         UpdateSelectedItem(ui, menu);
@@ -52,11 +48,11 @@ namespace SnakeGame
         {
             if (i == menu.selected)
             {
-                ui.menuButtons[i].label.setFillColor(sf::Color::Green);
+                ui.menuButtons[i].label.setFillColor(sf::Color::White);
             }
             else
             {
-                ui.menuButtons[i].label.setFillColor(sf::Color::White);
+                ui.menuButtons[i].label.setFillColor(COLOR_TEXT);
             }
         };
     }
@@ -67,6 +63,7 @@ namespace SnakeGame
         texture.draw(ui.menuLabel);
         for (int i = 0; i < menu.items.size(); ++i)
         {
+            texture.draw(ui.menuButtons[i].sprite);
             texture.draw(ui.menuButtons[i].label);
         }
     }
@@ -74,6 +71,34 @@ namespace SnakeGame
     void DrawHud(UI &ui, sf::RenderTexture &texture)
     {
         texture.draw(ui.hudBackground);
+    }
+
+    void InitMenuButton(Button &button, Resources &resources)
+    {
+        button.label.setString("button");
+        button.label.setFont(resources.font);
+        button.label.setCharacterSize(16);
+        button.label.setFillColor(COLOR_TEXT);
+        button.sprite.setTexture(resources.button);
+
+        sf::FloatRect spriteRect = button.sprite.getLocalBounds();
+        sf::Vector2f origin = {std::round(spriteRect.width / 2), 0.f};
+        button.sprite.setOrigin(origin);
+    }
+
+    void UpdateMenuBottonPosition(Button &button, int positionY)
+    {
+        sf::Vector2f position = {std::round(LEVEL_WIDTH * CELL_SIZE / 2), (float)positionY};
+        button.sprite.setPosition(position);
+        button.label.setPosition(position);
+    }
+
+    void UpdateMenuBottonText(Button &button, std::string text)
+    {
+        button.label.setString(text);
+        sf::FloatRect textRect = button.label.getLocalBounds();
+        sf::Vector2f origin = {std::round(textRect.width / 2), 4.f};
+        button.label.setOrigin(origin);
     }
 
 }
