@@ -133,7 +133,8 @@ namespace SnakeGame
 	{
 		game.currentMenu = game.menus[menuState];
 		game.currentMenu.selected = 0;
-		UpdateMenuUI(game.ui, game.currentMenu);
+		UpdateMenuUI(game.ui, game.currentMenu, game.currentMenu.selected);
+		UpdateMenuSelectedItem(game.ui, game.currentMenu);
 	}
 
 	void StartGameLoop(Game &game)

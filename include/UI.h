@@ -10,6 +10,7 @@ namespace SnakeGame
     {
         sf::Sprite sprite;
         sf::Text label;
+        int menuItem;
     };
 
     struct Selector
@@ -27,10 +28,12 @@ namespace SnakeGame
         std::vector<Button> menuButtons;
         sf::Text menuLabel;
         sf::RectangleShape tint;
+        sf::Sprite menuUp;
+        sf::Sprite menuDown;
     };
 
     void InitUI(UI &ui, Resources &resources);
-    void UpdateMenuUI(UI &ui, Menu &menu);
+    void UpdateMenuUI(UI &ui, Menu &menu, int menuPosition);
     void UpdateMenuSelectedItem(UI &ui, Menu &menu);
     void DrawMenuUI(UI &ui, Menu &menu, sf::RenderTexture &texture);
     void DrawHud(UI &ui, sf::RenderTexture &texture);

@@ -44,7 +44,10 @@ namespace SnakeGame
         SelectorTopLeft,
         SelectorTopRight,
         SelectorBottomLeft,
-        SelectorBottomRight
+        SelectorBottomRight,
+
+        MenuUp,
+        MenuDown
     };
 
     struct Resources

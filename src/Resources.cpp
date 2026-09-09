@@ -122,6 +122,13 @@ namespace SnakeGame
             return sf::IntRect(72, 48, 12, 12);
             break;
 
+        case TextureID::MenuUp:
+            return sf::IntRect(96, 48, 12, 12);
+            break;
+        case TextureID::MenuDown:
+            return sf::IntRect(108, 48, 12, 12);
+            break;
+
         default:
             break;
         }
