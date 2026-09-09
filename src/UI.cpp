@@ -26,6 +26,19 @@ namespace SnakeGame
 
         ui.tint.setFillColor(COLOR_TINT);
         ui.tint.setSize(sf::Vector2f(LEVEL_WIDTH * CELL_SIZE, (LEVEL_HEIGHT + UI_HEIGHT) * CELL_SIZE));
+
+        ui.selector.topLeft.setTexture(resources.atlas);
+        ui.selector.topLeft.setTextureRect(GetTextureRect(TextureID::SelectorTopLeft));
+        ui.selector.topLeft.setOrigin({2.f, 3.f});
+        ui.selector.topRight.setTexture(resources.atlas);
+        ui.selector.topRight.setTextureRect(GetTextureRect(TextureID::SelectorTopRight));
+        ui.selector.topRight.setOrigin({6.f, 3.f});
+        ui.selector.bottomLeft.setTexture(resources.atlas);
+        ui.selector.bottomLeft.setTextureRect(GetTextureRect(TextureID::SelectorBottomLeft));
+        ui.selector.bottomLeft.setOrigin({2.f, 11.f});
+        ui.selector.bottomRight.setTexture(resources.atlas);
+        ui.selector.bottomRight.setTextureRect(GetTextureRect(TextureID::SelectorBottomRight));
+        ui.selector.bottomRight.setOrigin({6.f, 11.f});
     }
 
     void UpdateMenuUI(UI &ui, Menu &menu)
@@ -39,22 +52,13 @@ namespace SnakeGame
                 UpdateMenuBottonText(ui.menuButtons[i], menu.items[i].label);
             }
         }
-        UpdateSelectedItem(ui, menu);
+        UpdateMenuSelectedItem(ui, menu);
     }
 
-    void UpdateSelectedItem(UI &ui, Menu &menu)
+    void UpdateMenuSelectedItem(UI &ui, Menu &menu)
     {
-        for (int i = 0; i < menu.items.size(); i++)
-        {
-            if (i == menu.selected)
-            {
-                ui.menuButtons[i].label.setFillColor(sf::Color::White);
-            }
-            else
-            {
-                ui.menuButtons[i].label.setFillColor(COLOR_TEXT);
-            }
-        };
+        sf::FloatRect itemRect = ui.menuButtons[menu.selected].sprite.getGlobalBounds();
+        UpdateSelectorPosition(ui.selector, itemRect);
     }
 
     void DrawMenuUI(UI &ui, Menu &menu, sf::RenderTexture &texture)
@@ -66,6 +70,10 @@ namespace SnakeGame
             texture.draw(ui.menuButtons[i].sprite);
             texture.draw(ui.menuButtons[i].label);
         }
+        texture.draw(ui.selector.topLeft);
+        texture.draw(ui.selector.topRight);
+        texture.draw(ui.selector.bottomLeft);
+        texture.draw(ui.selector.bottomRight);
     }
 
     void DrawHud(UI &ui, sf::RenderTexture &texture)
@@ -99,6 +107,14 @@ namespace SnakeGame
         sf::FloatRect textRect = button.label.getLocalBounds();
         sf::Vector2f origin = {std::round(textRect.width / 2), 4.f};
         button.label.setOrigin(origin);
+    }
+
+    void UpdateSelectorPosition(Selector &selector, sf::FloatRect target)
+    {
+        selector.topLeft.setPosition(target.left, target.top);
+        selector.topRight.setPosition(target.left + target.width, target.top);
+        selector.bottomLeft.setPosition(target.left, target.top + target.height);
+        selector.bottomRight.setPosition(target.left + target.width, target.top + target.height);
     }
 
 }

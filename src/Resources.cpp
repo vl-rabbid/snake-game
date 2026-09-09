@@ -107,6 +107,20 @@ namespace SnakeGame
             break;
         case TextureID::UIFrame3:
             return sf::IntRect(24, 48, 12, 12);
+            break;
+
+        case TextureID::SelectorTopLeft:
+            return sf::IntRect(36, 48, 12, 12);
+            break;
+        case TextureID::SelectorTopRight:
+            return sf::IntRect(48, 48, 12, 12);
+            break;
+        case TextureID::SelectorBottomLeft:
+            return sf::IntRect(60, 48, 12, 12);
+            break;
+        case TextureID::SelectorBottomRight:
+            return sf::IntRect(72, 48, 12, 12);
+            break;
 
         default:
             break;

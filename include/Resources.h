@@ -39,7 +39,12 @@ namespace SnakeGame
 
         UIFrame1,
         UIFrame2,
-        UIFrame3
+        UIFrame3,
+
+        SelectorTopLeft,
+        SelectorTopRight,
+        SelectorBottomLeft,
+        SelectorBottomRight
     };
 
     struct Resources

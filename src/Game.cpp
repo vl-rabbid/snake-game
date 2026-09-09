@@ -196,7 +196,7 @@ namespace SnakeGame
 			{
 				game.currentMenu.selected = game.currentMenu.items.size() - 1;
 			}
-			UpdateSelectedItem(game.ui, game.currentMenu);
+			UpdateMenuSelectedItem(game.ui, game.currentMenu);
 		}
 		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
 		{
@@ -205,7 +205,7 @@ namespace SnakeGame
 			{
 				game.currentMenu.selected = 0;
 			}
-			UpdateSelectedItem(game.ui, game.currentMenu);
+			UpdateMenuSelectedItem(game.ui, game.currentMenu);
 		}
 		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter)
 		{
