@@ -24,7 +24,8 @@ namespace SnakeGame
         SwitchMenuState = 0,
         SwitchGameState,
         StartGame,
-        PreviousMenu
+        PreviousMenu,
+        SetScreenScale
     };
 
     struct MenuItem

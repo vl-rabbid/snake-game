@@ -1,5 +1,6 @@
 #include "Menu.h"
 #include "GameState.h"
+#include "Renderer.h"
 
 namespace SnakeGame
 {
@@ -59,15 +60,18 @@ namespace SnakeGame
             {
                 "Resolution",
                 MenuType::SubMenu,
-                {{"960x720",
-                  MenuActionType::StartGame,
-                  0},
+                {{"720x540",
+                  MenuActionType::SetScreenScale,
+                  static_cast<int>(ScreenResolution::R720x540)},
+                 {"960x720",
+                  MenuActionType::SetScreenScale,
+                  static_cast<int>(ScreenResolution::R960x720)},
+                 {"1200x900",
+                  MenuActionType::SetScreenScale,
+                  static_cast<int>(ScreenResolution::R1200x900)},
                  {"1440x1080",
-                  MenuActionType::StartGame,
-                  0},
-                 {"1920x1440",
-                  MenuActionType::StartGame,
-                  0},
+                  MenuActionType::SetScreenScale,
+                  static_cast<int>(ScreenResolution::R1440x1080)},
                  {"Back",
                   MenuActionType::PreviousMenu,
                   0}}};

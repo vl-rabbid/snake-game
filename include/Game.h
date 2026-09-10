@@ -7,15 +7,13 @@
 #include "UI.h"
 #include "Menu.h"
 #include "Resources.h"
+#include "Renderer.h"
 
 namespace SnakeGame
 {
 	struct Game
 	{
-		int gameWidth;
-		int gameHeight;
-		int screenScale;
-
+		Renderer renderer;
 		Resources resources;
 
 		GameState gameState;

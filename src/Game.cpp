@@ -19,9 +19,10 @@ namespace SnakeGame
 
 		InitResources(game.resources);
 
-		game.gameHeight = (LEVEL_HEIGHT + UI_HEIGHT) * CELL_SIZE;
-		game.gameWidth = LEVEL_WIDTH * CELL_SIZE;
-		game.screenScale = SCREEN_SCALE;
+		float gameHeight = (LEVEL_HEIGHT + UI_HEIGHT) * CELL_SIZE;
+		float gameWidth = LEVEL_WIDTH * CELL_SIZE;
+		InitRenderer(game.renderer, gameWidth, gameHeight);
+		SetRendererScale(game.renderer, SCREEN_SCALE);
 
 		InitMenues(game.menus);
 		InitUI(game.ui, game.resources);
@@ -245,6 +246,9 @@ namespace SnakeGame
 					game.menuLayers.pop_back();
 					UpdateMenuLayer(game);
 				}
+				break;
+			case MenuActionType::SetScreenScale:
+				SetRendererScale(game.renderer, game.menuLayers.back().items[game.menuLayers.back().selected].actionTarget);
 				break;
 			default:
 				break;

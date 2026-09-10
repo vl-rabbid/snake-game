@@ -9,16 +9,6 @@ int main()
 	Game game;
 	InitGame(game);
 
-	sf::RenderWindow window(sf::VideoMode(game.gameWidth * game.screenScale, game.gameHeight * game.screenScale), "Snake game!");
-	window.setFramerateLimit(60);
-	sf::RenderTexture gameTexture;
-	gameTexture.create(game.gameWidth, game.gameHeight);
-	gameTexture.setSmooth(false);
-	sf::Sprite gameSprite;
-	gameSprite.setTexture(gameTexture.getTexture());
-	gameSprite.setTextureRect(sf::IntRect(0, 0, game.gameWidth, game.gameHeight));
-	gameSprite.setScale(game.screenScale, game.screenScale);
-
 	sf::Clock gameClock;
 	float lastTime = gameClock.getElapsedTime().asSeconds();
 
@@ -29,22 +19,22 @@ int main()
 		lastTime = currentTime;
 
 		sf::Event event;
-		while (window.pollEvent(event))
+		while (game.renderer.window.pollEvent(event))
 		{
 			HandleImputAndEvents(game, event);
 		}
 
 		UpdateGame(game, deltaTime);
 
-		gameTexture.clear(COLOR_BASE);
-		DrawGame(game, gameTexture);
-		gameTexture.display();
+		game.renderer.gameTexture.clear(COLOR_BASE);
+		DrawGame(game, game.renderer.gameTexture);
+		game.renderer.gameTexture.display();
 
-		window.clear();
-		window.draw(gameSprite);
-		window.display();
+		game.renderer.window.clear();
+		game.renderer.window.draw(game.renderer.gameSprite);
+		game.renderer.window.display();
 	}
-	DeinitializeGame(game, window);
+	DeinitializeGame(game, game.renderer.window);
 
 	return 0;
 }
