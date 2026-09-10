@@ -37,6 +37,15 @@ namespace SnakeGame
 
         Apple,
 
+        Wall1,
+        Wall2,
+        Wall3,
+        Wall4,
+        Wall5,
+        Wall6,
+        Wall7,
+        Wall8,
+
         UIFrame1,
         UIFrame2,
         UIFrame3,
@@ -65,5 +74,6 @@ namespace SnakeGame
 
     void InitResources(Resources &resources);
     sf::IntRect GetTextureRect(TextureID id);
+    sf::IntRect GetRandomWallRect();
     sf::Texture CreateNineSliceTexture(const sf::Texture &atlas, sf::IntRect rect, unsigned int width, unsigned int height);
 }

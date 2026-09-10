@@ -16,6 +16,19 @@ namespace SnakeGame
         }
         level.apple.sprite.setTexture(resources.atlas);
         level.apple.sprite.setTextureRect(GetTextureRect(TextureID::Apple));
+
+        level.walls.clear();
+        level.walls.resize(LEVEL_WIDTH);
+        for (int i = 0; i < level.walls.size(); i++)
+        {
+            level.walls[i].position = {i, LEVEL_HEIGHT - 1};
+            level.walls[i].sprite.setTexture(resources.atlas);
+            level.walls[i].sprite.setTextureRect(GetRandomWallRect());
+            SetSpritePosition(level.walls[i].sprite, level.walls[i].position);
+            level.cells[level.walls[i].position.x][level.walls[i].position.y].type = CellType::Wall;
+        }
+
+        level.countEmptyCells = (LEVEL_WIDTH * LEVEL_HEIGHT) - level.walls.size();
     }
 
     void SpawnApple(Level &level)
@@ -35,6 +48,10 @@ namespace SnakeGame
     {
         texture.draw(level.background);
         texture.draw(level.apple.sprite);
+        for (int i = 0; i < level.walls.size(); i++)
+        {
+            texture.draw(level.walls[i].sprite);
+        }
     }
 
     void SetCellType(Level &level, Position2D position, CellType cellType)

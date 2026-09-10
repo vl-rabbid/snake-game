@@ -4,10 +4,11 @@
 
 namespace SnakeGame
 {
-    void InitSnake(Snake &snake, Resources &resources)
+    void InitSnake(Snake &snake, Resources &resources, int maxLength)
     {
         snake.segments.clear();
         snake.segments.resize(INITIAL_SEGMENT_NUMBER);
+        snake.segments.reserve(maxLength);
         for (int i = 0; i < snake.segments.size(); i++)
         {
             snake.segments[i].position = {LEVEL_WIDTH / 2, (LEVEL_HEIGHT / 2) + i};

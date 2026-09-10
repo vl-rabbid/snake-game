@@ -1,6 +1,8 @@
 #include "Resources.h"
 #include <cassert>
 #include <string>
+#include <array>
+#include "GameMath.h"
 
 namespace SnakeGame
 {
@@ -101,6 +103,31 @@ namespace SnakeGame
             return sf::IntRect(0, 24, 12, 12);
             break;
 
+        case TextureID::Wall1:
+            return sf::IntRect(0, 36, 12, 12);
+            break;
+        case TextureID::Wall2:
+            return sf::IntRect(12, 36, 12, 12);
+            break;
+        case TextureID::Wall3:
+            return sf::IntRect(24, 36, 12, 12);
+            break;
+        case TextureID::Wall4:
+            return sf::IntRect(36, 36, 12, 12);
+            break;
+        case TextureID::Wall5:
+            return sf::IntRect(48, 36, 12, 12);
+            break;
+        case TextureID::Wall6:
+            return sf::IntRect(60, 36, 12, 12);
+            break;
+        case TextureID::Wall7:
+            return sf::IntRect(72, 36, 12, 12);
+            break;
+        case TextureID::Wall8:
+            return sf::IntRect(84, 36, 12, 12);
+            break;
+
         case TextureID::UIFrame1:
             return sf::IntRect(0, 48, 12, 12);
             break;
@@ -139,6 +166,22 @@ namespace SnakeGame
             break;
         }
         return sf::IntRect(0, 0, 12, 12);
+    }
+
+    sf::IntRect GetRandomWallRect()
+    {
+        static std::array<TextureID, 8> walls =
+            {
+                TextureID::Wall1,
+                TextureID::Wall2,
+                TextureID::Wall3,
+                TextureID::Wall4,
+                TextureID::Wall5,
+                TextureID::Wall6,
+                TextureID::Wall7,
+                TextureID::Wall8};
+        int textureId = GetRandomInt(0, walls.size() - 1);
+        return GetTextureRect(walls[textureId]);
     }
 
     sf::Texture CreateNineSliceTexture(const sf::Texture &atlas, sf::IntRect rect, unsigned int width, unsigned int height)

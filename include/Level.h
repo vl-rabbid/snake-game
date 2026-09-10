@@ -24,11 +24,20 @@ namespace SnakeGame
         sf::Sprite sprite;
     };
 
+    struct Wall
+    {
+        Position2D position;
+        sf::Sprite sprite;
+    };
+
     struct Level
     {
         Cell cells[LEVEL_WIDTH][LEVEL_HEIGHT];
+        std::vector<Wall> walls;
         Apple apple;
         sf::Sprite background;
+
+        int countEmptyCells;
     };
 
     void InitLevel(Level &level, Resources &resources);

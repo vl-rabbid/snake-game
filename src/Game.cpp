@@ -148,7 +148,7 @@ namespace SnakeGame
 	{
 		game.speed = static_cast<float>(game.config.difficulty);
 		InitLevel(game.level, game.resources);
-		InitSnake(game.snake, game.resources);
+		InitSnake(game.snake, game.resources, game.level.countEmptyCells);
 		for (int i = 0; i < game.snake.segments.size(); i++)
 		{
 			SetCellType(game.level, game.snake.segments[i].position, CellType::Snake);
@@ -174,7 +174,10 @@ namespace SnakeGame
 			{
 				AddSnakeSegment(game.snake, snakeTail);
 				SetCellType(game.level, snakeHead.position, CellType::Snake);
-				SpawnApple(game.level);
+				if (game.snake.segments.size() < game.level.countEmptyCells)
+				{
+					SpawnApple(game.level);
+				}
 			}
 			else
 			{
