@@ -11,6 +11,8 @@ namespace SnakeGame
         assert(resources.font.loadFromFile(std::string(RESOURCES_PATH) + "/fonts/monogram.ttf"));
 
         resources.button = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame1), 90, 19);
+        resources.subMenu = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame3), 120, 113);
+        resources.subMenuTitle = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame2), 100, 17);
     }
 
     sf::IntRect GetTextureRect(TextureID id)
@@ -120,6 +122,10 @@ namespace SnakeGame
             break;
         case TextureID::SelectorBottomRight:
             return sf::IntRect(72, 48, 12, 12);
+            break;
+
+        case TextureID::Slider:
+            return sf::IntRect(84, 48, 12, 12);
             break;
 
         case TextureID::MenuUp:

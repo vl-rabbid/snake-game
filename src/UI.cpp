@@ -43,17 +43,48 @@ namespace SnakeGame
         ui.menuUp.setTexture(resources.atlas);
         ui.menuUp.setTextureRect(GetTextureRect(TextureID::MenuUp));
         ui.menuUp.setOrigin({4.f, 0.f});
-        ui.menuUp.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), 74.f});
+        ui.menuUp.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), 75.f});
         ui.menuDown.setTexture(resources.atlas);
         ui.menuDown.setTextureRect(GetTextureRect(TextureID::MenuDown));
         ui.menuDown.setOrigin({4.f, 0.f});
-        ui.menuDown.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), 167.f});
+        ui.menuDown.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), 166.f});
+
+        ui.subMenu.setTexture(resources.subMenu);
+        ui.subMenu.setOrigin({std::round(ui.subMenu.getLocalBounds().width / 2), 0.f});
+        ui.subMenu.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), 64.f});
+        ui.subMenuTitle.setTexture(resources.subMenuTitle);
+        ui.subMenuTitle.setOrigin({std::round(ui.subMenuTitle.getLocalBounds().width / 2), 0.f});
+        ui.subMenuTitle.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), 57.f});
+
+        ui.subMenuLabel.setString("subMenu");
+        ui.subMenuLabel.setFont(resources.font);
+        ui.subMenuLabel.setCharacterSize(16);
+        ui.subMenuLabel.setFillColor(COLOR_TEXT);
+        ui.subMenuLabel.setOrigin({std::round(ui.subMenuLabel.getLocalBounds().width / 2), 0.f});
+        ui.subMenuLabel.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), 53.f});
+
+        ui.slider.setTexture(resources.atlas);
+        ui.slider.setTextureRect(GetTextureRect(TextureID::Slider));
+        ui.slider.setOrigin({3.f, 5.f});
+
+        ui.sliderBar.setFillColor(COLOR_TEXT);
+        ui.sliderBar.setSize(sf::Vector2f(2.f, 78.f));
+        ui.sliderBar.setPosition({171.f, 85.f});
     }
 
     void UpdateMenuUI(UI &ui, Menu &menu)
     {
-        ui.menuLabel.setString(menu.label);
-        SetTextRelativeOrigin(ui.menuLabel, 0.5f, 0.5f);
+        if (menu.type == MenuType::FullMenu)
+        {
+            ui.menuLabel.setString(menu.label);
+            SetTextRelativeOrigin(ui.menuLabel, 0.5f, 0.5f);
+        }
+        else if (menu.type == MenuType::SubMenu)
+        {
+            ui.subMenuLabel.setString(menu.label);
+            ui.subMenuLabel.setOrigin({std::round(ui.subMenuLabel.getLocalBounds().width / 2), 0.f});
+        }
+
         for (int i = 0; i < ui.menuButtons.size(); i++)
         {
             if (i + menu.firstDisplayedItem < menu.items.size())
@@ -77,12 +108,27 @@ namespace SnakeGame
         }
         sf::FloatRect itemRect = ui.menuButtons[menu.selected - menu.firstDisplayedItem].sprite.getGlobalBounds();
         UpdateSelectorPosition(ui.selector, itemRect);
+
+        if (ui.menuButtons.size() < menu.items.size())
+        {
+            sf::Vector2f sliderPosition = ui.sliderBar.getPosition();
+            sliderPosition.y += std::round(ui.sliderBar.getSize().y * (float)(menu.selected / (float)(menu.items.size() - 1)));
+            ui.slider.setPosition(sliderPosition);
+        }
     }
 
     void DrawMenuUI(UI &ui, Menu &menu, sf::RenderTexture &texture)
     {
         texture.draw(ui.tint);
         texture.draw(ui.menuLabel);
+        if (menu.type == MenuType::SubMenu)
+        {
+            texture.draw(ui.tint);
+            texture.draw(ui.subMenu);
+            texture.draw(ui.subMenuTitle);
+            texture.draw(ui.subMenuLabel);
+        }
+
         for (int i = 0; i < ui.menuButtons.size(); ++i)
         {
             if (i < menu.items.size())
@@ -103,6 +149,12 @@ namespace SnakeGame
         if (menu.firstDisplayedItem > 0)
         {
             texture.draw(ui.menuUp);
+        }
+
+        if (ui.menuButtons.size() < menu.items.size())
+        {
+            texture.draw(ui.sliderBar);
+            texture.draw(ui.slider);
         }
     }
 

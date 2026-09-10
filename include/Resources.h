@@ -46,6 +46,8 @@ namespace SnakeGame
         SelectorBottomLeft,
         SelectorBottomRight,
 
+        Slider,
+
         MenuUp,
         MenuDown
     };
@@ -57,6 +59,8 @@ namespace SnakeGame
         sf::Font font;
 
         sf::Texture button;
+        sf::Texture subMenu;
+        sf::Texture subMenuTitle;
     };
 
     void InitResources(Resources &resources);

@@ -27,8 +27,14 @@ namespace SnakeGame
         std::vector<Button> menuButtons;
         sf::Text menuLabel;
         sf::RectangleShape tint;
+
         sf::Sprite menuUp;
         sf::Sprite menuDown;
+        sf::Sprite subMenu;
+        sf::Sprite subMenuTitle;
+        sf::Text subMenuLabel;
+        sf::Sprite slider;
+        sf::RectangleShape sliderBar;
     };
 
     void InitUI(UI &ui, Resources &resources);
