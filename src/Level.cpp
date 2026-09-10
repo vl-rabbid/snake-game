@@ -1,12 +1,15 @@
 #include "Level.h"
 #include "GameMath.h"
 #include "Resources.h"
+#include <fstream>
 
 namespace SnakeGame
 {
     void InitLevel(Level &level, Resources &resources)
     {
-        level.name = "Level 1";
+        SetEmptyLevel(level.config);
+        LoadLevel(level.config);
+
         level.background.setTexture(resources.background);
         for (int x = 0; x < LEVEL_WIDTH; x++)
         {
@@ -19,14 +22,14 @@ namespace SnakeGame
         level.apple.sprite.setTextureRect(GetTextureRect(TextureID::Apple));
 
         level.walls.clear();
-        level.walls.resize(LEVEL_WIDTH);
+        level.walls.resize(level.config.walls.size());
         for (int i = 0; i < level.walls.size(); i++)
         {
-            level.walls[i].position = {i, LEVEL_HEIGHT - 1};
+            level.walls[i].position = level.config.walls[i];
             level.walls[i].sprite.setTexture(resources.atlas);
             level.walls[i].sprite.setTextureRect(GetRandomWallRect());
             SetSpritePosition(level.walls[i].sprite, level.walls[i].position);
-            level.cells[level.walls[i].position.x][level.walls[i].position.y].type = CellType::Wall;
+            level.cells[level.walls[i].position.x][level.walls[i].position.y] = CellType::Wall;
         }
 
         level.countEmptyCells = (LEVEL_WIDTH * LEVEL_HEIGHT) - level.walls.size();
@@ -38,10 +41,10 @@ namespace SnakeGame
         do
         {
             position = GetRandomPositionOnLevel(LEVEL_WIDTH, LEVEL_HEIGHT);
-        } while (level.cells[position.x][position.y].type != CellType::Empty);
+        } while (level.cells[position.x][position.y] != CellType::Empty);
 
         level.apple.position = position;
-        level.cells[position.x][position.y].type = CellType::Apple;
+        level.cells[position.x][position.y] = CellType::Apple;
         SetSpritePosition(level.apple.sprite, position);
     }
 
@@ -57,11 +60,51 @@ namespace SnakeGame
 
     void SetCellType(Level &level, Position2D position, CellType cellType)
     {
-        level.cells[position.x][position.y].type = cellType;
+        level.cells[position.x][position.y] = cellType;
     }
 
     CellType GetCellType(Level &level, Position2D position)
     {
-        return level.cells[position.x][position.y].type;
+        return level.cells[position.x][position.y];
+    }
+
+    void LoadLevel(LevelConfig &levelConfig)
+    {
+        std::ifstream file(std::string(RESOURCES_PATH) + "/levels/level1.lvl");
+        if (file.is_open())
+        {
+            std::string line;
+            while (std::getline(file, line))
+            {
+                int pos = line.find('=');
+                if (pos == std::string::npos)
+                    continue;
+
+                std::string key = line.substr(0, pos);
+                std::string value = line.substr(pos + 1);
+
+                if (key == "name")
+                    levelConfig.name = value;
+                else if (key == "snakeSpawn")
+                    levelConfig.snakeSpawn = ParsePosition(value);
+                else if (key == "snakeSize")
+                    levelConfig.snakeSize = std::stoi(value);
+                else if (key == "wallCount")
+                    levelConfig.walls.resize(std::stoi(value));
+                else if (key == "wall")
+                {
+                    levelConfig.walls.push_back(ParsePosition(value));
+                }
+            }
+            file.close();
+        }
+    }
+
+    void SetEmptyLevel(LevelConfig &levelConfig)
+    {
+        levelConfig.name = "level";
+        levelConfig.snakeSpawn = {LEVEL_WIDTH / 2, (LEVEL_HEIGHT / 2)};
+        levelConfig.snakeSize = 3;
+        levelConfig.walls.clear();
     }
 }

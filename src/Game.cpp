@@ -148,14 +148,14 @@ namespace SnakeGame
 	{
 		game.speed = static_cast<float>(game.config.difficulty);
 		InitLevel(game.level, game.resources);
-		InitSnake(game.snake, game.resources, game.level.countEmptyCells);
+		InitSnake(game.snake, game.resources, game.level.config.snakeSpawn, game.level.config.snakeSize, game.level.countEmptyCells);
 		for (int i = 0; i < game.snake.segments.size(); i++)
 		{
 			SetCellType(game.level, game.snake.segments[i].position, CellType::Snake);
 		}
 		SpawnApple(game.level);
 		game.score = 0;
-		UpdateHud(game.ui, game.level.name, game.score);
+		UpdateHud(game.ui, game.level.config.name, game.score);
 	}
 
 	void UpdateGameLoop(Game &game, const float deltaTime)
@@ -177,7 +177,7 @@ namespace SnakeGame
 				AddSnakeSegment(game.snake, snakeTail);
 				SetCellType(game.level, snakeHead.position, CellType::Snake);
 				game.score += GetScoreMultiplier(game.config.difficulty);
-				UpdateHud(game.ui, game.level.name, game.score);
+				UpdateHud(game.ui, game.level.config.name, game.score);
 				if (game.snake.segments.size() < game.level.countEmptyCells)
 				{
 					SpawnApple(game.level);
@@ -292,6 +292,7 @@ namespace SnakeGame
 		default:
 			break;
 		}
+		return 1;
 	}
 
 }

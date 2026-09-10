@@ -29,20 +29,23 @@ namespace SnakeGame
         std::ifstream file(CONFIG_FILE_NAME);
         if (file.is_open())
         {
-            std::string configName;
-            int configValue;
-            while (file >> configName >> configValue)
+            std::string line;
+            while (std::getline(file, line))
             {
-                if (configName == "difficulty")
-                {
-                    config.difficulty = static_cast<GameDifficulty>(configValue);
-                }
-                else if (configName == "windowResolution")
-                {
-                    config.windowResolution = static_cast<WindowResolution>(configValue);
-                }
+                int pos = line.find('=');
+                if (pos == std::string::npos)
+                    continue;
+
+                std::string key = line.substr(0, pos);
+                std::string value = line.substr(pos + 1);
+
+                if (key == "difficulty")
+                    config.difficulty = static_cast<GameDifficulty>(std::stoi(value));
+                else if (key == "windowResolution")
+                    config.windowResolution = static_cast<WindowResolution>(std::stoi(value));
             }
             file.close();
+
             return true;
         }
         return false;
@@ -53,11 +56,10 @@ namespace SnakeGame
         std::ofstream file(CONFIG_FILE_NAME);
         if (file.is_open())
         {
-            file << "difficulty" << " " << static_cast<int>(config.difficulty) << "\n";
-            file << "windowResolution" << " " << static_cast<int>(config.windowResolution) << "\n";
+            file << "difficulty=" << static_cast<int>(config.difficulty) << "\n";
+            file << "windowResolution=" << static_cast<int>(config.windowResolution) << "\n";
             return true;
         }
         return false;
     }
-
 }

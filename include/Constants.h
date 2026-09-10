@@ -10,7 +10,6 @@ namespace SnakeGame
 	const int HUD_HEIGHT = 2;
 	const std::string CONFIG_FILE_NAME = "config.ini";
 
-	const int INITIAL_SEGMENT_NUMBER = 3;
 	const int INPUT_BUFFER_SIZE = 2;
 	const int NUM_MENU_BUTTONS = 4;
 

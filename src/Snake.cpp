@@ -4,16 +4,17 @@
 
 namespace SnakeGame
 {
-    void InitSnake(Snake &snake, Resources &resources, int maxLength)
+    void InitSnake(Snake &snake, Resources &resources, Position2D &spawn, int snakeSize, int maxLength)
     {
         snake.segments.clear();
-        snake.segments.resize(INITIAL_SEGMENT_NUMBER);
+        snake.segments.resize(snakeSize);
         snake.segments.reserve(maxLength);
         for (int i = 0; i < snake.segments.size(); i++)
         {
-            snake.segments[i].position = {LEVEL_WIDTH / 2, (LEVEL_HEIGHT / 2) + i};
+            snake.segments[i].position = {spawn.x, spawn.y + i};
             snake.segments[i].direction = Direction::Up;
             snake.segments[i].sprite.setTexture(resources.atlas);
+            snake.segments[i].sprite.setTextureRect(GetTextureRect(TextureID::SnakeBodyUp));
         }
         UpdateSnakeTexture(snake, false, false);
     }
@@ -98,7 +99,6 @@ namespace SnakeGame
         for (int i = snake.segments.size() - 1; i >= 0; i--)
         {
             SetSpritePosition(snake.segments[i].sprite, snake.segments[i].position);
-
             if (i == 0)
             {
                 UpdateHeadTexture(snake.segments[i], isDead, isMouthOpen);

@@ -13,9 +13,12 @@ namespace SnakeGame
         Wall
     };
 
-    struct Cell
+    struct LevelConfig
     {
-        CellType type{};
+        std::string name;
+        std::vector<Position2D> walls;
+        Position2D snakeSpawn;
+        int snakeSize;
     };
 
     struct Apple
@@ -32,8 +35,9 @@ namespace SnakeGame
 
     struct Level
     {
-        std::string name;
-        Cell cells[LEVEL_WIDTH][LEVEL_HEIGHT];
+        LevelConfig config;
+
+        CellType cells[LEVEL_WIDTH][LEVEL_HEIGHT];
         std::vector<Wall> walls;
         Apple apple;
         sf::Sprite background;
@@ -46,5 +50,6 @@ namespace SnakeGame
     void DrawLevel(Level &level, sf::RenderTexture &texture);
     void SetCellType(Level &level, Position2D position, CellType cellType);
     CellType GetCellType(Level &level, Position2D position);
-
+    void LoadLevel(LevelConfig &config);
+    void SetEmptyLevel(LevelConfig &levelConfig);
 }

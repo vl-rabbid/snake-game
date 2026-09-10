@@ -45,4 +45,14 @@ namespace SnakeGame
         int dy = std::abs(secondPosition.y - firstPosition.y);
         return std::max(dx, dy);
     }
+
+    Position2D ParsePosition(const std::string &value)
+    {
+        Position2D position;
+
+        int comma = value.find(',');
+        position.x = std::stoi(value.substr(0, comma));
+        position.y = std::stoi(value.substr(comma + 1));
+        return position;
+    }
 }

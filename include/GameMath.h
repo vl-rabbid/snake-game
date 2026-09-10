@@ -22,4 +22,5 @@ namespace SnakeGame
     void SetTextRelativeOrigin(sf::Text &text, float originX, float originY);
     void SetTextRelativePosition(sf::Text &text, float relativePositionX, float relativePositionY);
     int CellsBetween(Position2D &firstPosition, Position2D &secondPosition);
+    Position2D ParsePosition(const std::string &value);
 }
