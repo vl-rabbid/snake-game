@@ -20,7 +20,7 @@ namespace SnakeGame
 		InitResources(game.resources);
 		InitConfig(game.config);
 
-		float gameHeight = (LEVEL_HEIGHT + UI_HEIGHT) * CELL_SIZE;
+		float gameHeight = (LEVEL_HEIGHT + HUD_HEIGHT) * CELL_SIZE;
 		float gameWidth = LEVEL_WIDTH * CELL_SIZE;
 		InitRenderer(game.renderer, gameWidth, gameHeight);
 		SetRendererResolution(game.renderer, game.config.windowResolution);
@@ -154,6 +154,8 @@ namespace SnakeGame
 			SetCellType(game.level, game.snake.segments[i].position, CellType::Snake);
 		}
 		SpawnApple(game.level);
+		game.score = 0;
+		UpdateHud(game.ui, game.level.name, game.score);
 	}
 
 	void UpdateGameLoop(Game &game, const float deltaTime)
@@ -174,6 +176,8 @@ namespace SnakeGame
 			{
 				AddSnakeSegment(game.snake, snakeTail);
 				SetCellType(game.level, snakeHead.position, CellType::Snake);
+				game.score += GetScoreMultiplier(game.config.difficulty);
+				UpdateHud(game.ui, game.level.name, game.score);
 				if (game.snake.segments.size() < game.level.countEmptyCells)
 				{
 					SpawnApple(game.level);
@@ -269,6 +273,25 @@ namespace SnakeGame
 				break;
 			}
 		};
+	}
+
+	int GetScoreMultiplier(GameDifficulty gameDifficulty)
+	{
+		switch (gameDifficulty)
+		{
+		case GameDifficulty::VeryEasy:
+			return 2;
+		case GameDifficulty::Easy:
+			return 4;
+		case GameDifficulty::Normal:
+			return 6;
+		case GameDifficulty::Hard:
+			return 8;
+		case GameDifficulty::VeryHard:
+			return 10;
+		default:
+			break;
+		}
 	}
 
 }

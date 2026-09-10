@@ -6,8 +6,24 @@ namespace SnakeGame
 {
     void InitUI(UI &ui, Resources &resources)
     {
-        ui.hudBackground.setFillColor(COLOR_BASE);
-        ui.hudBackground.setSize(sf::Vector2f(LEVEL_WIDTH * CELL_SIZE, 24.f));
+        ui.hud.setTexture(resources.hud);
+        ui.hudLevelName.setTexture(resources.hudLevelName);
+        ui.hudLevelName.setPosition({163.f, 3.f});
+        ui.hudScore.setTexture(resources.hudScore);
+        ui.hudScore.setPosition({2.f, 3.f});
+
+        ui.hudLevelNameLabel.setString("level");
+        ui.hudLevelNameLabel.setFont(resources.font);
+        ui.hudLevelNameLabel.setCharacterSize(16);
+        ui.hudLevelNameLabel.setFillColor(COLOR_TEXT);
+        ui.hudLevelNameLabel.setOrigin({std::round(ui.hudLevelNameLabel.getLocalBounds().width / 2), 0.f});
+        ui.hudLevelNameLabel.setPosition({ui.hudLevelName.getGlobalBounds().left + std::round(ui.hudLevelName.getGlobalBounds().width / 2), 0.f});
+
+        ui.hudScoreLabel.setString("Score: ");
+        ui.hudScoreLabel.setFont(resources.font);
+        ui.hudScoreLabel.setCharacterSize(16);
+        ui.hudScoreLabel.setFillColor(COLOR_TEXT);
+        ui.hudScoreLabel.setPosition({8.f, 0.f});
 
         ui.menuLabel.setString("menuLabel");
         ui.menuLabel.setFont(resources.font);
@@ -25,7 +41,7 @@ namespace SnakeGame
         }
 
         ui.tint.setFillColor(COLOR_TINT);
-        ui.tint.setSize(sf::Vector2f(LEVEL_WIDTH * CELL_SIZE, (LEVEL_HEIGHT + UI_HEIGHT) * CELL_SIZE));
+        ui.tint.setSize(sf::Vector2f(LEVEL_WIDTH * CELL_SIZE, (LEVEL_HEIGHT + HUD_HEIGHT) * CELL_SIZE));
 
         ui.selector.topLeft.setTexture(resources.atlas);
         ui.selector.topLeft.setTextureRect(GetTextureRect(TextureID::SelectorTopLeft));
@@ -158,9 +174,21 @@ namespace SnakeGame
         }
     }
 
+    void UpdateHud(UI &ui, std::string levelName, int score)
+    {
+        ui.hudLevelNameLabel.setString(levelName);
+        ui.hudLevelNameLabel.setOrigin({std::round(ui.hudLevelNameLabel.getLocalBounds().width / 2), 0.f});
+
+        ui.hudScoreLabel.setString("Score: " + std::to_string(score));
+    }
+
     void DrawHud(UI &ui, sf::RenderTexture &texture)
     {
-        texture.draw(ui.hudBackground);
+        texture.draw(ui.hud);
+        texture.draw(ui.hudLevelName);
+        texture.draw(ui.hudScore);
+        texture.draw(ui.hudLevelNameLabel);
+        texture.draw(ui.hudScoreLabel);
     }
 
     void InitMenuButton(Button &button, Resources &resources)

@@ -58,7 +58,9 @@ namespace SnakeGame
         Slider,
 
         MenuUp,
-        MenuDown
+        MenuDown,
+
+        HUD
     };
 
     struct Resources
@@ -70,6 +72,10 @@ namespace SnakeGame
         sf::Texture button;
         sf::Texture subMenu;
         sf::Texture subMenuTitle;
+
+        sf::Texture hud;
+        sf::Texture hudLevelName;
+        sf::Texture hudScore;
     };
 
     void InitResources(Resources &resources);

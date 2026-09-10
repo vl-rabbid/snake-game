@@ -22,6 +22,7 @@ namespace SnakeGame
 		Level level;
 		Snake snake;
 		float speed;
+		int score;
 
 		std::map<MenuState, Menu> menus;
 		std::vector<Menu> menuLayers;
@@ -40,4 +41,5 @@ namespace SnakeGame
 	void StartGameLoop(Game &game);
 	void UpdateGameLoop(Game &game, const float deltaTime);
 	void HandleMenuImput(Game &game, const sf::Event &event);
+	int GetScoreMultiplier(GameDifficulty gameDifficulty);
 }

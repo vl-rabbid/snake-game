@@ -6,6 +6,7 @@ namespace SnakeGame
 {
     void InitLevel(Level &level, Resources &resources)
     {
+        level.name = "Level 1";
         level.background.setTexture(resources.background);
         for (int x = 0; x < LEVEL_WIDTH; x++)
         {

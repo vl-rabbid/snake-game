@@ -32,6 +32,7 @@ namespace SnakeGame
 
     struct Level
     {
+        std::string name;
         Cell cells[LEVEL_WIDTH][LEVEL_HEIGHT];
         std::vector<Wall> walls;
         Apple apple;
