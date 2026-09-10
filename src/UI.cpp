@@ -50,34 +50,32 @@ namespace SnakeGame
         ui.menuDown.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), 167.f});
     }
 
-    void UpdateMenuUI(UI &ui, Menu &menu, int menuPosition)
+    void UpdateMenuUI(UI &ui, Menu &menu)
     {
         ui.menuLabel.setString(menu.label);
         SetTextRelativeOrigin(ui.menuLabel, 0.5f, 0.5f);
         for (int i = 0; i < ui.menuButtons.size(); i++)
         {
-            if (i + menuPosition < menu.items.size())
+            if (i + menu.firstDisplayedItem < menu.items.size())
             {
-                UpdateMenuBottonText(ui.menuButtons[i], menu.items[i + menuPosition].label);
-                ui.menuButtons[i].menuItem = i + menuPosition;
+                UpdateMenuBottonText(ui.menuButtons[i], menu.items[i + menu.firstDisplayedItem].label);
             }
         }
     }
 
     void UpdateMenuSelectedItem(UI &ui, Menu &menu)
     {
-        int currentTopItem = ui.menuButtons[0].menuItem;
-        if (menu.selected - currentTopItem >= NUM_MENU_BUTTONS)
+        if (menu.selected - menu.firstDisplayedItem >= NUM_MENU_BUTTONS)
         {
-            UpdateMenuUI(ui, menu, menu.selected - NUM_MENU_BUTTONS + 1);
-            currentTopItem = ui.menuButtons[0].menuItem;
+            menu.firstDisplayedItem = menu.selected - NUM_MENU_BUTTONS + 1;
+            UpdateMenuUI(ui, menu);
         }
-        else if ((menu.selected - currentTopItem < 0))
+        else if ((menu.selected - menu.firstDisplayedItem < 0))
         {
-            UpdateMenuUI(ui, menu, menu.selected);
-            currentTopItem = ui.menuButtons[0].menuItem;
+            menu.firstDisplayedItem = menu.selected;
+            UpdateMenuUI(ui, menu);
         }
-        sf::FloatRect itemRect = ui.menuButtons[menu.selected - currentTopItem].sprite.getGlobalBounds();
+        sf::FloatRect itemRect = ui.menuButtons[menu.selected - menu.firstDisplayedItem].sprite.getGlobalBounds();
         UpdateSelectorPosition(ui.selector, itemRect);
     }
 
@@ -98,11 +96,11 @@ namespace SnakeGame
         texture.draw(ui.selector.bottomLeft);
         texture.draw(ui.selector.bottomRight);
 
-        if (ui.menuButtons[NUM_MENU_BUTTONS - 1].menuItem < menu.items.size() - 1)
+        if (ui.menuButtons.size() < menu.items.size() && menu.firstDisplayedItem + NUM_MENU_BUTTONS < menu.items.size())
         {
             texture.draw(ui.menuDown);
         }
-        if (ui.menuButtons[0].menuItem > 0)
+        if (menu.firstDisplayedItem > 0)
         {
             texture.draw(ui.menuUp);
         }

@@ -48,10 +48,6 @@ namespace SnakeGame
 			HandleSnakeImput(game.snake, event);
 			break;
 		case GameState::Pause:
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
-			{
-				SetGameState(game, GameState::GameLoop);
-			}
 			HandleMenuImput(game, event);
 			break;
 		case GameState::GameOver:
@@ -81,7 +77,7 @@ namespace SnakeGame
 		switch (game.gameState)
 		{
 		case GameState::MainMenu:
-			DrawMenuUI(game.ui, game.currentMenu, texture);
+			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
 			break;
 		case GameState::GameLoop:
 			DrawLevel(game.level, texture);
@@ -92,12 +88,12 @@ namespace SnakeGame
 			DrawLevel(game.level, texture);
 			DrawSnake(game.snake, texture);
 			DrawHud(game.ui, texture);
-			DrawMenuUI(game.ui, game.currentMenu, texture);
+			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
 		case GameState::Pause:
 			DrawLevel(game.level, texture);
 			DrawSnake(game.snake, texture);
 			DrawHud(game.ui, texture);
-			DrawMenuUI(game.ui, game.currentMenu, texture);
+			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
 		default:
 			break;
 		}
@@ -110,6 +106,7 @@ namespace SnakeGame
 
 	void SetGameState(Game &game, const GameState &gameState)
 	{
+		game.menuLayers.clear();
 		switch (gameState)
 		{
 		case GameState::MainMenu:
@@ -129,12 +126,20 @@ namespace SnakeGame
 		game.gameState = gameState;
 	}
 
-	void SetMenuState(Game &game, const MenuState &menuState)
+	void SetMenuState(Game &game, MenuState menuState)
 	{
-		game.currentMenu = game.menus[menuState];
-		game.currentMenu.selected = 0;
-		UpdateMenuUI(game.ui, game.currentMenu, game.currentMenu.selected);
-		UpdateMenuSelectedItem(game.ui, game.currentMenu);
+		Menu menu;
+		menu = game.menus[menuState];
+		menu.selected = 0;
+		menu.firstDisplayedItem = 0;
+		game.menuLayers.push_back(menu);
+		UpdateMenuLayer(game);
+	}
+
+	void UpdateMenuLayer(Game &game)
+	{
+		UpdateMenuUI(game.ui, game.menuLayers.back());
+		UpdateMenuSelectedItem(game.ui, game.menuLayers.back());
 	}
 
 	void StartGameLoop(Game &game)
@@ -190,34 +195,57 @@ namespace SnakeGame
 
 	void HandleMenuImput(Game &game, const sf::Event &event)
 	{
-		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
+		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
 		{
-			game.currentMenu.selected -= 1;
-			if (game.currentMenu.selected < 0)
+			if (game.menuLayers.size() > 1)
 			{
-				game.currentMenu.selected = game.currentMenu.items.size() - 1;
+				game.menuLayers.pop_back();
+				UpdateMenuLayer(game);
 			}
-			UpdateMenuSelectedItem(game.ui, game.currentMenu);
+			else if (game.gameState == GameState::Pause)
+			{
+				SetGameState(game, GameState::GameLoop);
+			}
+		}
+		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
+		{
+			game.menuLayers.back().selected -= 1;
+			if (game.menuLayers.back().selected < 0)
+			{
+				game.menuLayers.back().selected = game.menuLayers.back().items.size() - 1;
+			}
+			UpdateMenuSelectedItem(game.ui, game.menuLayers.back());
 		}
 		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
 		{
-			game.currentMenu.selected += 1;
-			if (game.currentMenu.selected > game.currentMenu.items.size() - 1)
+			game.menuLayers.back().selected += 1;
+			if (game.menuLayers.back().selected > game.menuLayers.back().items.size() - 1)
 			{
-				game.currentMenu.selected = 0;
+				game.menuLayers.back().selected = 0;
 			}
-			UpdateMenuSelectedItem(game.ui, game.currentMenu);
+			UpdateMenuSelectedItem(game.ui, game.menuLayers.back());
 		}
 		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter)
 		{
-			switch (game.currentMenu.items[game.currentMenu.selected].actionType)
+			switch (game.menuLayers.back().items[game.menuLayers.back().selected].actionType)
 			{
 			case MenuActionType::SwitchGameState:
-				SetGameState(game, static_cast<GameState>(game.currentMenu.items[game.currentMenu.selected].actionTarget));
+				SetGameState(game, static_cast<GameState>(game.menuLayers.back().items[game.menuLayers.back().selected].actionTarget));
+				break;
+			case MenuActionType::SwitchMenuState:
+				SetMenuState(game, static_cast<MenuState>(game.menuLayers.back().items[game.menuLayers.back().selected].actionTarget));
 				break;
 			case MenuActionType::StartGame:
 				SetGameState(game, GameState::GameLoop);
 				StartGameLoop(game);
+				break;
+			case MenuActionType::PreviousMenu:
+				if (game.menuLayers.size() > 1)
+				{
+					game.menuLayers.pop_back();
+					UpdateMenuLayer(game);
+				}
+				break;
 			default:
 				break;
 			}

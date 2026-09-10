@@ -24,7 +24,7 @@ namespace SnakeGame
 		float speed;
 
 		std::map<MenuState, Menu> menus;
-		Menu currentMenu;
+		std::vector<Menu> menuLayers;
 		UI ui;
 	};
 
@@ -35,7 +35,8 @@ namespace SnakeGame
 	void DrawGame(Game &game, sf::RenderTexture &texture);
 	void DeinitializeGame(Game &game, sf::RenderWindow &window);
 	void SetGameState(Game &game, const GameState &gameState);
-	void SetMenuState(Game &game, const MenuState &menuState);
+	void SetMenuState(Game &game, MenuState menuState);
+	void UpdateMenuLayer(Game &game);
 	void StartGameLoop(Game &game);
 	void UpdateGameLoop(Game &game, const float deltaTime);
 	void HandleMenuImput(Game &game, const sf::Event &event);

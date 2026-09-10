@@ -10,7 +10,7 @@ namespace SnakeGame
         assert(resources.background.loadFromFile(std::string(RESOURCES_PATH) + "/graphics/background.png"));
         assert(resources.font.loadFromFile(std::string(RESOURCES_PATH) + "/fonts/monogram.ttf"));
 
-        resources.button = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame1), 83, 19);
+        resources.button = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame1), 90, 19);
     }
 
     sf::IntRect GetTextureRect(TextureID id)
