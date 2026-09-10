@@ -1,6 +1,6 @@
 #include "Menu.h"
 #include "GameState.h"
-#include "Renderer.h"
+#include "Config.h"
 
 namespace SnakeGame
 {
@@ -13,6 +13,9 @@ namespace SnakeGame
                 {{"Play",
                   MenuActionType::StartGame,
                   0},
+                 {"Difficulty",
+                  MenuActionType::SwitchMenuState,
+                  static_cast<int>(MenuState::Difficulty)},
                  {"Settings",
                   MenuActionType::SwitchMenuState,
                   static_cast<int>(MenuState::Settings)},
@@ -62,16 +65,39 @@ namespace SnakeGame
                 MenuType::SubMenu,
                 {{"720x540",
                   MenuActionType::SetScreenScale,
-                  static_cast<int>(ScreenResolution::R720x540)},
+                  static_cast<int>(WindowResolution::R720x540)},
                  {"960x720",
                   MenuActionType::SetScreenScale,
-                  static_cast<int>(ScreenResolution::R960x720)},
+                  static_cast<int>(WindowResolution::R960x720)},
                  {"1200x900",
                   MenuActionType::SetScreenScale,
-                  static_cast<int>(ScreenResolution::R1200x900)},
+                  static_cast<int>(WindowResolution::R1200x900)},
                  {"1440x1080",
                   MenuActionType::SetScreenScale,
-                  static_cast<int>(ScreenResolution::R1440x1080)},
+                  static_cast<int>(WindowResolution::R1440x1080)},
+                 {"Back",
+                  MenuActionType::PreviousMenu,
+                  0}}};
+
+        menus[MenuState::Difficulty] =
+            {
+                "Difficulty",
+                MenuType::SubMenu,
+                {{"Very Easy",
+                  MenuActionType::SetDifficulty,
+                  static_cast<int>(GameDifficulty::VeryEasy)},
+                 {"Easy",
+                  MenuActionType::SetDifficulty,
+                  static_cast<int>(GameDifficulty::Easy)},
+                 {"Normal",
+                  MenuActionType::SetDifficulty,
+                  static_cast<int>(GameDifficulty::Normal)},
+                 {"Hard",
+                  MenuActionType::SetDifficulty,
+                  static_cast<int>(GameDifficulty::Hard)},
+                 {"Very Hard",
+                  MenuActionType::SetDifficulty,
+                  static_cast<int>(GameDifficulty::VeryHard)},
                  {"Back",
                   MenuActionType::PreviousMenu,
                   0}}};

@@ -18,11 +18,12 @@ namespace SnakeGame
 		srand(seed);
 
 		InitResources(game.resources);
+		InitConfig(game.config);
 
 		float gameHeight = (LEVEL_HEIGHT + UI_HEIGHT) * CELL_SIZE;
 		float gameWidth = LEVEL_WIDTH * CELL_SIZE;
 		InitRenderer(game.renderer, gameWidth, gameHeight);
-		SetRendererScale(game.renderer, SCREEN_SCALE);
+		SetRendererResolution(game.renderer, game.config.windowResolution);
 
 		InitMenues(game.menus);
 		InitUI(game.ui, game.resources);
@@ -145,7 +146,7 @@ namespace SnakeGame
 
 	void StartGameLoop(Game &game)
 	{
-		game.speed = INITIAL_SPEED;
+		game.speed = static_cast<float>(game.config.difficulty);
 		InitLevel(game.level, game.resources);
 		InitSnake(game.snake, game.resources);
 		for (int i = 0; i < game.snake.segments.size(); i++)
@@ -248,7 +249,18 @@ namespace SnakeGame
 				}
 				break;
 			case MenuActionType::SetScreenScale:
-				SetRendererScale(game.renderer, game.menuLayers.back().items[game.menuLayers.back().selected].actionTarget);
+				game.config.windowResolution = static_cast<WindowResolution>(game.menuLayers.back().items[game.menuLayers.back().selected].actionTarget);
+				SaveConfig(game.config);
+				SetRendererResolution(game.renderer, game.config.windowResolution);
+				break;
+			case MenuActionType::SetDifficulty:
+				game.config.difficulty = static_cast<GameDifficulty>(game.menuLayers.back().items[game.menuLayers.back().selected].actionTarget);
+				SaveConfig(game.config);
+				if (game.menuLayers.size() > 1)
+				{
+					game.menuLayers.pop_back();
+					UpdateMenuLayer(game);
+				}
 				break;
 			default:
 				break;

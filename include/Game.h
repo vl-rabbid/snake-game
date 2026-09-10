@@ -8,11 +8,13 @@
 #include "Menu.h"
 #include "Resources.h"
 #include "Renderer.h"
+#include "Config.h"
 
 namespace SnakeGame
 {
 	struct Game
 	{
+		Config config;
 		Renderer renderer;
 		Resources resources;
 

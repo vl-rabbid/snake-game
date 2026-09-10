@@ -16,7 +16,8 @@ namespace SnakeGame
         Pause,
         GameOver,
         Settings,
-        Resolution
+        Resolution,
+        Difficulty
     };
 
     enum class MenuActionType
@@ -25,7 +26,8 @@ namespace SnakeGame
         SwitchGameState,
         StartGame,
         PreviousMenu,
-        SetScreenScale
+        SetScreenScale,
+        SetDifficulty
     };
 
     struct MenuItem
