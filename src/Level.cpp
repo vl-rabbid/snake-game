@@ -2,13 +2,13 @@
 #include "GameMath.h"
 #include "Resources.h"
 #include <fstream>
+#include <filesystem>
 
 namespace SnakeGame
 {
     void InitLevel(Level &level, Resources &resources)
     {
-        SetEmptyLevel(level.config);
-        LoadLevel(level.config);
+        LoadLevel(level.config, std::string(RESOURCES_PATH) + "/levels/level1.lvl");
 
         level.background.setTexture(resources.background);
         for (int x = 0; x < LEVEL_WIDTH; x++)
@@ -68,9 +68,13 @@ namespace SnakeGame
         return level.cells[position.x][position.y];
     }
 
-    void LoadLevel(LevelConfig &levelConfig)
+    void LoadLevel(LevelConfig &levelConfig, std::string filePath)
     {
-        std::ifstream file(std::string(RESOURCES_PATH) + "/levels/level1.lvl");
+        SetEmptyLevel(levelConfig);
+
+        std::filesystem::path path = filePath;
+        levelConfig.id = path.stem().string();
+        std::ifstream file(filePath);
         if (file.is_open())
         {
             std::string line;
@@ -102,6 +106,7 @@ namespace SnakeGame
 
     void SetEmptyLevel(LevelConfig &levelConfig)
     {
+        levelConfig.id = "empty";
         levelConfig.name = "level";
         levelConfig.snakeSpawn = {LEVEL_WIDTH / 2, (LEVEL_HEIGHT / 2)};
         levelConfig.snakeSize = 3;

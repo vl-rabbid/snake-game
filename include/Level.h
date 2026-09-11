@@ -15,6 +15,7 @@ namespace SnakeGame
 
     struct LevelConfig
     {
+        std::string id;
         std::string name;
         std::vector<Position2D> walls;
         Position2D snakeSpawn;
@@ -50,6 +51,6 @@ namespace SnakeGame
     void DrawLevel(Level &level, sf::RenderTexture &texture);
     void SetCellType(Level &level, Position2D position, CellType cellType);
     CellType GetCellType(Level &level, Position2D position);
-    void LoadLevel(LevelConfig &config);
+    void LoadLevel(LevelConfig &levelConfig, std::string filePath);
     void SetEmptyLevel(LevelConfig &levelConfig);
 }

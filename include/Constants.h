@@ -9,6 +9,7 @@ namespace SnakeGame
 	const int LEVEL_HEIGHT = 13;
 	const int HUD_HEIGHT = 2;
 	const std::string CONFIG_FILE_NAME = "config.ini";
+	const int LEADERBOARD_SIZE = 15;
 
 	const int INPUT_BUFFER_SIZE = 2;
 	const int NUM_MENU_BUTTONS = 4;

@@ -9,6 +9,7 @@
 #include "Resources.h"
 #include "Renderer.h"
 #include "Config.h"
+#include "Leaderboard.h"
 
 namespace SnakeGame
 {
@@ -23,6 +24,7 @@ namespace SnakeGame
 		Snake snake;
 		float speed;
 		int score;
+		Leaderboard leaderboard;
 
 		std::map<MenuState, Menu> menus;
 		std::vector<Menu> menuLayers;

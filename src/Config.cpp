@@ -22,6 +22,7 @@ namespace SnakeGame
     {
         config.difficulty = GameDifficulty::Normal;
         config.windowResolution = WindowResolution::R960x720;
+        config.playerName = "XYZ";
     }
 
     bool LoadConfig(Config &config)
@@ -43,9 +44,10 @@ namespace SnakeGame
                     config.difficulty = static_cast<GameDifficulty>(std::stoi(value));
                 else if (key == "windowResolution")
                     config.windowResolution = static_cast<WindowResolution>(std::stoi(value));
+                else if (key == "playerName")
+                    config.playerName = value;
             }
             file.close();
-
             return true;
         }
         return false;
@@ -58,6 +60,8 @@ namespace SnakeGame
         {
             file << "difficulty=" << static_cast<int>(config.difficulty) << "\n";
             file << "windowResolution=" << static_cast<int>(config.windowResolution) << "\n";
+            file << "playerName=" << config.playerName << "\n";
+            file.close();
             return true;
         }
         return false;

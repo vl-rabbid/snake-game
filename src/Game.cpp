@@ -148,6 +148,7 @@ namespace SnakeGame
 	{
 		game.speed = static_cast<float>(game.config.difficulty);
 		InitLevel(game.level, game.resources);
+		LoadLeaderboard(game.leaderboard, game.level.config.id);
 		InitSnake(game.snake, game.resources, game.level.config.snakeSpawn, game.level.config.snakeSize, game.level.countEmptyCells);
 		for (int i = 0; i < game.snake.segments.size(); i++)
 		{
@@ -190,6 +191,11 @@ namespace SnakeGame
 				{
 					SetGameState(game, GameState::GameOver);
 					isDead = true;
+					if (game.score > 0)
+					{
+						AddLeaderboardEntry(game.leaderboard, game.config.playerName, game.score);
+						SaveLeaderboard(game.leaderboard);
+					}
 				}
 				else
 				{

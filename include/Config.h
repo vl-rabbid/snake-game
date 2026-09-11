@@ -24,6 +24,7 @@ namespace SnakeGame
     {
         GameDifficulty difficulty;
         WindowResolution windowResolution;
+        std::string playerName;
     };
 
     bool ConfigFileExists();
