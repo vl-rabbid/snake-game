@@ -32,6 +32,13 @@ namespace SnakeGame
         ui.menuLabel.setFillColor(sf::Color::White);
         SetTextRelativePosition(ui.menuLabel, 0.5f, 0.1f);
 
+        ui.menuLabelShadow.setString("menuLabel");
+        ui.menuLabelShadow.setFont(resources.font);
+        ui.menuLabelShadow.setStyle(sf::Text::Bold);
+        ui.menuLabelShadow.setCharacterSize(48);
+        ui.menuLabelShadow.setFillColor(COLOR_SHADOW);
+        ui.menuLabelShadow.setPosition({ui.menuLabel.getPosition().x + 2, ui.menuLabel.getPosition().y + 2});
+
         ui.menuButtons.clear();
         ui.menuButtons.resize(NUM_MENU_BUTTONS);
         for (size_t i = 0; i < ui.menuButtons.size(); ++i)
@@ -94,6 +101,8 @@ namespace SnakeGame
         {
             ui.menuLabel.setString(menu.label);
             SetTextRelativeOrigin(ui.menuLabel, 0.5f, 0.5f);
+            ui.menuLabelShadow.setString(menu.label);
+            SetTextRelativeOrigin(ui.menuLabelShadow, 0.5f, 0.5f);
         }
         else if (menu.type == MenuType::SubMenu)
         {
@@ -105,7 +114,8 @@ namespace SnakeGame
         {
             if (i + menu.firstDisplayedItem < menu.items.size())
             {
-                UpdateMenuBottonText(ui.menuButtons[i], menu.items[i + menu.firstDisplayedItem].label);
+                MenuItem &item = menu.items[i + menu.firstDisplayedItem];
+                UpdateMenuBottonText(ui.menuButtons[i], item.label, item.enabled, item.pressed);
             }
         }
     }
@@ -122,7 +132,10 @@ namespace SnakeGame
             menu.firstDisplayedItem = menu.selected;
             UpdateMenuUI(ui, menu);
         }
-        sf::FloatRect itemRect = ui.menuButtons[menu.selected - menu.firstDisplayedItem].sprite.getGlobalBounds();
+
+        sf::FloatRect itemRect = ui.menuButtons[menu.selected - menu.firstDisplayedItem].spriteEnabled.getGlobalBounds();
+        if (!menu.items[menu.selected].enabled || menu.items[menu.selected].pressed)
+            itemRect.top++;
         UpdateSelectorPosition(ui.selector, itemRect);
 
         if (ui.menuButtons.size() < menu.items.size())
@@ -136,6 +149,7 @@ namespace SnakeGame
     void DrawMenuUI(UI &ui, Menu &menu, sf::RenderTexture &texture)
     {
         texture.draw(ui.tint);
+        texture.draw(ui.menuLabelShadow);
         texture.draw(ui.menuLabel);
         if (menu.type == MenuType::SubMenu)
         {
@@ -149,7 +163,13 @@ namespace SnakeGame
         {
             if (i < menu.items.size())
             {
-                texture.draw(ui.menuButtons[i].sprite);
+                if (menu.items[menu.firstDisplayedItem + i].pressed)
+                    texture.draw(ui.menuButtons[i].spritePressed);
+                else if (menu.items[menu.firstDisplayedItem + i].enabled)
+                    texture.draw(ui.menuButtons[i].spriteEnabled);
+                else
+                    texture.draw(ui.menuButtons[i].spriteDisabled);
+
                 texture.draw(ui.menuButtons[i].label);
             }
         }
@@ -197,26 +217,32 @@ namespace SnakeGame
         button.label.setFont(resources.font);
         button.label.setCharacterSize(16);
         button.label.setFillColor(COLOR_TEXT);
-        button.sprite.setTexture(resources.button);
+        button.spriteEnabled.setTexture(resources.buttonEnabled);
+        button.spriteDisabled.setTexture(resources.buttonDisabled);
+        button.spritePressed.setTexture(resources.buttonPressed);
 
-        sf::FloatRect spriteRect = button.sprite.getLocalBounds();
-        sf::Vector2f origin = {std::round(spriteRect.width / 2), 0.f};
-        button.sprite.setOrigin(origin);
+        sf::FloatRect spriteRect = button.spriteEnabled.getLocalBounds();
+        button.spriteEnabled.setOrigin({std::round(spriteRect.width / 2), 0.f});
+        button.spriteDisabled.setOrigin({std::round(spriteRect.width / 2), -1.f});
+        button.spritePressed.setOrigin({std::round(spriteRect.width / 2), -1.f});
     }
 
     void UpdateMenuBottonPosition(Button &button, int positionY)
     {
         sf::Vector2f position = {std::round(LEVEL_WIDTH * CELL_SIZE / 2), (float)positionY};
-        button.sprite.setPosition(position);
+        button.spriteEnabled.setPosition(position);
+        button.spriteDisabled.setPosition(position);
+        button.spritePressed.setPosition(position);
         button.label.setPosition(position);
     }
 
-    void UpdateMenuBottonText(Button &button, std::string text)
+    void UpdateMenuBottonText(Button &button, std::string text, bool enabled, bool pressed)
     {
         button.label.setString(text);
-        sf::FloatRect textRect = button.label.getLocalBounds();
-        sf::Vector2f origin = {std::round(textRect.width / 2), 4.f};
-        button.label.setOrigin(origin);
+        if (!enabled || pressed)
+            button.label.setOrigin({std::round(button.label.getLocalBounds().width / 2), 3.f});
+        else
+            button.label.setOrigin({std::round(button.label.getLocalBounds().width / 2), 4.f});
     }
 
     void UpdateSelectorPosition(Selector &selector, sf::FloatRect target)

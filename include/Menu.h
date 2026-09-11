@@ -35,6 +35,8 @@ namespace SnakeGame
         std::string label;
         MenuActionType actionType;
         int actionTarget;
+        bool enabled = true;
+        bool pressed = false;
     };
 
     struct Menu

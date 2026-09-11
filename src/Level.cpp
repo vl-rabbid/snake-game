@@ -10,7 +10,6 @@ namespace SnakeGame
     {
         LoadLevel(level.config, std::string(RESOURCES_PATH) + "/levels/level1.lvl");
 
-        level.background.setTexture(resources.background);
         for (int x = 0; x < LEVEL_WIDTH; x++)
         {
             for (int y = 0; y < LEVEL_HEIGHT; y++)
@@ -50,7 +49,6 @@ namespace SnakeGame
 
     void DrawLevel(Level &level, sf::RenderTexture &texture)
     {
-        texture.draw(level.background);
         texture.draw(level.apple.sprite);
         for (int i = 0; i < level.walls.size(); i++)
         {

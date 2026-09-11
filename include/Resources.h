@@ -69,7 +69,9 @@ namespace SnakeGame
         sf::Texture background;
         sf::Font font;
 
-        sf::Texture button;
+        sf::Texture buttonEnabled;
+        sf::Texture buttonDisabled;
+        sf::Texture buttonPressed;
         sf::Texture subMenu;
         sf::Texture subMenuTitle;
 

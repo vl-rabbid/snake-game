@@ -41,7 +41,6 @@ namespace SnakeGame
         CellType cells[LEVEL_WIDTH][LEVEL_HEIGHT];
         std::vector<Wall> walls;
         Apple apple;
-        sf::Sprite background;
 
         int countEmptyCells;
     };

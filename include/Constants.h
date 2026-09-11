@@ -15,6 +15,6 @@ namespace SnakeGame
 	const int NUM_MENU_BUTTONS = 4;
 
 	const sf::Color COLOR_TINT(0, 0, 0, 100);
-	const sf::Color COLOR_BASE(128, 107, 91);
+	const sf::Color COLOR_SHADOW(0, 0, 0, 150);
 	const sf::Color COLOR_TEXT(54, 46, 40);
 }

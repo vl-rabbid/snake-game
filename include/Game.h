@@ -19,6 +19,8 @@ namespace SnakeGame
 		Renderer renderer;
 		Resources resources;
 
+		sf::Sprite background;
+
 		GameState gameState;
 		Level level;
 		Snake snake;
@@ -43,5 +45,6 @@ namespace SnakeGame
 	void StartGameLoop(Game &game);
 	void UpdateGameLoop(Game &game, const float deltaTime);
 	void HandleMenuImput(Game &game, const sf::Event &event);
+	void UpdateSubMenuItems(Menu &menu, Game &game, int actionTarget);
 	int GetScoreMultiplier(GameDifficulty gameDifficulty);
 }
