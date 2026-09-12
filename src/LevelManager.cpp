@@ -1,9 +1,35 @@
-#include "LevelConfig.h"
+#include "LevelManager.h"
 #include <fstream>
 #include <filesystem>
 
 namespace SnakeGame
 {
+    void LoadLevelManager(LevelManager &levelMangager)
+    {
+        levelMangager.levels.clear();
+
+        const std::filesystem::path levelsPath = std::filesystem::path(RESOURCES_PATH) / "levels";
+
+        if (std::filesystem::exists(levelsPath) && std::filesystem::is_directory(levelsPath))
+        {
+            for (const auto &entry : std::filesystem::directory_iterator(levelsPath))
+            {
+                if (entry.is_regular_file() && entry.path().extension() == ".lvl")
+                {
+                    levelMangager.levels.emplace_back();
+                    LoadLevel(levelMangager.levels.back(), entry.path().string());
+                }
+            }
+        }
+
+        if (levelMangager.levels.size() == 0)
+        {
+            levelMangager.levels.emplace_back();
+            SetEmptyLevel(levelMangager.levels.back());
+            UpdateCellTypes(levelMangager.levels.back());
+        }
+    }
+
     void LoadLevel(LevelConfig &levelConfig, std::string filePath)
     {
         SetEmptyLevel(levelConfig);
@@ -30,15 +56,17 @@ namespace SnakeGame
                 else if (key == "snakeSize")
                     levelConfig.snakeSize = std::stoi(value);
                 else if (key == "wallCount")
-                    levelConfig.walls.resize(std::stoi(value));
+                    levelConfig.walls.reserve(std::stoi(value));
                 else if (key == "wall")
-                {
                     levelConfig.walls.push_back(ParsePosition(value));
-                }
             }
             file.close();
         }
+        UpdateCellTypes(levelConfig);
+    }
 
+    void UpdateCellTypes(LevelConfig &levelConfig)
+    {
         for (int i = 0; i < levelConfig.walls.size(); i++)
         {
             SetCellType(levelConfig, levelConfig.walls[i], CellType::Wall);
@@ -55,7 +83,7 @@ namespace SnakeGame
     void SetEmptyLevel(LevelConfig &levelConfig)
     {
         levelConfig.id = "empty";
-        levelConfig.name = "level";
+        levelConfig.name = "Empty";
         levelConfig.snakeSpawn = {LEVEL_WIDTH / 2, (LEVEL_HEIGHT / 2)};
         levelConfig.snakeSize = 3;
         levelConfig.walls.clear();

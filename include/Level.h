@@ -2,7 +2,7 @@
 #include "Constants.h"
 #include "GameMath.h"
 #include "Resources.h"
-#include "LevelConfig.h"
+#include "LevelManager.h"
 
 namespace SnakeGame
 {

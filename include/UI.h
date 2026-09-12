@@ -3,7 +3,7 @@
 #include "Menu.h"
 #include "Constants.h"
 #include "Resources.h"
-#include "LevelConfig.h"
+#include "LevelManager.h"
 
 namespace SnakeGame
 {
@@ -64,7 +64,7 @@ namespace SnakeGame
     void UpdateMenuSelectedItem(UI &ui, Menu &menu);
     void DrawUITint(UI &ui, sf::RenderTexture &texture);
     void DrawMenuUI(UI &ui, Menu &menu, sf::RenderTexture &texture);
-    void DrawLevelSelect(UI &ui, sf::RenderTexture &texture);
+    void DrawLevelSelect(UI &ui, const LevelManager &levelManager, sf::RenderTexture &texture);
     void UpdateHud(UI &ui, std::string levelName, int score);
     void DrawHud(UI &ui, sf::RenderTexture &texture);
     void InitMenuButton(Button &button, Resources &resources);
@@ -74,5 +74,5 @@ namespace SnakeGame
     void PositionMenuButtonsList(UI &ui, int displayedAmount);
     void InitLevelButton(LevelButton &button, Resources &resources, int positionX);
     void UpdateLevelBottonText(LevelButton &button, std::string text);
-    void LoadLevelSelect(UI &ui, const LevelConfig &levelConfig);
+    void LoadLevelSelectUI(UI &ui, const LevelManager &levelManager);
 }

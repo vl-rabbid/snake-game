@@ -88,7 +88,7 @@ namespace SnakeGame
 			break;
 		case GameState::LevelSelect:
 			DrawUITint(game.ui, texture);
-			DrawLevelSelect(game.ui, texture);
+			DrawLevelSelect(game.ui, game.levelMangager, texture);
 			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
 			break;
 		case GameState::GameLoop:
@@ -127,9 +127,9 @@ namespace SnakeGame
 			SetMenuState(game, MenuState::Main);
 			break;
 		case GameState::LevelSelect:
-			LoadLevel(game.level.config, std::string(RESOURCES_PATH) + "/levels/level1.lvl");
 			SetMenuState(game, MenuState::LevelSelect);
-			LoadLevelSelect(game.ui, game.level.config);
+			LoadLevelManager(game.levelMangager);
+			LoadLevelSelectUI(game.ui, game.levelMangager);
 			break;
 		case GameState::GameLoop:
 			break;
@@ -174,6 +174,7 @@ namespace SnakeGame
 	void StartGameLoop(Game &game)
 	{
 		game.speed = static_cast<float>(game.config.difficulty);
+		game.level.config = game.levelMangager.levels[game.levelMangager.selected];
 		InitLevel(game.level, game.resources);
 		LoadLeaderboard(game.leaderboard, game.level.config.id);
 		InitSnake(game.snake, game.resources, game.level.config.snakeSpawn, game.level.config.snakeSize, game.level.countEmptyCells);
@@ -352,5 +353,4 @@ namespace SnakeGame
 		}
 		return 1;
 	}
-
 }

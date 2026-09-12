@@ -10,7 +10,7 @@
 #include "Renderer.h"
 #include "Config.h"
 #include "Leaderboard.h"
-#include "LevelConfig.h"
+#include "LevelManager.h"
 
 namespace SnakeGame
 {
@@ -32,6 +32,7 @@ namespace SnakeGame
 		std::map<MenuState, Menu> menus;
 		std::vector<Menu> menuLayers;
 		UI ui;
+		LevelManager levelMangager;
 	};
 
 	bool IsGameRunning(Game &game);

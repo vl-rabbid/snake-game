@@ -217,15 +217,19 @@ namespace SnakeGame
         }
     }
 
-    void DrawLevelSelect(UI &ui, sf::RenderTexture &texture)
+    void DrawLevelSelect(UI &ui, const LevelManager &levelManager, sf::RenderTexture &texture)
     {
-        for (int i = 0; i < ui.levelButtons.size(); i++)
+
+        for (int i = 0; i < ui.levelButtons.size(); ++i)
         {
-            texture.draw(ui.levelButtons[i].spriteButton);
-            texture.draw(ui.levelButtons[i].spriteLabel);
-            texture.draw(ui.levelButtons[i].spritePreviewFrame);
-            texture.draw(ui.levelButtons[i].label);
-            texture.draw(ui.levelButtons[i].preview, ui.levelButtons[i].previewStates);
+            if (i < levelManager.levels.size())
+            {
+                texture.draw(ui.levelButtons[i].spriteButton);
+                texture.draw(ui.levelButtons[i].spriteLabel);
+                texture.draw(ui.levelButtons[i].spritePreviewFrame);
+                texture.draw(ui.levelButtons[i].label);
+                texture.draw(ui.levelButtons[i].preview, ui.levelButtons[i].previewStates);
+            }
         }
 
         texture.draw(ui.selectorLevel.topLeft);
@@ -333,10 +337,15 @@ namespace SnakeGame
         button.label.setOrigin({std::round(button.label.getLocalBounds().width / 2), 4.f});
     }
 
-    void LoadLevelSelect(UI &ui, const LevelConfig &levelConfig)
+    void LoadLevelSelectUI(UI &ui, const LevelManager &levelManager)
     {
-        LevelButton &levelButton = ui.levelButtons[0];
-        UpdateLevelBottonText(levelButton, levelConfig.name);
-        levelButton.preview = GenerateLevelPreview(levelConfig);
+        for (int i = 0; i < ui.levelButtons.size(); i++)
+        {
+            if (i + levelManager.firstDisplayedItem < levelManager.levels.size())
+            {
+                UpdateLevelBottonText(ui.levelButtons[i], levelManager.levels[i + levelManager.firstDisplayedItem].name);
+                ui.levelButtons[i].preview = GenerateLevelPreview(levelManager.levels[i + levelManager.firstDisplayedItem]);
+            }
+        }
     }
 }

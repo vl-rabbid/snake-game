@@ -21,7 +21,16 @@ namespace SnakeGame
         CellType cells[LEVEL_WIDTH][LEVEL_HEIGHT];
     };
 
+    struct LevelManager
+    {
+        std::vector<LevelConfig> levels;
+        int selected = 0;
+        int firstDisplayedItem = 0;
+    };
+
+    void LoadLevelManager(LevelManager &levelMangager);
     void LoadLevel(LevelConfig &levelConfig, std::string filePath);
+    void UpdateCellTypes(LevelConfig &levelConfig);
     void SetEmptyLevel(LevelConfig &levelConfig);
     sf::VertexArray GenerateLevelPreview(const LevelConfig &level);
     void SetCellType(LevelConfig &levelConfig, Position2D position, CellType cellType);
