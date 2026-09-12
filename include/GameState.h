@@ -1,3 +1,5 @@
+#pragma once
+
 namespace SnakeGame
 {
     enum class GameState

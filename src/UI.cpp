@@ -1,5 +1,4 @@
 #include "UI.h"
-#include "GameMath.h"
 #include <cmath>
 
 namespace SnakeGame
@@ -226,6 +225,7 @@ namespace SnakeGame
             texture.draw(ui.levelButtons[i].spriteLabel);
             texture.draw(ui.levelButtons[i].spritePreviewFrame);
             texture.draw(ui.levelButtons[i].label);
+            texture.draw(ui.levelButtons[i].preview, ui.levelButtons[i].previewStates);
         }
 
         texture.draw(ui.selectorLevel.topLeft);
@@ -322,6 +322,9 @@ namespace SnakeGame
         button.label.setPosition({button.spriteLabel.getGlobalBounds().left + std::round(button.spriteLabel.getLocalBounds().width / 2), 37.f});
         UpdateLevelBottonText(button, "level");
         button.spritePreviewFrame.setPosition({(float)(positionX + 5), 57.f});
+        button.previewStates = button.spritePreviewFrame.getTransform();
+        button.previewStates.transform.translate(1.f, 1.f);
+        button.previewStates.transform.scale(3.f, 3.f);
     }
 
     void UpdateLevelBottonText(LevelButton &button, std::string text)
@@ -330,4 +333,10 @@ namespace SnakeGame
         button.label.setOrigin({std::round(button.label.getLocalBounds().width / 2), 4.f});
     }
 
+    void LoadLevelSelect(UI &ui, const LevelConfig &levelConfig)
+    {
+        LevelButton &levelButton = ui.levelButtons[0];
+        UpdateLevelBottonText(levelButton, levelConfig.name);
+        levelButton.preview = GenerateLevelPreview(levelConfig);
+    }
 }

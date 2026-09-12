@@ -1,20 +1,9 @@
 #include "Level.h"
-#include "GameMath.h"
-#include "Resources.h"
 
 namespace SnakeGame
 {
     void InitLevel(Level &level, Resources &resources)
     {
-        LoadLevel(level.config, std::string(RESOURCES_PATH) + "/levels/level1.lvl");
-
-        for (int x = 0; x < LEVEL_WIDTH; x++)
-        {
-            for (int y = 0; y < LEVEL_HEIGHT; y++)
-            {
-                SetCellType(level, {x, y}, CellType::Empty);
-            }
-        }
         level.apple.sprite.setTexture(resources.atlas);
         level.apple.sprite.setTextureRect(GetTextureRect(TextureID::Apple));
 
@@ -26,7 +15,6 @@ namespace SnakeGame
             level.walls[i].sprite.setTexture(resources.atlas);
             level.walls[i].sprite.setTextureRect(GetRandomWallRect());
             SetSpritePosition(level.walls[i].sprite, level.walls[i].position);
-            level.cells[level.walls[i].position.x][level.walls[i].position.y] = CellType::Wall;
         }
 
         level.countEmptyCells = (LEVEL_WIDTH * LEVEL_HEIGHT) - level.walls.size();
@@ -38,10 +26,10 @@ namespace SnakeGame
         do
         {
             position = GetRandomPositionOnLevel(LEVEL_WIDTH, LEVEL_HEIGHT);
-        } while (level.cells[position.x][position.y] != CellType::Empty);
+        } while (GetCellType(level.config, position) != CellType::Empty);
 
         level.apple.position = position;
-        level.cells[position.x][position.y] = CellType::Apple;
+        SetCellType(level.config, position, CellType::Apple);
         SetSpritePosition(level.apple.sprite, position);
     }
 
@@ -52,15 +40,5 @@ namespace SnakeGame
         {
             texture.draw(level.walls[i].sprite);
         }
-    }
-
-    void SetCellType(Level &level, Position2D position, CellType cellType)
-    {
-        level.cells[position.x][position.y] = cellType;
-    }
-
-    CellType GetCellType(Level &level, Position2D position)
-    {
-        return level.cells[position.x][position.y];
     }
 }

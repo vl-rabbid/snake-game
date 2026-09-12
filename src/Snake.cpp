@@ -1,6 +1,4 @@
 #include "Snake.h"
-#include "Game.h"
-#include "Constants.h"
 
 namespace SnakeGame
 {

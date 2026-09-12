@@ -2,7 +2,6 @@
 #include <cassert>
 #include <string>
 #include <array>
-#include "GameMath.h"
 
 namespace SnakeGame
 {

@@ -1,6 +1,4 @@
 #include "Menu.h"
-#include "GameState.h"
-#include "Config.h"
 
 namespace SnakeGame
 {

@@ -3,6 +3,7 @@
 #include "Menu.h"
 #include "Constants.h"
 #include "Resources.h"
+#include "LevelConfig.h"
 
 namespace SnakeGame
 {
@@ -20,6 +21,8 @@ namespace SnakeGame
         sf::Sprite spriteLabel;
         sf::Sprite spriteButton;
         sf::Sprite spritePreviewFrame;
+        sf::VertexArray preview;
+        sf::RenderStates previewStates;
     };
 
     struct Selector
@@ -71,4 +74,5 @@ namespace SnakeGame
     void PositionMenuButtonsList(UI &ui, int displayedAmount);
     void InitLevelButton(LevelButton &button, Resources &resources, int positionX);
     void UpdateLevelBottonText(LevelButton &button, std::string text);
+    void LoadLevelSelect(UI &ui, const LevelConfig &levelConfig);
 }

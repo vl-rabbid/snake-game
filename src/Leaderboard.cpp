@@ -1,7 +1,6 @@
 #include "Leaderboard.h"
 #include <fstream>
 #include <filesystem>
-#include <iostream>
 
 namespace SnakeGame
 {

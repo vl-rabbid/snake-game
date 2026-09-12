@@ -1,5 +1,4 @@
 #include "Game.h"
-#include "Level.h"
 
 namespace SnakeGame
 {
@@ -128,7 +127,9 @@ namespace SnakeGame
 			SetMenuState(game, MenuState::Main);
 			break;
 		case GameState::LevelSelect:
+			LoadLevel(game.level.config, std::string(RESOURCES_PATH) + "/levels/level1.lvl");
 			SetMenuState(game, MenuState::LevelSelect);
+			LoadLevelSelect(game.ui, game.level.config);
 			break;
 		case GameState::GameLoop:
 			break;
@@ -176,10 +177,6 @@ namespace SnakeGame
 		InitLevel(game.level, game.resources);
 		LoadLeaderboard(game.leaderboard, game.level.config.id);
 		InitSnake(game.snake, game.resources, game.level.config.snakeSpawn, game.level.config.snakeSize, game.level.countEmptyCells);
-		for (int i = 0; i < game.snake.segments.size(); i++)
-		{
-			SetCellType(game.level, game.snake.segments[i].position, CellType::Snake);
-		}
 		SpawnApple(game.level);
 		game.score = 0;
 		UpdateHud(game.ui, game.level.config.name, game.score);
@@ -199,10 +196,10 @@ namespace SnakeGame
 			UpdateSnake(game.snake);
 			SnakeSegment snakeHead = game.snake.segments.front();
 
-			if (GetCellType(game.level, snakeHead.position) == CellType::Apple)
+			if (GetCellType(game.level.config, snakeHead.position) == CellType::Apple)
 			{
 				AddSnakeSegment(game.snake, snakeTail);
-				SetCellType(game.level, snakeHead.position, CellType::Snake);
+				SetCellType(game.level.config, snakeHead.position, CellType::Snake);
 				game.score += GetScoreMultiplier(game.config.difficulty);
 				UpdateHud(game.ui, game.level.config.name, game.score);
 				if (game.snake.segments.size() < game.level.countEmptyCells)
@@ -212,8 +209,8 @@ namespace SnakeGame
 			}
 			else
 			{
-				SetCellType(game.level, snakeTail.position, CellType::Empty);
-				if (GetCellType(game.level, snakeHead.position) == CellType::Snake || GetCellType(game.level, snakeHead.position) == CellType::Wall)
+				SetCellType(game.level.config, snakeTail.position, CellType::Empty);
+				if (GetCellType(game.level.config, snakeHead.position) == CellType::Snake || GetCellType(game.level.config, snakeHead.position) == CellType::Wall)
 				{
 					SetGameState(game, GameState::GameOver);
 					isDead = true;
@@ -225,7 +222,7 @@ namespace SnakeGame
 				}
 				else
 				{
-					SetCellType(game.level, snakeHead.position, CellType::Snake);
+					SetCellType(game.level.config, snakeHead.position, CellType::Snake);
 				}
 			}
 			bool isMouthOpen = CellsBetween(snakeHead.position, game.level.apple.position) <= 2;

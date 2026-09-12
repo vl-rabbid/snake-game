@@ -2,6 +2,8 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 #include "Constants.h"
+#include "GameState.h"
+#include "Config.h"
 
 namespace SnakeGame
 {

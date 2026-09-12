@@ -18,4 +18,9 @@ namespace SnakeGame
 	const sf::Color COLOR_TINT(0, 0, 0, 100);
 	const sf::Color COLOR_SHADOW(0, 0, 0, 150);
 	const sf::Color COLOR_TEXT(54, 46, 40);
+
+	const sf::Color COLOR_GREEN_LIGHT(113, 180, 55);
+	const sf::Color COLOR_GREEN_DARK(79, 160, 65);
+	const sf::Color COLOR_SNAKE(24, 95, 229);
+	const sf::Color COLOR_WALL(82, 81, 110);
 }

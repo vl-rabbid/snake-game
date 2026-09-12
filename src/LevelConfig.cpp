@@ -38,6 +38,18 @@ namespace SnakeGame
             }
             file.close();
         }
+
+        for (int i = 0; i < levelConfig.walls.size(); i++)
+        {
+            SetCellType(levelConfig, levelConfig.walls[i], CellType::Wall);
+        }
+
+        Position2D snakePosition = levelConfig.snakeSpawn;
+        for (int i = 0; i < levelConfig.snakeSize; i++)
+        {
+            SetCellType(levelConfig, snakePosition, CellType::Snake);
+            snakePosition.y += 1;
+        }
     }
 
     void SetEmptyLevel(LevelConfig &levelConfig)
@@ -47,5 +59,58 @@ namespace SnakeGame
         levelConfig.snakeSpawn = {LEVEL_WIDTH / 2, (LEVEL_HEIGHT / 2)};
         levelConfig.snakeSize = 3;
         levelConfig.walls.clear();
+
+        for (int x = 0; x < LEVEL_WIDTH; x++)
+        {
+            for (int y = 0; y < LEVEL_HEIGHT; y++)
+            {
+                SetCellType(levelConfig, {x, y}, CellType::Empty);
+            }
+        }
+    }
+
+    sf::VertexArray GenerateLevelPreview(const LevelConfig &level)
+    {
+        sf::VertexArray vertices(
+            sf::Quads,
+            LEVEL_WIDTH * LEVEL_HEIGHT * 4);
+
+        for (int y = 0; y < LEVEL_HEIGHT; y++)
+        {
+            for (int x = 0; x < LEVEL_WIDTH; x++)
+            {
+                sf::Color color;
+                if (GetCellType(level, {x, y}) == CellType::Empty)
+                {
+                    if ((x + y) % 2 == 0)
+                        color = COLOR_GREEN_LIGHT;
+                    else
+                        color = COLOR_GREEN_DARK;
+                }
+                else if (GetCellType(level, {x, y}) == CellType::Wall)
+                    color = COLOR_WALL;
+
+                else if (GetCellType(level, {x, y}) == CellType::Snake)
+                    color = COLOR_SNAKE;
+
+                int index = (y * LEVEL_WIDTH + x) * 4;
+
+                vertices[index + 0] = sf::Vertex(sf::Vector2f(x, y), color);
+                vertices[index + 1] = sf::Vertex(sf::Vector2f(x + 1, y), color);
+                vertices[index + 2] = sf::Vertex(sf::Vector2f(x + 1, y + 1), color);
+                vertices[index + 3] = sf::Vertex(sf::Vector2f(x, y + 1), color);
+            }
+        }
+        return vertices;
+    }
+
+    void SetCellType(LevelConfig &level, Position2D position, CellType cellType)
+    {
+        level.cells[position.x][position.y] = cellType;
+    }
+
+    CellType GetCellType(const LevelConfig &level, Position2D position)
+    {
+        return level.cells[position.x][position.y];
     }
 }
