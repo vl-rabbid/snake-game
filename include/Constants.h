@@ -12,7 +12,7 @@ namespace SnakeGame
 	const int LEADERBOARD_SIZE = 15;
 
 	const int INPUT_BUFFER_SIZE = 2;
-	const int NUM_MENU_BUTTONS = 4;
+	const int MAX_MENU_BUTTONS = 4;
 
 	const sf::Color COLOR_TINT(0, 0, 0, 100);
 	const sf::Color COLOR_SHADOW(0, 0, 0, 150);

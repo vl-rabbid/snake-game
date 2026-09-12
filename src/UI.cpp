@@ -40,11 +40,10 @@ namespace SnakeGame
         ui.menuLabelShadow.setPosition({ui.menuLabel.getPosition().x + 2, ui.menuLabel.getPosition().y + 2});
 
         ui.menuButtons.clear();
-        ui.menuButtons.resize(NUM_MENU_BUTTONS);
+        ui.menuButtons.resize(MAX_MENU_BUTTONS);
         for (size_t i = 0; i < ui.menuButtons.size(); ++i)
         {
             InitMenuButton(ui.menuButtons[i], resources);
-            UpdateMenuBottonPosition(ui.menuButtons[i], 83 + (i * 21));
         }
 
         ui.tint.setFillColor(COLOR_TINT);
@@ -65,8 +64,7 @@ namespace SnakeGame
 
         ui.menuUp.setTexture(resources.atlas);
         ui.menuUp.setTextureRect(GetTextureRect(TextureID::MenuUp));
-        ui.menuUp.setOrigin({4.f, 0.f});
-        ui.menuUp.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), 75.f});
+        ui.menuUp.setOrigin({4.f, 8.f});
         ui.menuDown.setTexture(resources.atlas);
         ui.menuDown.setTextureRect(GetTextureRect(TextureID::MenuDown));
         ui.menuDown.setOrigin({4.f, 0.f});
@@ -91,8 +89,6 @@ namespace SnakeGame
         ui.slider.setOrigin({3.f, 5.f});
 
         ui.sliderBar.setFillColor(COLOR_TEXT);
-        ui.sliderBar.setSize(sf::Vector2f(2.f, 78.f));
-        ui.sliderBar.setPosition({171.f, 85.f});
     }
 
     void UpdateMenuUI(UI &ui, Menu &menu)
@@ -110,7 +106,9 @@ namespace SnakeGame
             ui.subMenuLabel.setOrigin({std::round(ui.subMenuLabel.getLocalBounds().width / 2), 0.f});
         }
 
-        for (int i = 0; i < ui.menuButtons.size(); i++)
+        PositionMenuButtonsList(ui, menu.displayedItemAmount);
+
+        for (int i = 0; i < menu.displayedItemAmount; i++)
         {
             if (i + menu.firstDisplayedItem < menu.items.size())
             {
@@ -122,9 +120,9 @@ namespace SnakeGame
 
     void UpdateMenuSelectedItem(UI &ui, Menu &menu)
     {
-        if (menu.selected - menu.firstDisplayedItem >= NUM_MENU_BUTTONS)
+        if (menu.selected - menu.firstDisplayedItem >= menu.displayedItemAmount)
         {
-            menu.firstDisplayedItem = menu.selected - NUM_MENU_BUTTONS + 1;
+            menu.firstDisplayedItem = menu.selected - menu.displayedItemAmount + 1;
             UpdateMenuUI(ui, menu);
         }
         else if ((menu.selected - menu.firstDisplayedItem < 0))
@@ -138,7 +136,7 @@ namespace SnakeGame
             itemRect.top++;
         UpdateSelectorPosition(ui.selector, itemRect);
 
-        if (ui.menuButtons.size() < menu.items.size())
+        if (menu.displayedItemAmount < menu.items.size())
         {
             sf::Vector2f sliderPosition = ui.sliderBar.getPosition();
             sliderPosition.y += std::round(ui.sliderBar.getSize().y * (float)(menu.selected / (float)(menu.items.size() - 1)));
@@ -159,26 +157,27 @@ namespace SnakeGame
             texture.draw(ui.subMenuLabel);
         }
 
-        for (int i = 0; i < ui.menuButtons.size(); ++i)
+        for (int i = 0; i < menu.displayedItemAmount; ++i)
         {
             if (i < menu.items.size())
             {
-                if (menu.items[menu.firstDisplayedItem + i].pressed)
-                    texture.draw(ui.menuButtons[i].spritePressed);
-                else if (menu.items[menu.firstDisplayedItem + i].enabled)
-                    texture.draw(ui.menuButtons[i].spriteEnabled);
-                else
+                if (!menu.items[menu.firstDisplayedItem + i].enabled)
                     texture.draw(ui.menuButtons[i].spriteDisabled);
+                else if (menu.items[menu.firstDisplayedItem + i].pressed)
+                    texture.draw(ui.menuButtons[i].spritePressed);
+                else
+                    texture.draw(ui.menuButtons[i].spriteEnabled);
 
                 texture.draw(ui.menuButtons[i].label);
             }
         }
+
         texture.draw(ui.selector.topLeft);
         texture.draw(ui.selector.topRight);
         texture.draw(ui.selector.bottomLeft);
         texture.draw(ui.selector.bottomRight);
 
-        if (ui.menuButtons.size() < menu.items.size() && menu.firstDisplayedItem + NUM_MENU_BUTTONS < menu.items.size())
+        if (menu.displayedItemAmount < menu.items.size() && menu.firstDisplayedItem + menu.displayedItemAmount < menu.items.size())
         {
             texture.draw(ui.menuDown);
         }
@@ -187,7 +186,7 @@ namespace SnakeGame
             texture.draw(ui.menuUp);
         }
 
-        if (ui.menuButtons.size() < menu.items.size())
+        if (menu.displayedItemAmount < menu.items.size())
         {
             texture.draw(ui.sliderBar);
             texture.draw(ui.slider);
@@ -251,6 +250,21 @@ namespace SnakeGame
         selector.topRight.setPosition(target.left + target.width, target.top);
         selector.bottomLeft.setPosition(target.left, target.top + target.height);
         selector.bottomRight.setPosition(target.left + target.width, target.top + target.height);
+    }
+
+    void PositionMenuButtonsList(UI &ui, int displayedAmount)
+    {
+        int positionY = 167;
+        for (int i = displayedAmount - 1; i >= 0; --i)
+        {
+            positionY -= 21;
+            UpdateMenuBottonPosition(ui.menuButtons[i], positionY);
+        }
+        ui.menuUp.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), (float)positionY});
+        ui.sliderBar.setPosition({171.f, 85.f});
+        ui.sliderBar.setPosition({171.f, (float)(positionY + 2)});
+        ui.sliderBar.setSize(sf::Vector2f(2.f, 78.f));
+        ui.sliderBar.setSize(sf::Vector2f(2.f, 163.f - (float)(positionY + 2)));
     }
 
 }

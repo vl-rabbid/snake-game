@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <SFML/Graphics.hpp>
+#include "Constants.h"
 
 namespace SnakeGame
 {
@@ -17,7 +18,8 @@ namespace SnakeGame
         GameOver,
         Settings,
         Resolution,
-        Difficulty
+        Difficulty,
+        LevelSelect
     };
 
     enum class MenuActionType
@@ -44,6 +46,7 @@ namespace SnakeGame
         std::string label;
         MenuType type;
         std::vector<MenuItem> items;
+        int displayedItemAmount = MAX_MENU_BUTTONS;
         int selected = 0;
         int firstDisplayedItem = 0;
     };

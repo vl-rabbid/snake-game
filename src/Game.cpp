@@ -225,9 +225,12 @@ namespace SnakeGame
 		static bool enterHeld = false;
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter)
 		{
-			game.menuLayers.back().items[game.menuLayers.back().selected].pressed = true;
-			UpdateMenuLayer(game);
-			enterHeld = true;
+			if (!game.menuLayers.back().items[game.menuLayers.back().selected].pressed)
+			{
+				game.menuLayers.back().items[game.menuLayers.back().selected].pressed = true;
+				UpdateMenuLayer(game);
+				enterHeld = true;
+			}
 		}
 		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
 		{

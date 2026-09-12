@@ -11,11 +11,8 @@ namespace SnakeGame
                 "Snake Game",
                 MenuType::FullMenu,
                 {{"Play",
-                  MenuActionType::StartGame,
-                  0},
-                 {"Difficulty",
                   MenuActionType::SwitchMenuState,
-                  static_cast<int>(MenuState::Difficulty)},
+                  static_cast<int>(MenuState::LevelSelect)},
                  {"Settings",
                   MenuActionType::SwitchMenuState,
                   static_cast<int>(MenuState::Settings)},
@@ -101,5 +98,20 @@ namespace SnakeGame
                  {"Back",
                   MenuActionType::PreviousMenu,
                   0}}};
+
+        menus[MenuState::LevelSelect] =
+            {
+                "",
+                MenuType::FullMenu,
+                {{"Start Game",
+                  MenuActionType::StartGame,
+                  0},
+                 {"Difficulty",
+                  MenuActionType::SwitchMenuState,
+                  static_cast<int>(MenuState::Difficulty)},
+                 {"Back",
+                  MenuActionType::PreviousMenu,
+                  0}},
+                2};
     }
 }

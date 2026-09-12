@@ -55,4 +55,5 @@ namespace SnakeGame
     void UpdateMenuBottonPosition(Button &button, int positionY);
     void UpdateMenuBottonText(Button &button, std::string text, bool enabled, bool pressed);
     void UpdateSelectorPosition(Selector &selector, sf::FloatRect target);
+    void PositionMenuButtonsList(UI &ui, int displayedAmount);
 }
