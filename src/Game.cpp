@@ -43,6 +43,9 @@ namespace SnakeGame
 		case GameState::MainMenu:
 			HandleMenuImput(game, event);
 			break;
+		case GameState::LevelSelect:
+			HandleMenuImput(game, event);
+			break;
 		case GameState::GameLoop:
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
 			{
@@ -81,6 +84,12 @@ namespace SnakeGame
 		switch (game.gameState)
 		{
 		case GameState::MainMenu:
+			DrawUITint(game.ui, texture);
+			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
+			break;
+		case GameState::LevelSelect:
+			DrawUITint(game.ui, texture);
+			DrawLevelSelect(game.ui, texture);
 			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
 			break;
 		case GameState::GameLoop:
@@ -92,11 +101,13 @@ namespace SnakeGame
 			DrawLevel(game.level, texture);
 			DrawSnake(game.snake, texture);
 			DrawHud(game.ui, texture);
+			DrawUITint(game.ui, texture);
 			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
 		case GameState::Pause:
 			DrawLevel(game.level, texture);
 			DrawSnake(game.snake, texture);
 			DrawHud(game.ui, texture);
+			DrawUITint(game.ui, texture);
 			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
 		default:
 			break;
@@ -115,6 +126,9 @@ namespace SnakeGame
 		{
 		case GameState::MainMenu:
 			SetMenuState(game, MenuState::Main);
+			break;
+		case GameState::LevelSelect:
+			SetMenuState(game, MenuState::LevelSelect);
 			break;
 		case GameState::GameLoop:
 			break;

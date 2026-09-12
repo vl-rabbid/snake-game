@@ -60,7 +60,8 @@ namespace SnakeGame
         MenuUp,
         MenuDown,
 
-        HUD
+        UIFrame4,
+        UIFrame5
     };
 
     struct Resources
@@ -78,6 +79,9 @@ namespace SnakeGame
         sf::Texture hud;
         sf::Texture hudLevelName;
         sf::Texture hudScore;
+
+        sf::Texture levelSelectButton;
+        sf::Texture levelPreviewFrame;
     };
 
     void InitResources(Resources &resources);

@@ -14,6 +14,14 @@ namespace SnakeGame
         sf::Text label;
     };
 
+    struct LevelButton
+    {
+        sf::Text label;
+        sf::Sprite spriteLabel;
+        sf::Sprite spriteButton;
+        sf::Sprite spritePreviewFrame;
+    };
+
     struct Selector
     {
         sf::Sprite topLeft;
@@ -30,7 +38,7 @@ namespace SnakeGame
         sf::Sprite hudScore;
         sf::Text hudScoreLabel;
 
-        Selector selector;
+        Selector selectorMenu;
         std::vector<Button> menuButtons;
         sf::Text menuLabel;
         sf::Text menuLabelShadow;
@@ -43,12 +51,17 @@ namespace SnakeGame
         sf::Text subMenuLabel;
         sf::Sprite slider;
         sf::RectangleShape sliderBar;
+
+        std::vector<LevelButton> levelButtons;
+        Selector selectorLevel;
     };
 
     void InitUI(UI &ui, Resources &resources);
     void UpdateMenuUI(UI &ui, Menu &menu);
     void UpdateMenuSelectedItem(UI &ui, Menu &menu);
+    void DrawUITint(UI &ui, sf::RenderTexture &texture);
     void DrawMenuUI(UI &ui, Menu &menu, sf::RenderTexture &texture);
+    void DrawLevelSelect(UI &ui, sf::RenderTexture &texture);
     void UpdateHud(UI &ui, std::string levelName, int score);
     void DrawHud(UI &ui, sf::RenderTexture &texture);
     void InitMenuButton(Button &button, Resources &resources);
@@ -56,4 +69,6 @@ namespace SnakeGame
     void UpdateMenuBottonText(Button &button, std::string text, bool enabled, bool pressed);
     void UpdateSelectorPosition(Selector &selector, sf::FloatRect target);
     void PositionMenuButtonsList(UI &ui, int displayedAmount);
+    void InitLevelButton(LevelButton &button, Resources &resources, int positionX);
+    void UpdateLevelBottonText(LevelButton &button, std::string text);
 }

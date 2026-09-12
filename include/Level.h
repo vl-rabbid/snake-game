@@ -2,6 +2,7 @@
 #include "Constants.h"
 #include "GameMath.h"
 #include "Resources.h"
+#include "LevelConfig.h"
 
 namespace SnakeGame
 {
@@ -11,15 +12,6 @@ namespace SnakeGame
         Snake,
         Apple,
         Wall
-    };
-
-    struct LevelConfig
-    {
-        std::string id;
-        std::string name;
-        std::vector<Position2D> walls;
-        Position2D snakeSpawn;
-        int snakeSize;
     };
 
     struct Apple
@@ -50,6 +42,4 @@ namespace SnakeGame
     void DrawLevel(Level &level, sf::RenderTexture &texture);
     void SetCellType(Level &level, Position2D position, CellType cellType);
     CellType GetCellType(Level &level, Position2D position);
-    void LoadLevel(LevelConfig &levelConfig, std::string filePath);
-    void SetEmptyLevel(LevelConfig &levelConfig);
 }

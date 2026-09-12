@@ -18,9 +18,13 @@ namespace SnakeGame
 
         resources.subMenu = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame3), 120, 113);
         resources.subMenuTitle = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame2), 100, 17);
-        resources.hud = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::HUD), LEVEL_WIDTH * CELL_SIZE, HUD_HEIGHT * CELL_SIZE);
-        resources.hudLevelName = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame3), 75, 18);
-        resources.hudScore = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame3), 95, 18);
+
+        resources.hud = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame4), LEVEL_WIDTH * CELL_SIZE, HUD_HEIGHT * CELL_SIZE);
+        resources.hudLevelName = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame2), 62, 17);
+        resources.hudScore = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame2), 95, 17);
+
+        resources.levelSelectButton = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame1), 72, 75);
+        resources.levelPreviewFrame = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame5), 62, 41);
     }
 
     sf::IntRect GetTextureRect(TextureID id)
@@ -168,8 +172,11 @@ namespace SnakeGame
             return sf::IntRect(108, 48, 12, 12);
             break;
 
-        case TextureID::HUD:
+        case TextureID::UIFrame4:
             return sf::IntRect(120, 48, 12, 12);
+            break;
+        case TextureID::UIFrame5:
+            return sf::IntRect(132, 48, 12, 12);
             break;
 
         default:

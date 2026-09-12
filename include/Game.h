@@ -10,6 +10,7 @@
 #include "Renderer.h"
 #include "Config.h"
 #include "Leaderboard.h"
+#include "LevelConfig.h"
 
 namespace SnakeGame
 {
