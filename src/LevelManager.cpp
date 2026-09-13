@@ -6,6 +6,8 @@ namespace SnakeGame
 {
     void LoadLevelManager(LevelManager &levelMangager)
     {
+        levelMangager.firstDisplayedItem = 0;
+        levelMangager.selected = 0;
         levelMangager.levels.clear();
 
         const std::filesystem::path levelsPath = std::filesystem::path(RESOURCES_PATH) / "levels";

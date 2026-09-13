@@ -160,14 +160,14 @@ namespace SnakeGame
             return sf::IntRect(72, 48, 12, 12);
             break;
 
-        case TextureID::Slider:
+        case TextureID::SliderVertical:
             return sf::IntRect(84, 48, 12, 12);
             break;
 
-        case TextureID::MenuUp:
+        case TextureID::Up:
             return sf::IntRect(96, 48, 12, 12);
             break;
-        case TextureID::MenuDown:
+        case TextureID::Down:
             return sf::IntRect(108, 48, 12, 12);
             break;
 
@@ -176,6 +176,17 @@ namespace SnakeGame
             break;
         case TextureID::UIFrame5:
             return sf::IntRect(132, 48, 12, 12);
+            break;
+
+        case TextureID::Left:
+            return sf::IntRect(0, 60, 12, 12);
+            break;
+        case TextureID::Right:
+            return sf::IntRect(12, 60, 12, 12);
+            break;
+
+        case TextureID::SliderHorizontal:
+            return sf::IntRect(24, 60, 12, 12);
             break;
 
         default:

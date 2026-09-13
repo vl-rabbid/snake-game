@@ -24,8 +24,8 @@ namespace SnakeGame
     struct LevelManager
     {
         std::vector<LevelConfig> levels;
-        int selected = 0;
-        int firstDisplayedItem = 0;
+        int selected;
+        int firstDisplayedItem;
     };
 
     void LoadLevelManager(LevelManager &levelMangager);

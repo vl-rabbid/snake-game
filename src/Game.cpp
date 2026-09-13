@@ -44,6 +44,7 @@ namespace SnakeGame
 			break;
 		case GameState::LevelSelect:
 			HandleMenuImput(game, event);
+			HandleLevelSelectImput(game, event);
 			break;
 		case GameState::GameLoop:
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
@@ -102,12 +103,14 @@ namespace SnakeGame
 			DrawHud(game.ui, texture);
 			DrawUITint(game.ui, texture);
 			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
+			break;
 		case GameState::Pause:
 			DrawLevel(game.level, texture);
 			DrawSnake(game.snake, texture);
 			DrawHud(game.ui, texture);
 			DrawUITint(game.ui, texture);
 			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
+			break;
 		default:
 			break;
 		}
@@ -130,6 +133,7 @@ namespace SnakeGame
 			SetMenuState(game, MenuState::LevelSelect);
 			LoadLevelManager(game.levelMangager);
 			LoadLevelSelectUI(game.ui, game.levelMangager);
+			UpdateLevelSelectedItem(game.ui, game.levelMangager);
 			break;
 		case GameState::GameLoop:
 			break;
@@ -317,6 +321,28 @@ namespace SnakeGame
 				}
 			}
 		};
+	}
+
+	void HandleLevelSelectImput(Game &game, const sf::Event &event)
+	{
+		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
+		{
+			game.levelMangager.selected -= 1;
+			if (game.levelMangager.selected < 0)
+			{
+				game.levelMangager.selected = game.levelMangager.levels.size() - 1;
+			}
+			UpdateLevelSelectedItem(game.ui, game.levelMangager);
+		}
+		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
+		{
+			game.levelMangager.selected += 1;
+			if (game.levelMangager.selected > game.levelMangager.levels.size() - 1)
+			{
+				game.levelMangager.selected = 0;
+			}
+			UpdateLevelSelectedItem(game.ui, game.levelMangager);
+		}
 	}
 
 	void UpdateSubMenuItems(Menu &menu, Game &game, int actionTarget)

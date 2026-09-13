@@ -56,13 +56,18 @@ namespace SnakeGame
         SelectorBottomLeft,
         SelectorBottomRight,
 
-        Slider,
+        SliderHorizontal,
 
-        MenuUp,
-        MenuDown,
+        Up,
+        Down,
 
         UIFrame4,
-        UIFrame5
+        UIFrame5,
+
+        Left,
+        Right,
+
+        SliderVertical
     };
 
     struct Resources

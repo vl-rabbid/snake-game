@@ -52,11 +52,15 @@ namespace SnakeGame
         sf::Sprite subMenu;
         sf::Sprite subMenuTitle;
         sf::Text subMenuLabel;
-        sf::Sprite slider;
-        sf::RectangleShape sliderBar;
+        sf::Sprite sliderVertical;
+        sf::RectangleShape sliderBarVertical;
 
         std::vector<LevelButton> levelButtons;
         Selector selectorLevel;
+        sf::Sprite sliderHorizontal;
+        sf::RectangleShape sliderBarHorizontal;
+        sf::Sprite levelRight;
+        sf::Sprite levelLeft;
     };
 
     void InitUI(UI &ui, Resources &resources);
@@ -75,4 +79,5 @@ namespace SnakeGame
     void InitLevelButton(LevelButton &button, Resources &resources, int positionX);
     void UpdateLevelBottonText(LevelButton &button, std::string text);
     void LoadLevelSelectUI(UI &ui, const LevelManager &levelManager);
+    void UpdateLevelSelectedItem(UI &ui, LevelManager &levelManager);
 }
