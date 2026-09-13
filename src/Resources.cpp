@@ -38,9 +38,14 @@ namespace SnakeGame
         resources.wall.volume = 60.f;
         assert(resources.gameOver.buffer.loadFromFile(std::string(RESOURCES_PATH) + "/audio/jingle_game_over.ogg"));
         resources.gameOver.volume = 10.f;
-        assert(resources.music.openFromFile(std::string(RESOURCES_PATH) + "/audio/music_theme.wav"));
+        assert(resources.countdown.buffer.loadFromFile(std::string(RESOURCES_PATH) + "/audio/sfx_countdown.wav"));
+        resources.countdown.volume = 70.f;
+        assert(resources.countdownGo.buffer.loadFromFile(std::string(RESOURCES_PATH) + "/audio/sfx_countdown_go.wav"));
+        resources.countdownGo.volume = 75.f;
+
+        assert(resources.music.openFromFile(std::string(RESOURCES_PATH) + "/audio/music_theme.ogg"));
         resources.music.setLoop(true);
-        resources.music.setVolume(60.f);
+        resources.music.setVolume(40.f);
     }
 
     sf::IntRect GetTextureRect(TextureID id)

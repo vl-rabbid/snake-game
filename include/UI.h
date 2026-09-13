@@ -101,4 +101,6 @@ namespace SnakeGame
     void UpdateLevelSelectUI(UI &ui, const float deltaTime);
     void LoadLeaderboardUI(UI &ui, Leaderboard &leaderboard, LevelManager &levelManager);
     void DrawLeaderboardUI(UI &ui, Leaderboard &leaderboard, sf::RenderTexture &texture);
+    void SetDelayUIText(UI &ui, std::string text);
+    void DrawDelayUI(UI &ui, sf::RenderTexture &texture);
 }

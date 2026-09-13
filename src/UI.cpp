@@ -29,14 +29,12 @@ namespace SnakeGame
         ui.menuLabel.setStyle(sf::Text::Bold);
         ui.menuLabel.setCharacterSize(48);
         ui.menuLabel.setFillColor(sf::Color::White);
-        SetTextRelativePosition(ui.menuLabel, 0.5f, 0.1f);
 
         ui.menuLabelShadow.setString("menuLabel");
         ui.menuLabelShadow.setFont(resources.font);
         ui.menuLabelShadow.setStyle(sf::Text::Bold);
         ui.menuLabelShadow.setCharacterSize(48);
         ui.menuLabelShadow.setFillColor(COLOR_SHADOW);
-        ui.menuLabelShadow.setPosition({ui.menuLabel.getPosition().x + 2, ui.menuLabel.getPosition().y + 2});
 
         ui.menuButtons.clear();
         ui.menuButtons.resize(MAX_MENU_BUTTONS);
@@ -155,6 +153,8 @@ namespace SnakeGame
 
     void LoadMenuUI(UI &ui, Menu &menu)
     {
+        SetTextRelativePosition(ui.menuLabel, 0.5f, 0.1f);
+        ui.menuLabelShadow.setPosition({ui.menuLabel.getPosition().x + 2, ui.menuLabel.getPosition().y + 2});
         if (menu.type == MenuType::FullMenu)
         {
             ui.menuLabel.setString(menu.label);
@@ -547,5 +547,21 @@ namespace SnakeGame
         texture.draw(ui.levelButtons[0].spritePreviewFrame);
         texture.draw(ui.levelButtons[0].label);
         texture.draw(ui.levelButtons[0].preview, ui.levelButtons[0].previewStates);
+    }
+
+    void SetDelayUIText(UI &ui, std::string text)
+    {
+        SetTextRelativePosition(ui.menuLabel, 0.5f, 0.25f);
+        ui.menuLabelShadow.setPosition({ui.menuLabel.getPosition().x + 2, ui.menuLabel.getPosition().y + 2});
+        ui.menuLabelShadow.setString(text);
+        SetTextRelativeOrigin(ui.menuLabelShadow, 0.5f, 0.5f);
+        ui.menuLabel.setString(text);
+        SetTextRelativeOrigin(ui.menuLabel, 0.5f, 0.5f);
+    }
+
+    void DrawDelayUI(UI &ui, sf::RenderTexture &texture)
+    {
+        texture.draw(ui.menuLabelShadow);
+        texture.draw(ui.menuLabel);
     }
 }

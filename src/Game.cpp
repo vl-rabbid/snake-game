@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <cmath>
 
 namespace SnakeGame
 {
@@ -86,6 +87,9 @@ namespace SnakeGame
 		case GameState::GameOver:
 			UpdateMenuUI(game.ui, deltaTime);
 			break;
+		case GameState::Delay:
+			UpdateDelay(game, deltaTime);
+			break;
 		case GameState::Leaderboard:
 			UpdateMenuUI(game.ui, deltaTime);
 			break;
@@ -129,6 +133,13 @@ namespace SnakeGame
 			DrawLeaderboardUI(game.ui, game.leaderboard, texture);
 			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
 			break;
+		case GameState::Delay:
+			DrawLevel(game.level, texture);
+			DrawSnake(game.snake, texture);
+			DrawHud(game.ui, texture);
+			DrawUITint(game.ui, texture);
+			DrawDelayUI(game.ui, texture);
+			break;
 		case GameState::Pause:
 			DrawLevel(game.level, texture);
 			DrawSnake(game.snake, texture);
@@ -167,7 +178,6 @@ namespace SnakeGame
 			PauseMusic(game);
 			break;
 		case GameState::GameOver:
-			StopMusic(game);
 			SetMenuState(game, MenuState::GameOver);
 			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
 			break;
@@ -204,6 +214,7 @@ namespace SnakeGame
 
 	void StartGameLoop(Game &game)
 	{
+		StopMusic(game);
 		game.speed = static_cast<float>(game.config.difficulty);
 		game.level.config = game.levelMangager.levels[game.levelMangager.selected];
 		InitLevel(game.level, game.resources);
@@ -253,7 +264,8 @@ namespace SnakeGame
 						AddLeaderboardEntry(game.leaderboard, game.config.playerName, game.score);
 						SaveLeaderboard(game.leaderboard);
 					}
-					SetGameState(game, GameState::GameOver);
+					StopMusic(game);
+					StartGameDelay(game, GameState::GameOver, DelayType::GameOver);
 				}
 				else
 				{
@@ -333,8 +345,11 @@ namespace SnakeGame
 					SetMenuState(game, static_cast<MenuState>(game.menuLayers.back().items[game.menuLayers.back().selected].actionTarget));
 					break;
 				case MenuActionType::StartGame:
-					SetGameState(game, GameState::GameLoop);
 					StartGameLoop(game);
+					StartGameDelay(game, GameState::GameLoop, DelayType::Countdown);
+					break;
+				case MenuActionType::ResumeGame:
+					StartGameDelay(game, GameState::GameLoop, DelayType::Countdown);
 					break;
 				case MenuActionType::PreviousMenu:
 					if (game.menuLayers.size() > 1)
@@ -496,4 +511,62 @@ namespace SnakeGame
 	{
 		game.resources.music.stop();
 	}
+
+	void StartGameDelay(Game &game, GameState nextState, DelayType type)
+	{
+		SetGameState(game, GameState::Delay);
+		game.delay.timer = 0.f;
+		game.delay.nextState = nextState;
+		game.delay.type = type;
+		switch (type)
+		{
+		case DelayType::Countdown:
+			game.delay.duration = DELAY_COUNTDOWN;
+			break;
+		case DelayType::GameOver:
+			game.delay.duration = DELAY_GAME_OVER;
+			break;
+		default:
+			break;
+		}
+	}
+
+	void UpdateDelay(Game &game, const float deltaTime)
+	{
+		float timeLeft = game.delay.duration - game.delay.timer;
+
+		static int wholeNumber = 0;
+		switch (game.delay.type)
+		{
+		case DelayType::Countdown:
+			if ((int)std::round(timeLeft) != wholeNumber)
+			{
+				wholeNumber = (int)std::round(timeLeft);
+				if (wholeNumber == 0)
+				{
+					SetDelayUIText(game.ui, "Go!");
+					PlaySound(game.soundFX, game.resources.countdownGo);
+				}
+				else
+				{
+					SetDelayUIText(game.ui, std::to_string(wholeNumber));
+					PlaySound(game.soundFX, game.resources.countdown);
+				}
+			}
+			break;
+		case DelayType::GameOver:
+			SetDelayUIText(game.ui, "GAME OVER!");
+			break;
+		default:
+			break;
+		}
+
+		game.delay.timer += deltaTime;
+		if (game.delay.timer >= game.delay.duration)
+		{
+			SetGameState(game, game.delay.nextState);
+			wholeNumber = 0;
+		}
+	}
+
 }

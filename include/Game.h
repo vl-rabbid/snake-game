@@ -24,6 +24,7 @@ namespace SnakeGame
 		sf::Sprite background;
 
 		GameState gameState;
+		Delay delay;
 		Level level;
 		Snake snake;
 		float speed;
@@ -58,4 +59,6 @@ namespace SnakeGame
 	void PlayMusic(Game &game);
 	void StopMusic(Game &game);
 	void PauseMusic(Game &game);
+	void StartGameDelay(Game &game, GameState nextState, DelayType type);
+	void UpdateDelay(Game &game, const float deltaTime);
 }

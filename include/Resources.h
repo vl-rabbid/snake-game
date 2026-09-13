@@ -106,6 +106,8 @@ namespace SnakeGame
         GameSound appleEaten;
         GameSound wall;
         GameSound gameOver;
+        GameSound countdown;
+        GameSound countdownGo;
 
         sf::Music music;
     };

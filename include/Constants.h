@@ -18,6 +18,9 @@ namespace SnakeGame
 	const float SLIDER_SPEED = 30.f;
 	const int LEADERBOARD_DISPLAYED = 5;
 
+	const float DELAY_COUNTDOWN = 3.2f;
+	const float DELAY_GAME_OVER = 1.5f;
+
 	const sf::Color COLOR_TINT(0, 0, 0, 100);
 	const sf::Color COLOR_SHADOW(0, 0, 0, 150);
 	const sf::Color COLOR_TEXT(54, 46, 40);
