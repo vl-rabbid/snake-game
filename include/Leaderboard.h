@@ -14,6 +14,7 @@ namespace SnakeGame
     {
         std::string levelId;
         std::vector<LeaderboardEntry> entries;
+        int firstDisplayedItem = 0;
     };
 
     void AddLeaderboardEntry(Leaderboard &leaderboard, std::string playerName, int score);

@@ -58,6 +58,11 @@ namespace SnakeGame
 			break;
 		case GameState::GameOver:
 			HandleMenuImput(game, event);
+			HandleLeaderboardImput(game, event);
+			break;
+		case GameState::Leaderboard:
+			HandleMenuImput(game, event);
+			HandleLeaderboardImput(game, event);
 			break;
 		default:
 			break;
@@ -79,6 +84,9 @@ namespace SnakeGame
 			UpdateGameLoop(game, deltaTime);
 			break;
 		case GameState::GameOver:
+			UpdateMenuUI(game.ui, deltaTime);
+			break;
+		case GameState::Leaderboard:
 			UpdateMenuUI(game.ui, deltaTime);
 			break;
 		case GameState::Pause:
@@ -103,6 +111,11 @@ namespace SnakeGame
 			DrawLevelSelect(game.ui, game.levelMangager, texture);
 			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
 			break;
+		case GameState::Leaderboard:
+			DrawUITint(game.ui, texture);
+			DrawLeaderboardUI(game.ui, game.leaderboard, texture);
+			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
+			break;
 		case GameState::GameLoop:
 			DrawLevel(game.level, texture);
 			DrawSnake(game.snake, texture);
@@ -113,6 +126,7 @@ namespace SnakeGame
 			DrawSnake(game.snake, texture);
 			DrawHud(game.ui, texture);
 			DrawUITint(game.ui, texture);
+			DrawLeaderboardUI(game.ui, game.leaderboard, texture);
 			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
 			break;
 		case GameState::Pause:
@@ -152,6 +166,12 @@ namespace SnakeGame
 			break;
 		case GameState::GameOver:
 			SetMenuState(game, MenuState::GameOver);
+			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
+			break;
+		case GameState::Leaderboard:
+			SetMenuState(game, MenuState::Leaderboard);
+			LoadLeaderboard(game.leaderboard, game.levelMangager.levels[game.levelMangager.selected].id);
+			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
 			break;
 		default:
 			break;
@@ -221,13 +241,13 @@ namespace SnakeGame
 				SetCellType(game.level.config, snakeTail.position, CellType::Empty);
 				if (GetCellType(game.level.config, snakeHead.position) == CellType::Snake || GetCellType(game.level.config, snakeHead.position) == CellType::Wall)
 				{
-					SetGameState(game, GameState::GameOver);
 					isDead = true;
 					if (game.score > 0)
 					{
 						AddLeaderboardEntry(game.leaderboard, game.config.playerName, game.score);
 						SaveLeaderboard(game.leaderboard);
 					}
+					SetGameState(game, GameState::GameOver);
 				}
 				else
 				{
@@ -346,6 +366,28 @@ namespace SnakeGame
 				game.levelMangager.selected = 0;
 			}
 			SetLevelSelectedItem(game.ui, game.levelMangager);
+		}
+	}
+
+	void HandleLeaderboardImput(Game &game, const sf::Event &event)
+	{
+		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
+		{
+			game.leaderboard.firstDisplayedItem -= LEADERBOARD_DISPLAYED;
+			if (game.leaderboard.firstDisplayedItem < 0)
+			{
+				game.leaderboard.firstDisplayedItem = ((game.leaderboard.entries.size() - 1) / LEADERBOARD_DISPLAYED) * LEADERBOARD_DISPLAYED;
+			}
+			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
+		}
+		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
+		{
+			game.leaderboard.firstDisplayedItem += LEADERBOARD_DISPLAYED;
+			if (game.leaderboard.firstDisplayedItem > game.leaderboard.entries.size() - 1)
+			{
+				game.leaderboard.firstDisplayedItem = 0;
+			}
+			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
 		}
 	}
 

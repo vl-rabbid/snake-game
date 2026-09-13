@@ -124,6 +124,33 @@ namespace SnakeGame
         ui.sliderBarHorizontal.setFillColor(COLOR_TEXT);
         ui.sliderBarHorizontal.setPosition({11.f, 111.f});
         ui.sliderBarHorizontal.setSize(sf::Vector2f(218.f, 2.f));
+
+        ui.leaderboardFrame.setTexture(resources.leaderboardFrame);
+        ui.leaderboardFrame.setPosition(93.f, 31.f);
+        ui.leaderboardLabelFrame.setTexture(resources.leaderboardLabelFrame);
+        ui.leaderboardLabelFrame.setPosition(112.f, 25.f);
+        ui.leaderboardLabel.setString("Leaderboard");
+        ui.leaderboardLabel.setFont(resources.font);
+        ui.leaderboardLabel.setCharacterSize(16);
+        ui.leaderboardLabel.setFillColor(COLOR_TEXT);
+        ui.leaderboardLabel.setOrigin({std::round(ui.leaderboardLabel.getLocalBounds().width / 2), 0.f});
+        ui.leaderboardLabel.setPosition({std::round(ui.leaderboardLabelFrame.getGlobalBounds().left + ui.leaderboardLabelFrame.getGlobalBounds().width / 2), 21.f});
+        for (int i = 0; i < LEADERBOARD_DISPLAYED; i++)
+        {
+            ui.leaderboardEntry[i].setString(std::to_string(i + 1) + ".Entry...........10");
+            ui.leaderboardEntry[i].setFont(resources.font);
+            ui.leaderboardEntry[i].setCharacterSize(16);
+            ui.leaderboardEntry[i].setFillColor(COLOR_TEXT);
+            ui.leaderboardEntry[i].setPosition({100.f, 36.f + (14.f * i)});
+        }
+        ui.leaderboardRight.setTexture(resources.atlas);
+        ui.leaderboardRight.setTextureRect(GetTextureRect(TextureID::Right));
+        ui.leaderboardRight.setOrigin({6.f, 4.f});
+        ui.leaderboardRight.setPosition({233.f, 74.f});
+        ui.leaderboardLeft.setTexture(resources.atlas);
+        ui.leaderboardLeft.setTextureRect(GetTextureRect(TextureID::Left));
+        ui.leaderboardLeft.setOrigin({0.f, 4.f});
+        ui.leaderboardLeft.setPosition({85.f, 74.f});
     }
 
     void LoadMenuUI(UI &ui, Menu &menu)
@@ -448,28 +475,77 @@ namespace SnakeGame
 
     void UpdateMenuUI(UI &ui, const float deltaTime)
     {
-        UpdateSelector(ui.selectorMenu, deltaTime, UI_SPEED);
+        UpdateSelector(ui.selectorMenu, deltaTime, SELECT_SPEED);
 
         sf::Vector2f currentPosition = ui.sliderVertical.getPosition();
         float delta = ui.sliderVerticalTargetPositionY - currentPosition.y;
         if (std::abs(delta) < 0.5f)
             currentPosition.y = ui.sliderVerticalTargetPositionY;
         else
-            currentPosition.y += delta * UI_SPEED * deltaTime;
+            currentPosition.y += delta * SLIDER_SPEED * deltaTime;
         ui.sliderVertical.setPosition(currentPosition);
     }
 
     void UpdateLevelSelectUI(UI &ui, const float deltaTime)
     {
-        UpdateSelector(ui.selectorLevel, deltaTime, UI_SPEED);
+        UpdateSelector(ui.selectorLevel, deltaTime, SELECT_SPEED);
 
         sf::Vector2f currentPosition = ui.sliderHorizontal.getPosition();
         float delta = ui.sliderHorizontalTargetPositionX - currentPosition.x;
         if (std::abs(delta) < 0.5f)
             currentPosition.x = ui.sliderHorizontalTargetPositionX;
         else
-            currentPosition.x += delta * UI_SPEED * deltaTime;
+            currentPosition.x += delta * SLIDER_SPEED * deltaTime;
         ui.sliderHorizontal.setPosition(currentPosition);
     }
 
+    void LoadLeaderboardUI(UI &ui, Leaderboard &leaderboard, LevelManager &levelManager)
+    {
+        for (int i = 0; i < LEADERBOARD_DISPLAYED; i++)
+        {
+            if (i + leaderboard.firstDisplayedItem < leaderboard.entries.size())
+            {
+                std::string text = std::to_string(i + leaderboard.firstDisplayedItem + 1) + ".";
+                text += leaderboard.entries[i + leaderboard.firstDisplayedItem].playerName;
+                std::string score = std::to_string(leaderboard.entries[i + leaderboard.firstDisplayedItem].score);
+                int dotNumber = 20 - text.size() - score.size();
+                for (int i = 0; i < dotNumber; i++)
+                {
+                    text += ".";
+                }
+                ui.leaderboardEntry[i].setString(text + score);
+            }
+        }
+
+        SetLevelBottonText(ui.levelButtons[0], levelManager.levels[levelManager.selected].name);
+        ui.levelButtons[0].preview = GenerateLevelPreview(levelManager.levels[levelManager.selected]);
+    }
+
+    void DrawLeaderboardUI(UI &ui, Leaderboard &leaderboard, sf::RenderTexture &texture)
+    {
+        texture.draw(ui.leaderboardFrame);
+        texture.draw(ui.leaderboardLabelFrame);
+        texture.draw(ui.leaderboardLabel);
+        for (int i = 0; i < LEADERBOARD_DISPLAYED; i++)
+        {
+            if (i + leaderboard.firstDisplayedItem < leaderboard.entries.size())
+            {
+                texture.draw(ui.leaderboardEntry[i]);
+            }
+        }
+        if (LEADERBOARD_DISPLAYED < leaderboard.entries.size() && leaderboard.firstDisplayedItem + LEADERBOARD_DISPLAYED < leaderboard.entries.size())
+        {
+            texture.draw(ui.leaderboardRight);
+        }
+        if (leaderboard.firstDisplayedItem > 0)
+        {
+            texture.draw(ui.leaderboardLeft);
+        }
+
+        texture.draw(ui.levelButtons[0].spriteButton);
+        texture.draw(ui.levelButtons[0].spriteLabel);
+        texture.draw(ui.levelButtons[0].spritePreviewFrame);
+        texture.draw(ui.levelButtons[0].label);
+        texture.draw(ui.levelButtons[0].preview, ui.levelButtons[0].previewStates);
+    }
 }

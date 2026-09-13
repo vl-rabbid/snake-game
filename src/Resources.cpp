@@ -24,6 +24,9 @@ namespace SnakeGame
 
         resources.levelSelectButton = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame1), 72, 75);
         resources.levelPreviewFrame = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame5), 62, 41);
+
+        resources.leaderboardFrame = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame3), 133, 84);
+        resources.leaderboardLabelFrame = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame2), 95, 17);
     }
 
     sf::IntRect GetTextureRect(TextureID id)

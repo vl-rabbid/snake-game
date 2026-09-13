@@ -47,6 +47,7 @@ namespace SnakeGame
 	void UpdateGameLoop(Game &game, const float deltaTime);
 	void HandleMenuImput(Game &game, const sf::Event &event);
 	void HandleLevelSelectImput(Game &game, const sf::Event &event);
+	void HandleLeaderboardImput(Game &game, const sf::Event &event);
 	void UpdateSubMenuItems(Menu &menu, Game &game, int actionTarget);
 	int GetScoreMultiplier(GameDifficulty gameDifficulty);
 }

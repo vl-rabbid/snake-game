@@ -88,6 +88,9 @@ namespace SnakeGame
 
         sf::Texture levelSelectButton;
         sf::Texture levelPreviewFrame;
+
+        sf::Texture leaderboardFrame;
+        sf::Texture leaderboardLabelFrame;
     };
 
     void InitResources(Resources &resources);

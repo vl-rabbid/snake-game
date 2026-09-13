@@ -4,6 +4,7 @@
 #include "Constants.h"
 #include "Resources.h"
 #include "LevelManager.h"
+#include "Leaderboard.h"
 
 namespace SnakeGame
 {
@@ -65,6 +66,13 @@ namespace SnakeGame
         sf::RectangleShape sliderBarHorizontal;
         sf::Sprite levelRight;
         sf::Sprite levelLeft;
+
+        sf::Sprite leaderboardFrame;
+        sf::Sprite leaderboardLabelFrame;
+        sf::Text leaderboardLabel;
+        sf::Text leaderboardEntry[LEADERBOARD_DISPLAYED];
+        sf::Sprite leaderboardRight;
+        sf::Sprite leaderboardLeft;
     };
 
     void InitUI(UI &ui, Resources &resources);
@@ -91,4 +99,6 @@ namespace SnakeGame
     void UpdateSelector(Selector &selector, const float deltaTime, const float speed);
     void UpdateMenuUI(UI &ui, const float deltaTime);
     void UpdateLevelSelectUI(UI &ui, const float deltaTime);
+    void LoadLeaderboardUI(UI &ui, Leaderboard &leaderboard, LevelManager &levelManager);
+    void DrawLeaderboardUI(UI &ui, Leaderboard &leaderboard, sf::RenderTexture &texture);
 }

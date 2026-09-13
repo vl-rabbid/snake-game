@@ -21,7 +21,8 @@ namespace SnakeGame
         Settings,
         Resolution,
         Difficulty,
-        LevelSelect
+        LevelSelect,
+        Leaderboard
     };
 
     enum class MenuActionType

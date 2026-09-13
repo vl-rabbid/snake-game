@@ -9,6 +9,7 @@ namespace SnakeGame
         GameLoop,
         Pause,
         GameOver,
+        Leaderboard,
         Exit
     };
 }

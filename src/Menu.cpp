@@ -34,14 +34,18 @@ namespace SnakeGame
 
         menus[MenuState::GameOver] =
             {
-                "GAME OVER",
+                "",
                 MenuType::FullMenu,
                 {{"Restart",
                   MenuActionType::StartGame,
                   0},
+                 {"Difficulty",
+                  MenuActionType::SwitchMenuState,
+                  static_cast<int>(MenuState::Difficulty)},
                  {"Back to menu",
                   MenuActionType::SwitchGameState,
-                  static_cast<int>(GameState::MainMenu)}}};
+                  static_cast<int>(GameState::MainMenu)}},
+                2};
 
         menus[MenuState::Settings] =
             {
@@ -107,9 +111,21 @@ namespace SnakeGame
                  {"Difficulty",
                   MenuActionType::SwitchMenuState,
                   static_cast<int>(MenuState::Difficulty)},
+                 {"Leaderboard",
+                  MenuActionType::SwitchGameState,
+                  static_cast<int>(GameState::Leaderboard)},
                  {"Back to menu",
                   MenuActionType::SwitchGameState,
                   static_cast<int>(GameState::MainMenu)}},
+                2};
+
+        menus[MenuState::Leaderboard] =
+            {
+                "",
+                MenuType::FullMenu,
+                {{"Back",
+                  MenuActionType::SwitchGameState,
+                  static_cast<int>(GameState::LevelSelect)}},
                 2};
     }
 }
