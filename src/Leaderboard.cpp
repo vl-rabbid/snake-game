@@ -45,6 +45,7 @@ namespace SnakeGame
     bool LoadLeaderboard(Leaderboard &leaderboard, std::string levelId)
     {
         leaderboard.levelId = levelId;
+        leaderboard.firstDisplayedItem = 0;
         leaderboard.entries.clear();
         leaderboard.entries.reserve(LEADERBOARD_SIZE);
 

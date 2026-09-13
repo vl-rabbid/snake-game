@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "GameMath.h"
 
 namespace SnakeGame
@@ -70,6 +71,13 @@ namespace SnakeGame
         SliderVertical
     };
 
+    struct GameSound
+    {
+        sf::SoundBuffer buffer;
+        float volume = 100.f;
+        std::string path;
+    };
+
     struct Resources
     {
         sf::Texture atlas;
@@ -91,6 +99,15 @@ namespace SnakeGame
 
         sf::Texture leaderboardFrame;
         sf::Texture leaderboardLabelFrame;
+
+        GameSound uiMoveVertical;
+        GameSound uiMoveHorizontal;
+        GameSound uiSelect;
+        GameSound appleEaten;
+        GameSound wall;
+        GameSound gameOver;
+
+        sf::Music music;
     };
 
     void InitResources(Resources &resources);

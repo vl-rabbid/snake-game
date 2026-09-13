@@ -160,11 +160,14 @@ namespace SnakeGame
 			LoadLevelSelectUI(game.ui, game.levelMangager);
 			break;
 		case GameState::GameLoop:
+			PlayMusic(game);
 			break;
 		case GameState::Pause:
 			SetMenuState(game, MenuState::Pause);
+			PauseMusic(game);
 			break;
 		case GameState::GameOver:
+			StopMusic(game);
 			SetMenuState(game, MenuState::GameOver);
 			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
 			break;
@@ -235,12 +238,15 @@ namespace SnakeGame
 				{
 					SpawnApple(game.level);
 				}
+				PlaySound(game.soundFX, game.resources.appleEaten);
 			}
 			else
 			{
 				SetCellType(game.level.config, snakeTail.position, CellType::Empty);
 				if (GetCellType(game.level.config, snakeHead.position) == CellType::Snake || GetCellType(game.level.config, snakeHead.position) == CellType::Wall)
 				{
+					PlaySound(game.soundFX, game.resources.wall);
+					PlaySound(game.soundJingle, game.resources.gameOver);
 					isDead = true;
 					if (game.score > 0)
 					{
@@ -286,21 +292,31 @@ namespace SnakeGame
 		}
 		else if (!enterHeld && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
 		{
+			int previousItem = game.menuLayers.back().selected;
 			game.menuLayers.back().selected -= 1;
 			if (game.menuLayers.back().selected < 0)
 			{
 				game.menuLayers.back().selected = game.menuLayers.back().items.size() - 1;
 			}
 			SetMenuSelectedItem(game.ui, game.menuLayers.back());
+			if (previousItem != game.menuLayers.back().selected)
+			{
+				PlaySound(game.soundFX, game.resources.uiMoveVertical);
+			}
 		}
 		else if (!enterHeld && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
 		{
+			int previousItem = game.menuLayers.back().selected;
 			game.menuLayers.back().selected += 1;
 			if (game.menuLayers.back().selected > game.menuLayers.back().items.size() - 1)
 			{
 				game.menuLayers.back().selected = 0;
 			}
 			SetMenuSelectedItem(game.ui, game.menuLayers.back());
+			if (previousItem != game.menuLayers.back().selected)
+			{
+				PlaySound(game.soundFX, game.resources.uiMoveVertical);
+			}
 		}
 		else if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Enter)
 		{
@@ -343,6 +359,7 @@ namespace SnakeGame
 				default:
 					break;
 				}
+				PlaySound(game.soundFX, game.resources.uiSelect);
 			}
 		};
 	}
@@ -351,21 +368,37 @@ namespace SnakeGame
 	{
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
 		{
-			game.levelMangager.selected -= 1;
-			if (game.levelMangager.selected < 0)
+			if (game.menuLayers.back().type != MenuType::SubMenu)
 			{
-				game.levelMangager.selected = game.levelMangager.levels.size() - 1;
+				int previousItem = game.levelMangager.selected;
+				game.levelMangager.selected -= 1;
+				if (game.levelMangager.selected < 0)
+				{
+					game.levelMangager.selected = game.levelMangager.levels.size() - 1;
+				}
+				SetLevelSelectedItem(game.ui, game.levelMangager);
+				if (previousItem != game.levelMangager.selected)
+				{
+					PlaySound(game.soundFX, game.resources.uiMoveHorizontal);
+				}
 			}
-			SetLevelSelectedItem(game.ui, game.levelMangager);
 		}
 		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
 		{
-			game.levelMangager.selected += 1;
-			if (game.levelMangager.selected > game.levelMangager.levels.size() - 1)
+			if (game.menuLayers.back().type != MenuType::SubMenu)
 			{
-				game.levelMangager.selected = 0;
+				int previousItem = game.levelMangager.selected;
+				game.levelMangager.selected += 1;
+				if (game.levelMangager.selected > game.levelMangager.levels.size() - 1)
+				{
+					game.levelMangager.selected = 0;
+				}
+				SetLevelSelectedItem(game.ui, game.levelMangager);
+				if (previousItem != game.levelMangager.selected)
+				{
+					PlaySound(game.soundFX, game.resources.uiMoveHorizontal);
+				}
 			}
-			SetLevelSelectedItem(game.ui, game.levelMangager);
 		}
 	}
 
@@ -373,21 +406,37 @@ namespace SnakeGame
 	{
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
 		{
-			game.leaderboard.firstDisplayedItem -= LEADERBOARD_DISPLAYED;
-			if (game.leaderboard.firstDisplayedItem < 0)
+			if (game.menuLayers.back().type != MenuType::SubMenu)
 			{
-				game.leaderboard.firstDisplayedItem = ((game.leaderboard.entries.size() - 1) / LEADERBOARD_DISPLAYED) * LEADERBOARD_DISPLAYED;
+				int previousItem = game.leaderboard.firstDisplayedItem;
+				game.leaderboard.firstDisplayedItem -= LEADERBOARD_DISPLAYED;
+				if (game.leaderboard.firstDisplayedItem < 0)
+				{
+					game.leaderboard.firstDisplayedItem = ((game.leaderboard.entries.size() - 1) / LEADERBOARD_DISPLAYED) * LEADERBOARD_DISPLAYED;
+				}
+				LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
+				if (previousItem != game.leaderboard.firstDisplayedItem)
+				{
+					PlaySound(game.soundFX, game.resources.uiMoveHorizontal);
+				}
 			}
-			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
 		}
 		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
 		{
-			game.leaderboard.firstDisplayedItem += LEADERBOARD_DISPLAYED;
-			if (game.leaderboard.firstDisplayedItem > game.leaderboard.entries.size() - 1)
+			if (game.menuLayers.back().type != MenuType::SubMenu)
 			{
-				game.leaderboard.firstDisplayedItem = 0;
+				int previousItem = game.leaderboard.firstDisplayedItem;
+				game.leaderboard.firstDisplayedItem += LEADERBOARD_DISPLAYED;
+				if (game.leaderboard.firstDisplayedItem > game.leaderboard.entries.size() - 1)
+				{
+					game.leaderboard.firstDisplayedItem = 0;
+				}
+				LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
+				if (previousItem != game.leaderboard.firstDisplayedItem)
+				{
+					PlaySound(game.soundFX, game.resources.uiMoveHorizontal);
+				}
 			}
-			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
 		}
 	}
 
@@ -424,5 +473,27 @@ namespace SnakeGame
 			break;
 		}
 		return 1;
+	}
+
+	void PlaySound(sf::Sound &sound, const GameSound &gameSound)
+	{
+		sound.setVolume(gameSound.volume);
+		sound.setBuffer(gameSound.buffer);
+		sound.play();
+	}
+
+	void PlayMusic(Game &game)
+	{
+		game.resources.music.play();
+	}
+
+	void PauseMusic(Game &game)
+	{
+		game.resources.music.pause();
+	}
+
+	void StopMusic(Game &game)
+	{
+		game.resources.music.stop();
 	}
 }

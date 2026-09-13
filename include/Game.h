@@ -1,6 +1,7 @@
 #pragma once
 #include "Constants.h"
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "Snake.h"
 #include "Level.h"
 #include "GameState.h"
@@ -33,6 +34,9 @@ namespace SnakeGame
 		std::vector<Menu> menuLayers;
 		UI ui;
 		LevelManager levelMangager;
+
+		sf::Sound soundFX;
+		sf::Sound soundJingle;
 	};
 
 	bool IsGameRunning(Game &game);
@@ -50,4 +54,8 @@ namespace SnakeGame
 	void HandleLeaderboardImput(Game &game, const sf::Event &event);
 	void UpdateSubMenuItems(Menu &menu, Game &game, int actionTarget);
 	int GetScoreMultiplier(GameDifficulty gameDifficulty);
+	void PlaySound(sf::Sound &sound, const GameSound &gameSound);
+	void PlayMusic(Game &game);
+	void StopMusic(Game &game);
+	void PauseMusic(Game &game);
 }
