@@ -43,7 +43,6 @@ namespace SnakeGame
 	void DeinitializeGame(Game &game, sf::RenderWindow &window);
 	void SetGameState(Game &game, const GameState &gameState);
 	void SetMenuState(Game &game, MenuState menuState);
-	void UpdateMenuLayer(Game &game);
 	void StartGameLoop(Game &game);
 	void UpdateGameLoop(Game &game, const float deltaTime);
 	void HandleMenuImput(Game &game, const sf::Event &event);

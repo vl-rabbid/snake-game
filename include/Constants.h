@@ -14,6 +14,7 @@ namespace SnakeGame
 	const int INPUT_BUFFER_SIZE = 2;
 	const int MAX_MENU_BUTTONS = 4;
 	const int DISPLAYED_LEVEL_COUNT = 3;
+	const float UI_SPEED = 40.f;
 
 	const sf::Color COLOR_TINT(0, 0, 0, 100);
 	const sf::Color COLOR_SHADOW(0, 0, 0, 150);

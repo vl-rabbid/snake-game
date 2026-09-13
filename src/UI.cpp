@@ -107,7 +107,8 @@ namespace SnakeGame
         {
             InitLevelButton(ui.levelButtons[i], resources, 9 + (i * 75));
         }
-        UpdateSelectorPosition(ui.selectorLevel, ui.levelButtons[0].spriteButton.getGlobalBounds());
+        SetSelectorTargetPosition(ui.selectorLevel, ui.levelButtons[0].spriteButton.getGlobalBounds());
+        ApplySelectorTargetPosition(ui.selectorLevel);
         ui.levelRight.setTexture(resources.atlas);
         ui.levelRight.setTextureRect(GetTextureRect(TextureID::Right));
         ui.levelRight.setOrigin({6.f, 4.f});
@@ -125,7 +126,7 @@ namespace SnakeGame
         ui.sliderBarHorizontal.setSize(sf::Vector2f(218.f, 2.f));
     }
 
-    void UpdateMenuUI(UI &ui, Menu &menu)
+    void LoadMenuUI(UI &ui, Menu &menu)
     {
         if (menu.type == MenuType::FullMenu)
         {
@@ -140,41 +141,48 @@ namespace SnakeGame
             ui.subMenuLabel.setOrigin({std::round(ui.subMenuLabel.getLocalBounds().width / 2), 0.f});
         }
 
-        PositionMenuButtonsList(ui, menu.displayedItemAmount);
+        SetMenuButtonsListPosition(ui, menu.displayedItemAmount);
+        LoadMenuUIItems(ui, menu);
+        SetMenuSelectedItem(ui, menu);
+        ApplySelectorTargetPosition(ui.selectorMenu);
+        ui.sliderVertical.setPosition({ui.sliderBarVertical.getPosition().x, ui.sliderVerticalTargetPositionY});
+    }
 
+    void LoadMenuUIItems(UI &ui, Menu &menu)
+    {
         for (int i = 0; i < menu.displayedItemAmount; i++)
         {
             if (i + menu.firstDisplayedItem < menu.items.size())
             {
                 MenuItem &item = menu.items[i + menu.firstDisplayedItem];
-                UpdateMenuBottonText(ui.menuButtons[i], item.label, item.enabled, item.pressed);
+                SetMenuBottonText(ui.menuButtons[i], item.label, item.enabled, item.pressed);
             }
         }
     }
 
-    void UpdateMenuSelectedItem(UI &ui, Menu &menu)
+    void SetMenuSelectedItem(UI &ui, Menu &menu)
     {
         if (menu.selected >= menu.firstDisplayedItem + menu.displayedItemAmount)
         {
             menu.firstDisplayedItem = menu.selected - menu.displayedItemAmount + 1;
-            UpdateMenuUI(ui, menu);
+            LoadMenuUIItems(ui, menu);
         }
         else if ((menu.selected < menu.firstDisplayedItem))
         {
             menu.firstDisplayedItem = menu.selected;
-            UpdateMenuUI(ui, menu);
+            LoadMenuUIItems(ui, menu);
         }
 
         sf::FloatRect itemRect = ui.menuButtons[menu.selected - menu.firstDisplayedItem].spriteEnabled.getGlobalBounds();
         if (!menu.items[menu.selected].enabled || menu.items[menu.selected].pressed)
             itemRect.top++;
-        UpdateSelectorPosition(ui.selectorMenu, itemRect);
+        SetSelectorTargetPosition(ui.selectorMenu, itemRect);
 
         if (menu.displayedItemAmount < menu.items.size())
         {
             sf::Vector2f sliderPosition = ui.sliderBarVertical.getPosition();
             sliderPosition.y += std::round(ui.sliderBarVertical.getSize().y * (float)(menu.selected / (float)(menu.items.size() - 1)));
-            ui.sliderVertical.setPosition(sliderPosition);
+            ui.sliderVerticalTargetPositionY = sliderPosition.y;
         }
     }
 
@@ -300,7 +308,7 @@ namespace SnakeGame
         button.spritePressed.setOrigin({std::round(spriteRect.width / 2), -1.f});
     }
 
-    void UpdateMenuBottonPosition(Button &button, int positionY)
+    void SetMenuBottonPosition(Button &button, int positionY)
     {
         sf::Vector2f position = {std::round(LEVEL_WIDTH * CELL_SIZE / 2), (float)positionY};
         button.spriteEnabled.setPosition(position);
@@ -309,7 +317,7 @@ namespace SnakeGame
         button.label.setPosition(position);
     }
 
-    void UpdateMenuBottonText(Button &button, std::string text, bool enabled, bool pressed)
+    void SetMenuBottonText(Button &button, std::string text, bool enabled, bool pressed)
     {
         button.label.setString(text);
         if (!enabled || pressed)
@@ -318,21 +326,13 @@ namespace SnakeGame
             button.label.setOrigin({std::round(button.label.getLocalBounds().width / 2), 4.f});
     }
 
-    void UpdateSelectorPosition(Selector &selector, sf::FloatRect target)
-    {
-        selector.topLeft.setPosition(target.left, target.top);
-        selector.topRight.setPosition(target.left + target.width, target.top);
-        selector.bottomLeft.setPosition(target.left, target.top + target.height);
-        selector.bottomRight.setPosition(target.left + target.width, target.top + target.height);
-    }
-
-    void PositionMenuButtonsList(UI &ui, int displayedAmount)
+    void SetMenuButtonsListPosition(UI &ui, int displayedAmount)
     {
         int positionY = 167;
         for (int i = displayedAmount - 1; i >= 0; --i)
         {
             positionY -= 21;
-            UpdateMenuBottonPosition(ui.menuButtons[i], positionY);
+            SetMenuBottonPosition(ui.menuButtons[i], positionY);
         }
         ui.menuUp.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), (float)positionY});
         ui.sliderBarVertical.setPosition({171.f, (float)(positionY + 2)});
@@ -351,51 +351,125 @@ namespace SnakeGame
         button.spriteButton.setPosition({(float)positionX, 31.f});
         button.spriteLabel.setPosition({(float)(positionX + 5), 37.f});
         button.label.setPosition({button.spriteLabel.getGlobalBounds().left + std::round(button.spriteLabel.getLocalBounds().width / 2), 37.f});
-        UpdateLevelBottonText(button, "level");
+        SetLevelBottonText(button, "level");
         button.spritePreviewFrame.setPosition({(float)(positionX + 5), 57.f});
         button.previewStates = button.spritePreviewFrame.getTransform();
         button.previewStates.transform.translate(1.f, 1.f);
         button.previewStates.transform.scale(3.f, 3.f);
     }
 
-    void UpdateLevelBottonText(LevelButton &button, std::string text)
+    void SetLevelBottonText(LevelButton &button, std::string text)
     {
         button.label.setString(text);
         button.label.setOrigin({std::round(button.label.getLocalBounds().width / 2), 4.f});
     }
 
-    void LoadLevelSelectUI(UI &ui, const LevelManager &levelManager)
+    void LoadLevelSelectUI(UI &ui, LevelManager &levelManager)
+    {
+        LoadLevelSelectUIItems(ui, levelManager);
+        SetLevelSelectedItem(ui, levelManager);
+        ApplySelectorTargetPosition(ui.selectorLevel);
+        ui.sliderHorizontal.setPosition(ui.sliderBarHorizontal.getPosition());
+    }
+
+    void LoadLevelSelectUIItems(UI &ui, const LevelManager &levelManager)
     {
         for (int i = 0; i < ui.levelButtons.size(); i++)
         {
             if (i + levelManager.firstDisplayedItem < levelManager.levels.size())
             {
-                UpdateLevelBottonText(ui.levelButtons[i], levelManager.levels[i + levelManager.firstDisplayedItem].name);
+                SetLevelBottonText(ui.levelButtons[i], levelManager.levels[i + levelManager.firstDisplayedItem].name);
                 ui.levelButtons[i].preview = GenerateLevelPreview(levelManager.levels[i + levelManager.firstDisplayedItem]);
             }
         }
     }
 
-    void UpdateLevelSelectedItem(UI &ui, LevelManager &levelManager)
+    void SetLevelSelectedItem(UI &ui, LevelManager &levelManager)
     {
         if (levelManager.selected >= levelManager.firstDisplayedItem + ui.levelButtons.size())
         {
             levelManager.firstDisplayedItem = levelManager.selected - ui.levelButtons.size() + 1;
-            LoadLevelSelectUI(ui, levelManager);
+            LoadLevelSelectUIItems(ui, levelManager);
         }
         else if (levelManager.selected < levelManager.firstDisplayedItem)
         {
             levelManager.firstDisplayedItem = levelManager.selected;
-            LoadLevelSelectUI(ui, levelManager);
+            LoadLevelSelectUIItems(ui, levelManager);
         }
         sf::FloatRect itemRect = ui.levelButtons[levelManager.selected - levelManager.firstDisplayedItem].spriteButton.getGlobalBounds();
-        UpdateSelectorPosition(ui.selectorLevel, itemRect);
+        SetSelectorTargetPosition(ui.selectorLevel, itemRect);
 
         if (ui.levelButtons.size() < levelManager.levels.size())
         {
             sf::Vector2f sliderPosition = ui.sliderBarHorizontal.getPosition();
             sliderPosition.x += std::round(ui.sliderBarHorizontal.getSize().x * (float)(levelManager.selected / (float)(levelManager.levels.size() - 1)));
-            ui.sliderHorizontal.setPosition(sliderPosition);
+            ui.sliderHorizontalTargetPositionX = sliderPosition.x;
         }
     }
+
+    void SetSelectorTargetPosition(Selector &selector, sf::FloatRect target)
+    {
+        selector.targetPosition[0] = {target.left, target.top};
+        selector.targetPosition[1] = {target.left + target.width, target.top};
+        selector.targetPosition[2] = {target.left, target.top + target.height};
+        selector.targetPosition[3] = {target.left + target.width, target.top + target.height};
+    }
+
+    void ApplySelectorTargetPosition(Selector &selector)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            selector.currentPosition[i] = selector.targetPosition[i];
+        }
+        ApplySelectorCurrentPosition(selector);
+    }
+
+    void ApplySelectorCurrentPosition(Selector &selector)
+    {
+        selector.topLeft.setPosition({std::round(selector.currentPosition[0].x), std::round(selector.currentPosition[0].y)});
+        selector.topRight.setPosition({std::round(selector.currentPosition[1].x), std::round(selector.currentPosition[1].y)});
+        selector.bottomLeft.setPosition({std::round(selector.currentPosition[2].x), std::round(selector.currentPosition[2].y)});
+        selector.bottomRight.setPosition({std::round(selector.currentPosition[3].x), std::round(selector.currentPosition[3].y)});
+    }
+
+    void UpdateSelector(Selector &selector, const float deltaTime, const float speed)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            sf::Vector2f delta = {(selector.targetPosition[i].x - selector.currentPosition[i].x), (selector.targetPosition[i].y - selector.currentPosition[i].y)};
+            if (std::abs(delta.x) < 0.5f && std::abs(delta.y) < 0.5f)
+                selector.currentPosition[i] = selector.targetPosition[i];
+            else
+                selector.currentPosition[i] += delta * speed * deltaTime;
+        }
+
+        ApplySelectorCurrentPosition(selector);
+    }
+
+    void UpdateMenuUI(UI &ui, const float deltaTime)
+    {
+        UpdateSelector(ui.selectorMenu, deltaTime, UI_SPEED);
+
+        sf::Vector2f currentPosition = ui.sliderVertical.getPosition();
+        float delta = ui.sliderVerticalTargetPositionY - currentPosition.y;
+        if (std::abs(delta) < 0.5f)
+            currentPosition.y = ui.sliderVerticalTargetPositionY;
+        else
+            currentPosition.y += delta * UI_SPEED * deltaTime;
+        ui.sliderVertical.setPosition(currentPosition);
+    }
+
+    void UpdateLevelSelectUI(UI &ui, const float deltaTime)
+    {
+        UpdateSelector(ui.selectorLevel, deltaTime, UI_SPEED);
+
+        sf::Vector2f currentPosition = ui.sliderHorizontal.getPosition();
+        float delta = ui.sliderHorizontalTargetPositionX - currentPosition.x;
+        if (std::abs(delta) < 0.5f)
+            currentPosition.x = ui.sliderHorizontalTargetPositionX;
+        else
+            currentPosition.x += delta * UI_SPEED * deltaTime;
+        ui.sliderHorizontal.setPosition(currentPosition);
+    }
+
 }

@@ -31,6 +31,8 @@ namespace SnakeGame
         sf::Sprite topRight;
         sf::Sprite bottomLeft;
         sf::Sprite bottomRight;
+        sf::Vector2f currentPosition[4];
+        sf::Vector2f targetPosition[4];
     };
 
     struct UI
@@ -53,31 +55,40 @@ namespace SnakeGame
         sf::Sprite subMenuTitle;
         sf::Text subMenuLabel;
         sf::Sprite sliderVertical;
+        float sliderVerticalTargetPositionY;
         sf::RectangleShape sliderBarVertical;
 
         std::vector<LevelButton> levelButtons;
         Selector selectorLevel;
         sf::Sprite sliderHorizontal;
+        float sliderHorizontalTargetPositionX;
         sf::RectangleShape sliderBarHorizontal;
         sf::Sprite levelRight;
         sf::Sprite levelLeft;
     };
 
     void InitUI(UI &ui, Resources &resources);
-    void UpdateMenuUI(UI &ui, Menu &menu);
-    void UpdateMenuSelectedItem(UI &ui, Menu &menu);
+    void LoadMenuUI(UI &ui, Menu &menu);
+    void LoadMenuUIItems(UI &ui, Menu &menu);
+    void SetMenuSelectedItem(UI &ui, Menu &menu);
     void DrawUITint(UI &ui, sf::RenderTexture &texture);
     void DrawMenuUI(UI &ui, Menu &menu, sf::RenderTexture &texture);
     void DrawLevelSelect(UI &ui, const LevelManager &levelManager, sf::RenderTexture &texture);
     void UpdateHud(UI &ui, std::string levelName, int score);
     void DrawHud(UI &ui, sf::RenderTexture &texture);
     void InitMenuButton(Button &button, Resources &resources);
-    void UpdateMenuBottonPosition(Button &button, int positionY);
-    void UpdateMenuBottonText(Button &button, std::string text, bool enabled, bool pressed);
-    void UpdateSelectorPosition(Selector &selector, sf::FloatRect target);
-    void PositionMenuButtonsList(UI &ui, int displayedAmount);
+    void SetMenuBottonPosition(Button &button, int positionY);
+    void SetMenuBottonText(Button &button, std::string text, bool enabled, bool pressed);
+    void SetMenuButtonsListPosition(UI &ui, int displayedAmount);
     void InitLevelButton(LevelButton &button, Resources &resources, int positionX);
-    void UpdateLevelBottonText(LevelButton &button, std::string text);
-    void LoadLevelSelectUI(UI &ui, const LevelManager &levelManager);
-    void UpdateLevelSelectedItem(UI &ui, LevelManager &levelManager);
+    void SetLevelBottonText(LevelButton &button, std::string text);
+    void LoadLevelSelectUI(UI &ui, LevelManager &levelManager);
+    void LoadLevelSelectUIItems(UI &ui, const LevelManager &levelManager);
+    void SetLevelSelectedItem(UI &ui, LevelManager &levelManager);
+    void SetSelectorTargetPosition(Selector &selector, sf::FloatRect target);
+    void ApplySelectorTargetPosition(Selector &selector);
+    void ApplySelectorCurrentPosition(Selector &selector);
+    void UpdateSelector(Selector &selector, const float deltaTime, const float speed);
+    void UpdateMenuUI(UI &ui, const float deltaTime);
+    void UpdateLevelSelectUI(UI &ui, const float deltaTime);
 }

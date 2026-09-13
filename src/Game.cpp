@@ -69,9 +69,20 @@ namespace SnakeGame
 		switch (game.gameState)
 		{
 		case GameState::MainMenu:
+			UpdateMenuUI(game.ui, deltaTime);
+			break;
+		case GameState::LevelSelect:
+			UpdateMenuUI(game.ui, deltaTime);
+			UpdateLevelSelectUI(game.ui, deltaTime);
 			break;
 		case GameState::GameLoop:
 			UpdateGameLoop(game, deltaTime);
+			break;
+		case GameState::GameOver:
+			UpdateMenuUI(game.ui, deltaTime);
+			break;
+		case GameState::Pause:
+			UpdateMenuUI(game.ui, deltaTime);
 			break;
 		default:
 			break;
@@ -133,7 +144,6 @@ namespace SnakeGame
 			SetMenuState(game, MenuState::LevelSelect);
 			LoadLevelManager(game.levelMangager);
 			LoadLevelSelectUI(game.ui, game.levelMangager);
-			UpdateLevelSelectedItem(game.ui, game.levelMangager);
 			break;
 		case GameState::GameLoop:
 			break;
@@ -166,13 +176,7 @@ namespace SnakeGame
 			UpdateSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.difficulty));
 		}
 
-		UpdateMenuLayer(game);
-	}
-
-	void UpdateMenuLayer(Game &game)
-	{
-		UpdateMenuUI(game.ui, game.menuLayers.back());
-		UpdateMenuSelectedItem(game.ui, game.menuLayers.back());
+		LoadMenuUI(game.ui, game.menuLayers.back());
 	}
 
 	void StartGameLoop(Game &game)
@@ -244,7 +248,7 @@ namespace SnakeGame
 			if (!game.menuLayers.back().items[game.menuLayers.back().selected].pressed)
 			{
 				game.menuLayers.back().items[game.menuLayers.back().selected].pressed = true;
-				UpdateMenuLayer(game);
+				LoadMenuUIItems(game.ui, game.menuLayers.back());
 				enterHeld = true;
 			}
 		}
@@ -253,7 +257,7 @@ namespace SnakeGame
 			if (game.menuLayers.size() > 1)
 			{
 				game.menuLayers.pop_back();
-				UpdateMenuLayer(game);
+				LoadMenuUI(game.ui, game.menuLayers.back());
 			}
 			else if (game.gameState == GameState::Pause)
 			{
@@ -267,7 +271,7 @@ namespace SnakeGame
 			{
 				game.menuLayers.back().selected = game.menuLayers.back().items.size() - 1;
 			}
-			UpdateMenuSelectedItem(game.ui, game.menuLayers.back());
+			SetMenuSelectedItem(game.ui, game.menuLayers.back());
 		}
 		else if (!enterHeld && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
 		{
@@ -276,7 +280,7 @@ namespace SnakeGame
 			{
 				game.menuLayers.back().selected = 0;
 			}
-			UpdateMenuSelectedItem(game.ui, game.menuLayers.back());
+			SetMenuSelectedItem(game.ui, game.menuLayers.back());
 		}
 		else if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Enter)
 		{
@@ -300,7 +304,7 @@ namespace SnakeGame
 					if (game.menuLayers.size() > 1)
 					{
 						game.menuLayers.pop_back();
-						UpdateMenuLayer(game);
+						LoadMenuUI(game.ui, game.menuLayers.back());
 					}
 					break;
 				case MenuActionType::SetScreenScale:
@@ -308,13 +312,13 @@ namespace SnakeGame
 					SaveConfig(game.config);
 					SetRendererResolution(game.renderer, game.config.windowResolution);
 					UpdateSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.windowResolution));
-					UpdateMenuLayer(game);
+					LoadMenuUIItems(game.ui, game.menuLayers.back());
 					break;
 				case MenuActionType::SetDifficulty:
 					game.config.difficulty = static_cast<GameDifficulty>(game.menuLayers.back().items[game.menuLayers.back().selected].actionTarget);
 					SaveConfig(game.config);
 					UpdateSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.difficulty));
-					UpdateMenuLayer(game);
+					LoadMenuUIItems(game.ui, game.menuLayers.back());
 					break;
 				default:
 					break;
@@ -332,7 +336,7 @@ namespace SnakeGame
 			{
 				game.levelMangager.selected = game.levelMangager.levels.size() - 1;
 			}
-			UpdateLevelSelectedItem(game.ui, game.levelMangager);
+			SetLevelSelectedItem(game.ui, game.levelMangager);
 		}
 		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
 		{
@@ -341,7 +345,7 @@ namespace SnakeGame
 			{
 				game.levelMangager.selected = 0;
 			}
-			UpdateLevelSelectedItem(game.ui, game.levelMangager);
+			SetLevelSelectedItem(game.ui, game.levelMangager);
 		}
 	}
 
