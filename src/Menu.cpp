@@ -30,6 +30,9 @@ namespace SnakeGame
                  {"Restart",
                   MenuActionType::StartGame,
                   0},
+                 {"Settings",
+                  MenuActionType::SwitchMenuState,
+                  static_cast<int>(MenuState::Settings)},
                  {"Back to menu",
                   MenuActionType::SwitchMenuState,
                   static_cast<int>(MenuState::Main)}}};
@@ -58,6 +61,12 @@ namespace SnakeGame
                 {{"Resolution",
                   MenuActionType::SwitchMenuState,
                   static_cast<int>(MenuState::Resolution)},
+                 {"Sound",
+                  MenuActionType::ToggleSound,
+                  0},
+                 {"Music",
+                  MenuActionType::ToggleMusic,
+                  0},
                  {"Back",
                   MenuActionType::PreviousMenu,
                   0}}};

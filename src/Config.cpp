@@ -23,6 +23,8 @@ namespace SnakeGame
         config.difficulty = GameDifficulty::Normal;
         config.windowResolution = WindowResolution::R960x720;
         config.playerName = "XYZ";
+        config.soundEnabled = true;
+        config.musicEnabled = true;
     }
 
     bool LoadConfig(Config &config)
@@ -46,6 +48,10 @@ namespace SnakeGame
                     config.windowResolution = static_cast<WindowResolution>(std::stoi(value));
                 else if (key == "playerName")
                     config.playerName = value;
+                else if (key == "soundEnabled")
+                    config.soundEnabled = static_cast<bool>(std::stoi(value));
+                else if (key == "musicEnabled")
+                    config.musicEnabled = static_cast<bool>(std::stoi(value));
             }
             file.close();
             return true;
@@ -61,6 +67,8 @@ namespace SnakeGame
             file << "difficulty=" << static_cast<int>(config.difficulty) << "\n";
             file << "windowResolution=" << static_cast<int>(config.windowResolution) << "\n";
             file << "playerName=" << config.playerName << "\n";
+            file << "soundEnabled=" << static_cast<int>(config.soundEnabled) << "\n";
+            file << "musicEnabled=" << static_cast<int>(config.musicEnabled) << "\n";
             file.close();
             return true;
         }

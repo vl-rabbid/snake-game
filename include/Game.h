@@ -60,9 +60,10 @@ namespace SnakeGame
 	void HandleMainMenuImput(Game &game, const sf::Event &event);
 	void HandleLevelSelectImput(Game &game, const sf::Event &event);
 	void HandleLeaderboardImput(Game &game, const sf::Event &event);
-	void UpdateSubMenuItems(Menu &menu, Game &game, int actionTarget);
+	void SetSubMenuItems(Menu &menu, Game &game, int actionTarget);
+	void SetSettingsItems(Menu &menu, Game &game);
 
-	void PlaySound(sf::Sound &sound, const GameSound &gameSound);
+	void PlaySound(Game &game, sf::Sound &sound, const GameSound &gameSound);
 	void PlayMusic(Game &game);
 	void StopMusic(Game &game);
 	void PauseMusic(Game &game);

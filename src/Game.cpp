@@ -157,10 +157,13 @@ namespace SnakeGame
 			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
 			break;
 		case MenuState::Resolution:
-			UpdateSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.windowResolution));
+			SetSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.windowResolution));
 			break;
 		case MenuState::Difficulty:
-			UpdateSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.difficulty));
+			SetSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.difficulty));
+			break;
+		case MenuState::Settings:
+			SetSettingsItems(game.menuLayers.back(), game);
 			break;
 		default:
 			break;
@@ -205,15 +208,15 @@ namespace SnakeGame
 				{
 					SpawnApple(game.level);
 				}
-				PlaySound(game.soundFX, game.resources.appleEaten);
+				PlaySound(game, game.soundFX, game.resources.appleEaten);
 			}
 			else
 			{
 				SetCellType(game.level.config, snakeTail.position, CellType::Empty);
 				if (GetCellType(game.level.config, snakeHead.position) == CellType::Snake || GetCellType(game.level.config, snakeHead.position) == CellType::Wall)
 				{
-					PlaySound(game.soundFX, game.resources.wall);
-					PlaySound(game.soundJingle, game.resources.gameOver);
+					PlaySound(game, game.soundFX, game.resources.wall);
+					PlaySound(game, game.soundJingle, game.resources.gameOver);
 					isDead = true;
 					if (game.score > 0)
 					{
@@ -324,7 +327,7 @@ namespace SnakeGame
 			{
 				game.menuLayers.pop_back();
 				LoadMenuUI(game.ui, game.menuLayers.back());
-				PlaySound(game.soundFX, game.resources.uiSelect);
+				PlaySound(game, game.soundFX, game.resources.uiSelect);
 			}
 			else if (game.menuLayers.back().state == MenuState::Pause)
 			{
@@ -342,7 +345,7 @@ namespace SnakeGame
 			SetMenuSelectedItem(game.ui, game.menuLayers.back());
 			if (previousItem != game.menuLayers.back().selected)
 			{
-				PlaySound(game.soundFX, game.resources.uiMoveVertical);
+				PlaySound(game, game.soundFX, game.resources.uiMoveVertical);
 			}
 		}
 		else if (!enterHeld && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
@@ -356,7 +359,7 @@ namespace SnakeGame
 			SetMenuSelectedItem(game.ui, game.menuLayers.back());
 			if (previousItem != game.menuLayers.back().selected)
 			{
-				PlaySound(game.soundFX, game.resources.uiMoveVertical);
+				PlaySound(game, game.soundFX, game.resources.uiMoveVertical);
 			}
 		}
 		else if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Enter)
@@ -391,19 +394,31 @@ namespace SnakeGame
 					game.config.windowResolution = static_cast<WindowResolution>(game.menuLayers.back().items[game.menuLayers.back().selected].actionTarget);
 					SaveConfig(game.config);
 					SetRendererResolution(game.renderer, game.config.windowResolution);
-					UpdateSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.windowResolution));
+					SetSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.windowResolution));
 					LoadMenuUIItems(game.ui, game.menuLayers.back());
 					break;
 				case MenuActionType::SetDifficulty:
 					game.config.difficulty = static_cast<GameDifficulty>(game.menuLayers.back().items[game.menuLayers.back().selected].actionTarget);
 					SaveConfig(game.config);
-					UpdateSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.difficulty));
+					SetSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.difficulty));
+					LoadMenuUIItems(game.ui, game.menuLayers.back());
+					break;
+				case MenuActionType::ToggleSound:
+					game.config.soundEnabled = !game.config.soundEnabled;
+					SaveConfig(game.config);
+					SetSettingsItems(game.menuLayers.back(), game);
+					LoadMenuUIItems(game.ui, game.menuLayers.back());
+					break;
+				case MenuActionType::ToggleMusic:
+					game.config.musicEnabled = !game.config.musicEnabled;
+					SaveConfig(game.config);
+					SetSettingsItems(game.menuLayers.back(), game);
 					LoadMenuUIItems(game.ui, game.menuLayers.back());
 					break;
 				default:
 					break;
 				}
-				PlaySound(game.soundFX, game.resources.uiSelect);
+				PlaySound(game, game.soundFX, game.resources.uiSelect);
 			}
 		};
 	}
@@ -423,7 +438,7 @@ namespace SnakeGame
 				SetLevelSelectedItem(game.ui, game.levelMangager);
 				if (previousItem != game.levelMangager.selected)
 				{
-					PlaySound(game.soundFX, game.resources.uiMoveHorizontal);
+					PlaySound(game, game.soundFX, game.resources.uiMoveHorizontal);
 				}
 			}
 		}
@@ -440,7 +455,7 @@ namespace SnakeGame
 				SetLevelSelectedItem(game.ui, game.levelMangager);
 				if (previousItem != game.levelMangager.selected)
 				{
-					PlaySound(game.soundFX, game.resources.uiMoveHorizontal);
+					PlaySound(game, game.soundFX, game.resources.uiMoveHorizontal);
 				}
 			}
 		}
@@ -461,7 +476,7 @@ namespace SnakeGame
 				LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
 				if (previousItem != game.leaderboard.firstDisplayedItem)
 				{
-					PlaySound(game.soundFX, game.resources.uiMoveHorizontal);
+					PlaySound(game, game.soundFX, game.resources.uiMoveHorizontal);
 				}
 			}
 		}
@@ -478,13 +493,13 @@ namespace SnakeGame
 				LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
 				if (previousItem != game.leaderboard.firstDisplayedItem)
 				{
-					PlaySound(game.soundFX, game.resources.uiMoveHorizontal);
+					PlaySound(game, game.soundFX, game.resources.uiMoveHorizontal);
 				}
 			}
 		}
 	}
 
-	void UpdateSubMenuItems(Menu &menu, Game &game, int actionTarget)
+	void SetSubMenuItems(Menu &menu, Game &game, int actionTarget)
 	{
 		for (int i = 0; i < menu.items.size(); i++)
 		{
@@ -495,6 +510,30 @@ namespace SnakeGame
 			else
 			{
 				menu.items[i].enabled = true;
+			}
+		}
+	}
+
+	void SetSettingsItems(Menu &menu, Game &game)
+	{
+		for (int i = 0; i < menu.items.size(); i++)
+		{
+			switch (menu.items[i].actionType)
+			{
+			case MenuActionType::ToggleSound:
+				if (game.config.soundEnabled)
+					menu.items[i].label = "Sound: ON";
+				else
+					menu.items[i].label = "Sound: OFF";
+				break;
+			case MenuActionType::ToggleMusic:
+				if (game.config.musicEnabled)
+					menu.items[i].label = "Music: ON";
+				else
+					menu.items[i].label = "Music: OFF";
+				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -519,16 +558,22 @@ namespace SnakeGame
 		return 1;
 	}
 
-	void PlaySound(sf::Sound &sound, const GameSound &gameSound)
+	void PlaySound(Game &game, sf::Sound &sound, const GameSound &gameSound)
 	{
-		sound.setVolume(gameSound.volume);
-		sound.setBuffer(gameSound.buffer);
-		sound.play();
+		if (game.config.soundEnabled)
+		{
+			sound.setVolume(gameSound.volume);
+			sound.setBuffer(gameSound.buffer);
+			sound.play();
+		}
 	}
 
 	void PlayMusic(Game &game)
 	{
-		game.resources.music.play();
+		if (game.config.musicEnabled)
+		{
+			game.resources.music.play();
+		}
 	}
 
 	void PauseMusic(Game &game)
@@ -593,12 +638,12 @@ namespace SnakeGame
 				if (wholeNumber == 0)
 				{
 					SetDelayUIText(game.ui, "Go!");
-					PlaySound(game.soundFX, game.resources.countdownGo);
+					PlaySound(game, game.soundFX, game.resources.countdownGo);
 				}
 				else
 				{
 					SetDelayUIText(game.ui, std::to_string(wholeNumber));
-					PlaySound(game.soundFX, game.resources.countdown);
+					PlaySound(game, game.soundFX, game.resources.countdown);
 				}
 			}
 			break;

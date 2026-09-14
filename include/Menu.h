@@ -21,7 +21,9 @@ namespace SnakeGame
         ResumeGame,
         PreviousMenu,
         SetScreenScale,
-        SetDifficulty
+        SetDifficulty,
+        ToggleSound,
+        ToggleMusic
     };
 
     struct MenuItem

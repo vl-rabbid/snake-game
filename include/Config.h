@@ -25,6 +25,8 @@ namespace SnakeGame
         GameDifficulty difficulty;
         WindowResolution windowResolution;
         std::string playerName;
+        bool soundEnabled;
+        bool musicEnabled;
     };
 
     bool ConfigFileExists();
