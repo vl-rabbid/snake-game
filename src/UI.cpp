@@ -65,21 +65,21 @@ namespace SnakeGame
         ui.menuDown.setTexture(resources.atlas);
         ui.menuDown.setTextureRect(GetTextureRect(TextureID::Down));
         ui.menuDown.setOrigin({4.f, 0.f});
-        ui.menuDown.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), 166.f});
+        ui.menuDown.setPosition({(float)std::round(LEVEL_WIDTH * CELL_SIZE / 2), 166.f});
 
         ui.subMenu.setTexture(resources.subMenu);
         ui.subMenu.setOrigin({std::round(ui.subMenu.getLocalBounds().width / 2), 0.f});
-        ui.subMenu.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), 64.f});
+        ui.subMenu.setPosition({(float)std::round(LEVEL_WIDTH * CELL_SIZE / 2), 64.f});
         ui.subMenuTitle.setTexture(resources.subMenuTitle);
         ui.subMenuTitle.setOrigin({std::round(ui.subMenuTitle.getLocalBounds().width / 2), 0.f});
-        ui.subMenuTitle.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), 57.f});
+        ui.subMenuTitle.setPosition({(float)std::round(LEVEL_WIDTH * CELL_SIZE / 2), 57.f});
 
         ui.subMenuLabel.setString("subMenu");
         ui.subMenuLabel.setFont(resources.font);
         ui.subMenuLabel.setCharacterSize(16);
         ui.subMenuLabel.setFillColor(COLOR_TEXT);
         ui.subMenuLabel.setOrigin({std::round(ui.subMenuLabel.getLocalBounds().width / 2), 0.f});
-        ui.subMenuLabel.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), 53.f});
+        ui.subMenuLabel.setPosition({(float)std::round(LEVEL_WIDTH * CELL_SIZE / 2), 53.f});
 
         ui.sliderVertical.setTexture(resources.atlas);
         ui.sliderVertical.setTextureRect(GetTextureRect(TextureID::SliderVertical));
@@ -153,10 +153,10 @@ namespace SnakeGame
 
         ui.inputMenu.setTexture(resources.inputMenu);
         ui.inputMenu.setOrigin({std::round(ui.inputMenu.getLocalBounds().width / 2), 0.f});
-        ui.inputMenu.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), 64.f});
+        ui.inputMenu.setPosition({(float)std::round(LEVEL_WIDTH * CELL_SIZE / 2), 64.f});
         ui.inputField.setTexture(resources.inputField);
         ui.inputField.setOrigin({std::round(ui.inputField.getLocalBounds().width / 2), 0.f});
-        ui.inputField.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), 81.f});
+        ui.inputField.setPosition({(float)std::round(LEVEL_WIDTH * CELL_SIZE / 2), 81.f});
         ui.inputLabel.setString("PLAYERNAME");
         ui.inputLabel.setFont(resources.font);
         ui.inputLabel.setCharacterSize(16);
@@ -367,7 +367,7 @@ namespace SnakeGame
 
     void SetMenuBottonPosition(Button &button, int positionY)
     {
-        sf::Vector2f position = {std::round(LEVEL_WIDTH * CELL_SIZE / 2), (float)positionY};
+        sf::Vector2f position = {(float)std::round(LEVEL_WIDTH * CELL_SIZE / 2), (float)positionY};
         button.spriteEnabled.setPosition(position);
         button.spriteDisabled.setPosition(position);
         button.spritePressed.setPosition(position);
@@ -391,7 +391,7 @@ namespace SnakeGame
             positionY -= 21;
             SetMenuBottonPosition(ui.menuButtons[i], positionY);
         }
-        ui.menuUp.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), (float)positionY});
+        ui.menuUp.setPosition({(float)std::round(LEVEL_WIDTH * CELL_SIZE / 2), (float)positionY});
         ui.sliderBarVertical.setPosition({171.f, (float)(positionY + 2)});
         ui.sliderBarVertical.setSize(sf::Vector2f(2.f, 163.f - (float)(positionY + 2)));
     }
