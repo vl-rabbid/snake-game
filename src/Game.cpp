@@ -28,10 +28,11 @@ namespace SnakeGame
 
 		InitMenues(game.menus);
 		InitUI(game.ui, game.resources);
-		SetGameState(game, GameState::MainMenu);
+		SetGameState(game, GameState::Menu);
+		SetMenuState(game, MenuState::Main);
 	}
 
-	void HandleImputAndEvents(Game &game, const sf::Event &event)
+	void HandleGameImput(Game &game, const sf::Event &event)
 	{
 		if (event.type == sf::Event::Closed)
 		{
@@ -40,30 +41,16 @@ namespace SnakeGame
 		}
 		switch (game.gameState)
 		{
-		case GameState::MainMenu:
+		case GameState::Menu:
 			HandleMenuImput(game, event);
-			break;
-		case GameState::LevelSelect:
-			HandleMenuImput(game, event);
-			HandleLevelSelectImput(game, event);
 			break;
 		case GameState::GameLoop:
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
 			{
-				SetGameState(game, GameState::Pause);
+				SetGameState(game, GameState::Menu);
+				SetMenuState(game, MenuState::Pause);
 			}
 			HandleSnakeImput(game.snake, event);
-			break;
-		case GameState::Pause:
-			HandleMenuImput(game, event);
-			break;
-		case GameState::GameOver:
-			HandleMenuImput(game, event);
-			HandleLeaderboardImput(game, event);
-			break;
-		case GameState::Leaderboard:
-			HandleMenuImput(game, event);
-			HandleLeaderboardImput(game, event);
 			break;
 		default:
 			break;
@@ -74,27 +61,14 @@ namespace SnakeGame
 	{
 		switch (game.gameState)
 		{
-		case GameState::MainMenu:
-			UpdateMenuUI(game.ui, deltaTime);
-			break;
-		case GameState::LevelSelect:
-			UpdateMenuUI(game.ui, deltaTime);
-			UpdateLevelSelectUI(game.ui, deltaTime);
+		case GameState::Menu:
+			UpdateMenu(game, deltaTime);
 			break;
 		case GameState::GameLoop:
 			UpdateGameLoop(game, deltaTime);
 			break;
-		case GameState::GameOver:
-			UpdateMenuUI(game.ui, deltaTime);
-			break;
 		case GameState::Delay:
 			UpdateDelay(game, deltaTime);
-			break;
-		case GameState::Leaderboard:
-			UpdateMenuUI(game.ui, deltaTime);
-			break;
-		case GameState::Pause:
-			UpdateMenuUI(game.ui, deltaTime);
 			break;
 		default:
 			break;
@@ -106,32 +80,21 @@ namespace SnakeGame
 		texture.draw(game.background);
 		switch (game.gameState)
 		{
-		case GameState::MainMenu:
-			DrawUITint(game.ui, texture);
-			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
-			break;
-		case GameState::LevelSelect:
-			DrawUITint(game.ui, texture);
-			DrawLevelSelect(game.ui, game.levelMangager, texture);
-			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
-			break;
-		case GameState::Leaderboard:
-			DrawUITint(game.ui, texture);
-			DrawLeaderboardUI(game.ui, game.leaderboard, texture);
-			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
+		case GameState::Menu:
+			if (game.menuLayers.back().type == MenuType::FullMenu)
+			{
+				DrawMenu(game, game.menuLayers.back(), texture);
+			}
+			else if (game.menuLayers.back().type == MenuType::SubMenu && game.menuLayers.size() > 1)
+			{
+				DrawMenu(game, game.menuLayers[game.menuLayers.size() - 2], texture);
+				DrawMenu(game, game.menuLayers.back(), texture);
+			}
 			break;
 		case GameState::GameLoop:
 			DrawLevel(game.level, texture);
 			DrawSnake(game.snake, texture);
 			DrawHud(game.ui, texture);
-			break;
-		case GameState::GameOver:
-			DrawLevel(game.level, texture);
-			DrawSnake(game.snake, texture);
-			DrawHud(game.ui, texture);
-			DrawUITint(game.ui, texture);
-			DrawLeaderboardUI(game.ui, game.leaderboard, texture);
-			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
 			break;
 		case GameState::Delay:
 			DrawLevel(game.level, texture);
@@ -139,13 +102,6 @@ namespace SnakeGame
 			DrawHud(game.ui, texture);
 			DrawUITint(game.ui, texture);
 			DrawDelayUI(game.ui, texture);
-			break;
-		case GameState::Pause:
-			DrawLevel(game.level, texture);
-			DrawSnake(game.snake, texture);
-			DrawHud(game.ui, texture);
-			DrawUITint(game.ui, texture);
-			DrawMenuUI(game.ui, game.menuLayers.back(), texture);
 			break;
 		default:
 			break;
@@ -159,32 +115,11 @@ namespace SnakeGame
 
 	void SetGameState(Game &game, const GameState &gameState)
 	{
-		game.menuLayers.clear();
 		switch (gameState)
 		{
-		case GameState::MainMenu:
-			SetMenuState(game, MenuState::Main);
-			break;
-		case GameState::LevelSelect:
-			SetMenuState(game, MenuState::LevelSelect);
-			LoadLevelManager(game.levelMangager);
-			LoadLevelSelectUI(game.ui, game.levelMangager);
-			break;
 		case GameState::GameLoop:
+			game.menuLayers.clear();
 			PlayMusic(game);
-			break;
-		case GameState::Pause:
-			SetMenuState(game, MenuState::Pause);
-			PauseMusic(game);
-			break;
-		case GameState::GameOver:
-			SetMenuState(game, MenuState::GameOver);
-			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
-			break;
-		case GameState::Leaderboard:
-			SetMenuState(game, MenuState::Leaderboard);
-			LoadLeaderboard(game.leaderboard, game.levelMangager.levels[game.levelMangager.selected].id);
-			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
 			break;
 		default:
 			break;
@@ -194,21 +129,42 @@ namespace SnakeGame
 
 	void SetMenuState(Game &game, MenuState menuState)
 	{
+		if (menuState == MenuState::Main)
+		{
+			game.menuLayers.clear();
+		}
+
 		Menu menu;
 		menu = game.menus[menuState];
 		menu.selected = 0;
 		menu.firstDisplayedItem = 0;
 		game.menuLayers.push_back(menu);
 
-		if (menuState == MenuState::Resolution)
+		switch (game.menuLayers.back().state)
 		{
+		case MenuState::LevelSelect:
+			LoadLevelManager(game.levelMangager);
+			LoadLevelSelectUI(game.ui, game.levelMangager);
+			break;
+		case MenuState::Pause:
+			PauseMusic(game);
+			break;
+		case MenuState::GameOver:
+			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
+			break;
+		case MenuState::Leaderboard:
+			LoadLeaderboard(game.leaderboard, game.levelMangager.levels[game.levelMangager.selected].id);
+			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
+			break;
+		case MenuState::Resolution:
 			UpdateSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.windowResolution));
-		}
-		else if (menuState == MenuState::Difficulty)
-		{
+			break;
+		case MenuState::Difficulty:
 			UpdateSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.difficulty));
+			break;
+		default:
+			break;
 		}
-
 		LoadMenuUI(game.ui, game.menuLayers.back());
 	}
 
@@ -265,7 +221,7 @@ namespace SnakeGame
 						SaveLeaderboard(game.leaderboard);
 					}
 					StopMusic(game);
-					StartGameDelay(game, GameState::GameOver, DelayType::GameOver);
+					StartMenuStateDelay(game, MenuState::GameOver, DelayType::GameOver);
 				}
 				else
 				{
@@ -278,7 +234,79 @@ namespace SnakeGame
 		}
 	}
 
+	void DrawMenu(Game &game, Menu &menu, sf::RenderTexture &texture)
+	{
+		switch (menu.state)
+		{
+		case MenuState::LevelSelect:
+			DrawUITint(game.ui, texture);
+			DrawLevelSelect(game.ui, game.levelMangager, texture);
+			DrawMenuUI(game.ui, menu, texture);
+			break;
+		case MenuState::Leaderboard:
+			DrawUITint(game.ui, texture);
+			DrawLeaderboardUI(game.ui, game.leaderboard, texture);
+			DrawMenuUI(game.ui, menu, texture);
+			break;
+		case MenuState::GameOver:
+			DrawLevel(game.level, texture);
+			DrawSnake(game.snake, texture);
+			DrawHud(game.ui, texture);
+			DrawUITint(game.ui, texture);
+			DrawLeaderboardUI(game.ui, game.leaderboard, texture);
+			DrawMenuUI(game.ui, menu, texture);
+			break;
+		case MenuState::Pause:
+			DrawLevel(game.level, texture);
+			DrawSnake(game.snake, texture);
+			DrawHud(game.ui, texture);
+			DrawUITint(game.ui, texture);
+			DrawMenuUI(game.ui, menu, texture);
+			break;
+		default:
+			DrawUITint(game.ui, texture);
+			DrawMenuUI(game.ui, menu, texture);
+			break;
+		}
+	}
+
+	void UpdateMenu(Game &game, const float deltaTime)
+	{
+		switch (game.menuLayers.back().state)
+		{
+		case MenuState::LevelSelect:
+			UpdateMenuUI(game.ui, deltaTime);
+			UpdateLevelSelectUI(game.ui, deltaTime);
+			break;
+		default:
+			UpdateMenuUI(game.ui, deltaTime);
+			break;
+		}
+	}
+
 	void HandleMenuImput(Game &game, const sf::Event &event)
+	{
+		switch (game.menuLayers.back().state)
+		{
+		case MenuState::Leaderboard:
+			HandleLeaderboardImput(game, event);
+			HandleMainMenuImput(game, event);
+			break;
+		case MenuState::LevelSelect:
+			HandleLevelSelectImput(game, event);
+			HandleMainMenuImput(game, event);
+			break;
+		case MenuState::GameOver:
+			HandleLeaderboardImput(game, event);
+			HandleMainMenuImput(game, event);
+			break;
+		default:
+			HandleMainMenuImput(game, event);
+			break;
+		}
+	}
+
+	void HandleMainMenuImput(Game &game, const sf::Event &event)
 	{
 		static bool enterHeld = false;
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter)
@@ -296,10 +324,11 @@ namespace SnakeGame
 			{
 				game.menuLayers.pop_back();
 				LoadMenuUI(game.ui, game.menuLayers.back());
+				PlaySound(game.soundFX, game.resources.uiSelect);
 			}
-			else if (game.gameState == GameState::Pause)
+			else if (game.menuLayers.back().state == MenuState::Pause)
 			{
-				SetGameState(game, GameState::GameLoop);
+				StartGameStateDelay(game, GameState::GameLoop, DelayType::GameStart);
 			}
 		}
 		else if (!enterHeld && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
@@ -346,10 +375,10 @@ namespace SnakeGame
 					break;
 				case MenuActionType::StartGame:
 					StartGameLoop(game);
-					StartGameDelay(game, GameState::GameLoop, DelayType::Countdown);
+					StartGameStateDelay(game, GameState::GameLoop, DelayType::GameStart);
 					break;
 				case MenuActionType::ResumeGame:
-					StartGameDelay(game, GameState::GameLoop, DelayType::Countdown);
+					StartGameStateDelay(game, GameState::GameLoop, DelayType::GameStart);
 					break;
 				case MenuActionType::PreviousMenu:
 					if (game.menuLayers.size() > 1)
@@ -512,15 +541,34 @@ namespace SnakeGame
 		game.resources.music.stop();
 	}
 
-	void StartGameDelay(Game &game, GameState nextState, DelayType type)
+	void StartGameStateDelay(Game &game, GameState nextGameState, DelayType type)
 	{
 		SetGameState(game, GameState::Delay);
 		game.delay.timer = 0.f;
-		game.delay.nextState = nextState;
+		game.delay.nextGameState = nextGameState;
 		game.delay.type = type;
 		switch (type)
 		{
-		case DelayType::Countdown:
+		case DelayType::GameStart:
+			game.delay.duration = DELAY_COUNTDOWN;
+			break;
+		case DelayType::GameOver:
+			game.delay.duration = DELAY_GAME_OVER;
+			break;
+		default:
+			break;
+		}
+	}
+
+	void StartMenuStateDelay(Game &game, MenuState nextMenuState, DelayType type)
+	{
+		SetGameState(game, GameState::Delay);
+		game.delay.timer = 0.f;
+		game.delay.nextMenuState = nextMenuState;
+		game.delay.type = type;
+		switch (type)
+		{
+		case DelayType::GameStart:
 			game.delay.duration = DELAY_COUNTDOWN;
 			break;
 		case DelayType::GameOver:
@@ -538,7 +586,7 @@ namespace SnakeGame
 		static int wholeNumber = 0;
 		switch (game.delay.type)
 		{
-		case DelayType::Countdown:
+		case DelayType::GameStart:
 			if ((int)std::round(timeLeft) != wholeNumber)
 			{
 				wholeNumber = (int)std::round(timeLeft);
@@ -564,7 +612,18 @@ namespace SnakeGame
 		game.delay.timer += deltaTime;
 		if (game.delay.timer >= game.delay.duration)
 		{
-			SetGameState(game, game.delay.nextState);
+			switch (game.delay.type)
+			{
+			case DelayType::GameStart:
+				SetGameState(game, game.delay.nextGameState);
+				break;
+			case DelayType::GameOver:
+				SetGameState(game, GameState::Menu);
+				SetMenuState(game, game.delay.nextMenuState);
+				break;
+			default:
+				break;
+			}
 			wholeNumber = 0;
 		}
 	}

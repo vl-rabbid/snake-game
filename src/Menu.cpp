@@ -6,11 +6,12 @@ namespace SnakeGame
     {
         menus[MenuState::Main] =
             {
+                MenuState::Main,
                 "Snake Game",
                 MenuType::FullMenu,
                 {{"Play",
-                  MenuActionType::SwitchGameState,
-                  static_cast<int>(GameState::LevelSelect)},
+                  MenuActionType::SwitchMenuState,
+                  static_cast<int>(MenuState::LevelSelect)},
                  {"Settings",
                   MenuActionType::SwitchMenuState,
                   static_cast<int>(MenuState::Settings)},
@@ -20,6 +21,7 @@ namespace SnakeGame
 
         menus[MenuState::Pause] =
             {
+                MenuState::Pause,
                 "Pause",
                 MenuType::FullMenu,
                 {{"Resume",
@@ -29,11 +31,12 @@ namespace SnakeGame
                   MenuActionType::StartGame,
                   0},
                  {"Back to menu",
-                  MenuActionType::SwitchGameState,
-                  static_cast<int>(GameState::MainMenu)}}};
+                  MenuActionType::SwitchMenuState,
+                  static_cast<int>(MenuState::Main)}}};
 
         menus[MenuState::GameOver] =
             {
+                MenuState::GameOver,
                 "",
                 MenuType::FullMenu,
                 {{"Restart",
@@ -43,12 +46,13 @@ namespace SnakeGame
                   MenuActionType::SwitchMenuState,
                   static_cast<int>(MenuState::Difficulty)},
                  {"Back to menu",
-                  MenuActionType::SwitchGameState,
-                  static_cast<int>(GameState::MainMenu)}},
+                  MenuActionType::SwitchMenuState,
+                  static_cast<int>(MenuState::Main)}},
                 2};
 
         menus[MenuState::Settings] =
             {
+                MenuState::Settings,
                 "Settings",
                 MenuType::FullMenu,
                 {{"Resolution",
@@ -60,6 +64,7 @@ namespace SnakeGame
 
         menus[MenuState::Resolution] =
             {
+                MenuState::Resolution,
                 "Resolution",
                 MenuType::SubMenu,
                 {{"720x540",
@@ -80,6 +85,7 @@ namespace SnakeGame
 
         menus[MenuState::Difficulty] =
             {
+                MenuState::Difficulty,
                 "Difficulty",
                 MenuType::SubMenu,
                 {{"Very Easy",
@@ -103,6 +109,7 @@ namespace SnakeGame
 
         menus[MenuState::LevelSelect] =
             {
+                MenuState::LevelSelect,
                 "",
                 MenuType::FullMenu,
                 {{"Start Game",
@@ -112,20 +119,21 @@ namespace SnakeGame
                   MenuActionType::SwitchMenuState,
                   static_cast<int>(MenuState::Difficulty)},
                  {"Leaderboard",
-                  MenuActionType::SwitchGameState,
-                  static_cast<int>(GameState::Leaderboard)},
-                 {"Back to menu",
-                  MenuActionType::SwitchGameState,
-                  static_cast<int>(GameState::MainMenu)}},
+                  MenuActionType::SwitchMenuState,
+                  static_cast<int>(MenuState::Leaderboard)},
+                 {"Back",
+                  MenuActionType::PreviousMenu,
+                  0}},
                 2};
 
         menus[MenuState::Leaderboard] =
             {
+                MenuState::Leaderboard,
                 "",
                 MenuType::FullMenu,
                 {{"Back",
-                  MenuActionType::SwitchGameState,
-                  static_cast<int>(GameState::LevelSelect)}},
+                  MenuActionType::PreviousMenu,
+                  0}},
                 2};
     }
 }

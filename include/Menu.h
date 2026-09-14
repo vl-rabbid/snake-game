@@ -2,7 +2,7 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 #include "Constants.h"
-#include "GameState.h"
+#include "StateManager.h"
 #include "Config.h"
 
 namespace SnakeGame
@@ -11,18 +11,6 @@ namespace SnakeGame
     {
         FullMenu = 0,
         SubMenu
-    };
-
-    enum class MenuState
-    {
-        Main = 0,
-        Pause,
-        GameOver,
-        Settings,
-        Resolution,
-        Difficulty,
-        LevelSelect,
-        Leaderboard
     };
 
     enum class MenuActionType
@@ -47,6 +35,7 @@ namespace SnakeGame
 
     struct Menu
     {
+        MenuState state;
         std::string label;
         MenuType type;
         std::vector<MenuItem> items;

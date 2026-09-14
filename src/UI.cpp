@@ -149,6 +149,7 @@ namespace SnakeGame
         ui.leaderboardLeft.setTextureRect(GetTextureRect(TextureID::Left));
         ui.leaderboardLeft.setOrigin({0.f, 4.f});
         ui.leaderboardLeft.setPosition({85.f, 74.f});
+        InitLevelButton(ui.leaderboardLevel, resources, 9);
     }
 
     void LoadMenuUI(UI &ui, Menu &menu)
@@ -170,7 +171,6 @@ namespace SnakeGame
 
         SetMenuButtonsListPosition(ui, menu.displayedItemAmount);
         LoadMenuUIItems(ui, menu);
-        SetMenuSelectedItem(ui, menu);
         ApplySelectorTargetPosition(ui.selectorMenu);
         ui.sliderVertical.setPosition({ui.sliderBarVertical.getPosition().x, ui.sliderVerticalTargetPositionY});
     }
@@ -185,6 +185,7 @@ namespace SnakeGame
                 SetMenuBottonText(ui.menuButtons[i], item.label, item.enabled, item.pressed);
             }
         }
+        SetMenuSelectedItem(ui, menu);
     }
 
     void SetMenuSelectedItem(UI &ui, Menu &menu)
@@ -220,11 +221,13 @@ namespace SnakeGame
 
     void DrawMenuUI(UI &ui, Menu &menu, sf::RenderTexture &texture)
     {
-        texture.draw(ui.menuLabelShadow);
-        texture.draw(ui.menuLabel);
-        if (menu.type == MenuType::SubMenu)
+        if (menu.type == MenuType::FullMenu)
         {
-            texture.draw(ui.tint);
+            texture.draw(ui.menuLabelShadow);
+            texture.draw(ui.menuLabel);
+        }
+        else if (menu.type == MenuType::SubMenu)
+        {
             texture.draw(ui.subMenu);
             texture.draw(ui.subMenuTitle);
             texture.draw(ui.subMenuLabel);
@@ -517,8 +520,8 @@ namespace SnakeGame
             }
         }
 
-        SetLevelBottonText(ui.levelButtons[0], levelManager.levels[levelManager.selected].name);
-        ui.levelButtons[0].preview = GenerateLevelPreview(levelManager.levels[levelManager.selected]);
+        SetLevelBottonText(ui.leaderboardLevel, levelManager.levels[levelManager.selected].name);
+        ui.leaderboardLevel.preview = GenerateLevelPreview(levelManager.levels[levelManager.selected]);
     }
 
     void DrawLeaderboardUI(UI &ui, Leaderboard &leaderboard, sf::RenderTexture &texture)
@@ -542,11 +545,11 @@ namespace SnakeGame
             texture.draw(ui.leaderboardLeft);
         }
 
-        texture.draw(ui.levelButtons[0].spriteButton);
-        texture.draw(ui.levelButtons[0].spriteLabel);
-        texture.draw(ui.levelButtons[0].spritePreviewFrame);
-        texture.draw(ui.levelButtons[0].label);
-        texture.draw(ui.levelButtons[0].preview, ui.levelButtons[0].previewStates);
+        texture.draw(ui.leaderboardLevel.spriteButton);
+        texture.draw(ui.leaderboardLevel.spriteLabel);
+        texture.draw(ui.leaderboardLevel.spritePreviewFrame);
+        texture.draw(ui.leaderboardLevel.label);
+        texture.draw(ui.leaderboardLevel.preview, ui.leaderboardLevel.previewStates);
     }
 
     void SetDelayUIText(UI &ui, std::string text)

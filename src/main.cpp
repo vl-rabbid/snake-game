@@ -20,7 +20,7 @@ int main()
 		sf::Event event;
 		while (game.renderer.window.pollEvent(event))
 		{
-			HandleImputAndEvents(game, event);
+			HandleGameImput(game, event);
 		}
 
 		UpdateGame(game, deltaTime);

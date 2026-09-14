@@ -4,7 +4,7 @@
 #include <SFML/Audio.hpp>
 #include "Snake.h"
 #include "Level.h"
-#include "GameState.h"
+#include "StateManager.h"
 #include "UI.h"
 #include "Menu.h"
 #include "Resources.h"
@@ -42,23 +42,32 @@ namespace SnakeGame
 
 	bool IsGameRunning(Game &game);
 	void InitGame(Game &game);
-	void HandleImputAndEvents(Game &game, const sf::Event &event);
+	void HandleGameImput(Game &game, const sf::Event &event);
 	void UpdateGame(Game &game, const float deltaTime);
 	void DrawGame(Game &game, sf::RenderTexture &texture);
 	void DeinitializeGame(Game &game, sf::RenderWindow &window);
+
 	void SetGameState(Game &game, const GameState &gameState);
-	void SetMenuState(Game &game, MenuState menuState);
+
 	void StartGameLoop(Game &game);
 	void UpdateGameLoop(Game &game, const float deltaTime);
+	int GetScoreMultiplier(GameDifficulty gameDifficulty);
+
+	void DrawMenu(Game &game, Menu &menu, sf::RenderTexture &texture);
+	void UpdateMenu(Game &game, const float deltaTime);
+	void SetMenuState(Game &game, MenuState menuState);
 	void HandleMenuImput(Game &game, const sf::Event &event);
+	void HandleMainMenuImput(Game &game, const sf::Event &event);
 	void HandleLevelSelectImput(Game &game, const sf::Event &event);
 	void HandleLeaderboardImput(Game &game, const sf::Event &event);
 	void UpdateSubMenuItems(Menu &menu, Game &game, int actionTarget);
-	int GetScoreMultiplier(GameDifficulty gameDifficulty);
+
 	void PlaySound(sf::Sound &sound, const GameSound &gameSound);
 	void PlayMusic(Game &game);
 	void StopMusic(Game &game);
 	void PauseMusic(Game &game);
-	void StartGameDelay(Game &game, GameState nextState, DelayType type);
+
+	void StartGameStateDelay(Game &game, GameState nextGameState, DelayType type);
+	void StartMenuStateDelay(Game &game, MenuState nextMenuState, DelayType type);
 	void UpdateDelay(Game &game, const float deltaTime);
 }

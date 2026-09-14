@@ -73,6 +73,7 @@ namespace SnakeGame
         sf::Text leaderboardEntry[LEADERBOARD_DISPLAYED];
         sf::Sprite leaderboardRight;
         sf::Sprite leaderboardLeft;
+        LevelButton leaderboardLevel;
     };
 
     void InitUI(UI &ui, Resources &resources);
