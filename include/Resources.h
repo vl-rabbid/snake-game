@@ -68,7 +68,9 @@ namespace SnakeGame
         Left,
         Right,
 
-        SliderVertical
+        SliderVertical,
+
+        UIFrame6
     };
 
     struct GameSound
@@ -100,6 +102,9 @@ namespace SnakeGame
         sf::Texture leaderboardFrame;
         sf::Texture leaderboardLabelFrame;
 
+        sf::Texture inputMenu;
+        sf::Texture inputField;
+
         GameSound uiMoveVertical;
         GameSound uiMoveHorizontal;
         GameSound uiSelect;
@@ -108,6 +113,7 @@ namespace SnakeGame
         GameSound gameOver;
         GameSound countdown;
         GameSound countdownGo;
+        GameSound input;
 
         sf::Music music;
     };

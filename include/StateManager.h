@@ -19,7 +19,8 @@ namespace SnakeGame
         Resolution,
         Difficulty,
         LevelSelect,
-        Leaderboard
+        Leaderboard,
+        SetPlayerName
     };
 
     enum class DelayType

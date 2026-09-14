@@ -150,6 +150,21 @@ namespace SnakeGame
         ui.leaderboardLeft.setOrigin({0.f, 4.f});
         ui.leaderboardLeft.setPosition({85.f, 74.f});
         InitLevelButton(ui.leaderboardLevel, resources, 9);
+
+        ui.inputMenu.setTexture(resources.inputMenu);
+        ui.inputMenu.setOrigin({std::round(ui.inputMenu.getLocalBounds().width / 2), 0.f});
+        ui.inputMenu.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), 64.f});
+        ui.inputField.setTexture(resources.inputField);
+        ui.inputField.setOrigin({std::round(ui.inputField.getLocalBounds().width / 2), 0.f});
+        ui.inputField.setPosition({std::round(LEVEL_WIDTH * CELL_SIZE / 2), 81.f});
+        ui.inputLabel.setString("PLAYERNAME");
+        ui.inputLabel.setFont(resources.font);
+        ui.inputLabel.setCharacterSize(16);
+        ui.inputLabel.setFillColor(COLOR_INPUT_TEXT);
+        ui.inputLabel.setPosition({ui.inputField.getGlobalBounds().left + 8.f, ui.inputField.getGlobalBounds().top - 5.f});
+        ui.inputMarker.setFillColor(COLOR_INPUT_TEXT);
+        ui.inputMarker.setSize(sf::Vector2f(1.f, 11.f));
+        ui.inputMarker.setPosition({ui.inputLabel.getGlobalBounds().left + ui.inputLabel.getGlobalBounds().width + 1.f, ui.inputField.getGlobalBounds().top + 2.f});
     }
 
     void LoadMenuUI(UI &ui, Menu &menu)
@@ -163,7 +178,7 @@ namespace SnakeGame
             ui.menuLabelShadow.setString(menu.label);
             SetTextRelativeOrigin(ui.menuLabelShadow, 0.5f, 0.5f);
         }
-        else if (menu.type == MenuType::SubMenu)
+        else if (menu.type == MenuType::SubMenu || menu.type == MenuType::InputString)
         {
             ui.subMenuLabel.setString(menu.label);
             ui.subMenuLabel.setOrigin({std::round(ui.subMenuLabel.getLocalBounds().width / 2), 0.f});
@@ -231,6 +246,18 @@ namespace SnakeGame
             texture.draw(ui.subMenu);
             texture.draw(ui.subMenuTitle);
             texture.draw(ui.subMenuLabel);
+        }
+        else if (menu.type == MenuType::InputString)
+        {
+            texture.draw(ui.inputMenu);
+            texture.draw(ui.subMenuTitle);
+            texture.draw(ui.subMenuLabel);
+            texture.draw(ui.inputField);
+            texture.draw(ui.inputLabel);
+            if (ui.inputMarkerVisible)
+            {
+                texture.draw(ui.inputMarker);
+            }
         }
 
         for (int i = 0; i < menu.displayedItemAmount; ++i)
@@ -500,6 +527,23 @@ namespace SnakeGame
         else
             currentPosition.x += delta * SLIDER_SPEED * deltaTime;
         ui.sliderHorizontal.setPosition(currentPosition);
+    }
+
+    void UpdateInputMarker(UI &ui, const float deltaTime)
+    {
+        static float timer = 0.f;
+        timer += deltaTime;
+        if (timer >= INPUT_MARKER_INTERVAL)
+        {
+            ui.inputMarkerVisible = !ui.inputMarkerVisible;
+            timer -= INPUT_MARKER_INTERVAL;
+        }
+    }
+
+    void SetInputLabel(UI &ui, std::string text)
+    {
+        ui.inputLabel.setString(text);
+        ui.inputMarker.setPosition({ui.inputLabel.getGlobalBounds().left + ui.inputLabel.getGlobalBounds().width + 1.f, ui.inputField.getGlobalBounds().top + 2.f});
     }
 
     void LoadLeaderboardUI(UI &ui, Leaderboard &leaderboard, LevelManager &levelManager)

@@ -85,10 +85,13 @@ namespace SnakeGame
 			{
 				DrawMenu(game, game.menuLayers.back(), texture);
 			}
-			else if (game.menuLayers.back().type == MenuType::SubMenu && game.menuLayers.size() > 1)
+			else if (game.menuLayers.size() > 1)
 			{
-				DrawMenu(game, game.menuLayers[game.menuLayers.size() - 2], texture);
-				DrawMenu(game, game.menuLayers.back(), texture);
+				if (game.menuLayers.back().type == MenuType::SubMenu || game.menuLayers.back().type == MenuType::InputString)
+				{
+					DrawMenu(game, game.menuLayers[game.menuLayers.size() - 2], texture);
+					DrawMenu(game, game.menuLayers.back(), texture);
+				}
 			}
 			break;
 		case GameState::GameLoop:
@@ -164,6 +167,10 @@ namespace SnakeGame
 			break;
 		case MenuState::Settings:
 			SetSettingsItems(game.menuLayers.back(), game);
+			break;
+		case MenuState::SetPlayerName:
+			game.newPlayerName = game.config.playerName;
+			SetInputLabel(game.ui, game.newPlayerName);
 			break;
 		default:
 			break;
@@ -281,6 +288,10 @@ namespace SnakeGame
 			UpdateMenuUI(game.ui, deltaTime);
 			UpdateLevelSelectUI(game.ui, deltaTime);
 			break;
+		case MenuState::SetPlayerName:
+			UpdateInputMarker(game.ui, deltaTime);
+			UpdateMenuUI(game.ui, deltaTime);
+			break;
 		default:
 			UpdateMenuUI(game.ui, deltaTime);
 			break;
@@ -302,6 +313,10 @@ namespace SnakeGame
 		case MenuState::GameOver:
 			HandleLeaderboardImput(game, event);
 			HandleMainMenuImput(game, event);
+			break;
+		case MenuState::SetPlayerName:
+			HandleMainMenuImput(game, event);
+			HandleTypingInput(game, event);
 			break;
 		default:
 			HandleMainMenuImput(game, event);
@@ -415,6 +430,15 @@ namespace SnakeGame
 					SetSettingsItems(game.menuLayers.back(), game);
 					LoadMenuUIItems(game.ui, game.menuLayers.back());
 					break;
+				case MenuActionType::SavePlayerName:
+					game.config.playerName = game.newPlayerName;
+					SaveConfig(game.config);
+					if (game.menuLayers.size() > 1)
+					{
+						game.menuLayers.pop_back();
+						LoadMenuUI(game.ui, game.menuLayers.back());
+					}
+					break;
 				default:
 					break;
 				}
@@ -495,6 +519,47 @@ namespace SnakeGame
 				{
 					PlaySound(game, game.soundFX, game.resources.uiMoveHorizontal);
 				}
+			}
+		}
+	}
+
+	void HandleTypingInput(Game &game, const sf::Event &event)
+	{
+		if (event.type == sf::Event::TextEntered)
+		{
+			char32_t c = event.text.unicode;
+			if (c == '\b')
+			{
+				if (!game.newPlayerName.empty())
+				{
+					game.newPlayerName.pop_back();
+					SetInputLabel(game.ui, game.newPlayerName);
+					PlaySound(game, game.soundFX, game.resources.input);
+					SetInputMenuItems(game.menuLayers.back(), game);
+					LoadMenuUIItems(game.ui, game.menuLayers.back());
+				}
+			}
+			else if (game.newPlayerName.size() < 10 && IsAllowedInputChar(c))
+			{
+				game.newPlayerName += static_cast<char>(c);
+				SetInputLabel(game.ui, game.newPlayerName);
+				PlaySound(game, game.soundFX, game.resources.input);
+				SetInputMenuItems(game.menuLayers.back(), game);
+				LoadMenuUIItems(game.ui, game.menuLayers.back());
+			}
+		}
+	}
+
+	void SetInputMenuItems(Menu &menu, Game &game)
+	{
+		for (int i = 0; i < menu.items.size(); i++)
+		{
+			if (menu.items[i].actionType == MenuActionType::SavePlayerName)
+			{
+				if (game.newPlayerName.empty())
+					menu.items[i].enabled = false;
+				else
+					menu.items[i].enabled = true;
 			}
 		}
 	}
@@ -673,4 +738,12 @@ namespace SnakeGame
 		}
 	}
 
+	bool IsAllowedInputChar(char32_t c)
+	{
+		return (c >= U'A' && c <= U'Z') ||
+			   (c >= U'a' && c <= U'z') ||
+			   (c >= U'0' && c <= U'9') ||
+			   c == U'_' ||
+			   c == U'-';
+	}
 }

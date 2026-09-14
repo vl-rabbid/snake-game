@@ -10,7 +10,8 @@ namespace SnakeGame
     enum class MenuType
     {
         FullMenu = 0,
-        SubMenu
+        SubMenu,
+        InputString
     };
 
     enum class MenuActionType
@@ -23,7 +24,8 @@ namespace SnakeGame
         SetScreenScale,
         SetDifficulty,
         ToggleSound,
-        ToggleMusic
+        ToggleMusic,
+        SavePlayerName
     };
 
     struct MenuItem

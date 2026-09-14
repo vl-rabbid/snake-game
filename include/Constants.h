@@ -16,6 +16,7 @@ namespace SnakeGame
 	const int DISPLAYED_LEVEL_COUNT = 3;
 	const float SELECT_SPEED = 40.f;
 	const float SLIDER_SPEED = 30.f;
+	const float INPUT_MARKER_INTERVAL = 0.5f;
 	const int LEADERBOARD_DISPLAYED = 5;
 
 	const float DELAY_COUNTDOWN = 3.2f;
@@ -24,6 +25,7 @@ namespace SnakeGame
 	const sf::Color COLOR_TINT(0, 0, 0, 100);
 	const sf::Color COLOR_SHADOW(0, 0, 0, 150);
 	const sf::Color COLOR_TEXT(54, 46, 40);
+	const sf::Color COLOR_INPUT_TEXT(184, 159, 128);
 
 	const sf::Color COLOR_GREEN_LIGHT(113, 180, 55);
 	const sf::Color COLOR_GREEN_DARK(79, 160, 65);

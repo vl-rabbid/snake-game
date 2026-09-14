@@ -38,6 +38,8 @@ namespace SnakeGame
 
 		sf::Sound soundFX;
 		sf::Sound soundJingle;
+
+		std::string newPlayerName;
 	};
 
 	bool IsGameRunning(Game &game);
@@ -60,6 +62,8 @@ namespace SnakeGame
 	void HandleMainMenuImput(Game &game, const sf::Event &event);
 	void HandleLevelSelectImput(Game &game, const sf::Event &event);
 	void HandleLeaderboardImput(Game &game, const sf::Event &event);
+	void HandleTypingInput(Game &game, const sf::Event &event);
+	void SetInputMenuItems(Menu &menu, Game &game);
 	void SetSubMenuItems(Menu &menu, Game &game, int actionTarget);
 	void SetSettingsItems(Menu &menu, Game &game);
 
@@ -71,4 +75,6 @@ namespace SnakeGame
 	void StartGameStateDelay(Game &game, GameState nextGameState, DelayType type);
 	void StartMenuStateDelay(Game &game, MenuState nextMenuState, DelayType type);
 	void UpdateDelay(Game &game, const float deltaTime);
+
+	bool IsAllowedInputChar(char32_t c);
 }

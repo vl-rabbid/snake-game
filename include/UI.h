@@ -74,6 +74,12 @@ namespace SnakeGame
         sf::Sprite leaderboardRight;
         sf::Sprite leaderboardLeft;
         LevelButton leaderboardLevel;
+
+        sf::Sprite inputMenu;
+        sf::Sprite inputField;
+        sf::Text inputLabel;
+        sf::RectangleShape inputMarker;
+        bool inputMarkerVisible = true;
     };
 
     void InitUI(UI &ui, Resources &resources);
@@ -100,6 +106,8 @@ namespace SnakeGame
     void UpdateSelector(Selector &selector, const float deltaTime, const float speed);
     void UpdateMenuUI(UI &ui, const float deltaTime);
     void UpdateLevelSelectUI(UI &ui, const float deltaTime);
+    void UpdateInputMarker(UI &ui, const float deltaTime);
+    void SetInputLabel(UI &ui, std::string text);
     void LoadLeaderboardUI(UI &ui, Leaderboard &leaderboard, LevelManager &levelManager);
     void DrawLeaderboardUI(UI &ui, Leaderboard &leaderboard, sf::RenderTexture &texture);
     void SetDelayUIText(UI &ui, std::string text);

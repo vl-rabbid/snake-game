@@ -28,6 +28,9 @@ namespace SnakeGame
         resources.leaderboardFrame = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame3), 133, 84);
         resources.leaderboardLabelFrame = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame2), 95, 17);
 
+        resources.inputMenu = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame3), 120, 90);
+        resources.inputField = CreateNineSliceTexture(resources.atlas, GetTextureRect(TextureID::UIFrame6), 75, 15);
+
         assert(resources.uiMoveVertical.buffer.loadFromFile(std::string(RESOURCES_PATH) + "/audio/sfx_menu_a.wav"));
         assert(resources.uiMoveHorizontal.buffer.loadFromFile(std::string(RESOURCES_PATH) + "/audio/sfx_menu_b.wav"));
         assert(resources.uiSelect.buffer.loadFromFile(std::string(RESOURCES_PATH) + "/audio/sfx_menu_select.wav"));
@@ -42,6 +45,8 @@ namespace SnakeGame
         resources.countdown.volume = 70.f;
         assert(resources.countdownGo.buffer.loadFromFile(std::string(RESOURCES_PATH) + "/audio/sfx_countdown_go.wav"));
         resources.countdownGo.volume = 75.f;
+        assert(resources.input.buffer.loadFromFile(std::string(RESOURCES_PATH) + "/audio/sfx_input.wav"));
+        resources.input.volume = 80.f;
 
         assert(resources.music.openFromFile(std::string(RESOURCES_PATH) + "/audio/music_theme.ogg"));
         resources.music.setLoop(true);
@@ -209,6 +214,10 @@ namespace SnakeGame
 
         case TextureID::SliderHorizontal:
             return sf::IntRect(24, 60, 12, 12);
+            break;
+
+        case TextureID::UIFrame6:
+            return sf::IntRect(36, 60, 12, 12);
             break;
 
         default:

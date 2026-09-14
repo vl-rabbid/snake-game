@@ -61,6 +61,9 @@ namespace SnakeGame
                 {{"Resolution",
                   MenuActionType::SwitchMenuState,
                   static_cast<int>(MenuState::Resolution)},
+                 {"Player name",
+                  MenuActionType::SwitchMenuState,
+                  static_cast<int>(MenuState::SetPlayerName)},
                  {"Sound",
                   MenuActionType::ToggleSound,
                   0},
@@ -144,5 +147,18 @@ namespace SnakeGame
                   MenuActionType::PreviousMenu,
                   0}},
                 2};
+
+        menus[MenuState::SetPlayerName] =
+            {
+                MenuState::SetPlayerName,
+                "Player name",
+                MenuType::InputString,
+                {{"Save",
+                  MenuActionType::SavePlayerName,
+                  0},
+                 {"Back",
+                  MenuActionType::PreviousMenu,
+                  0}},
+                3};
     }
 }
