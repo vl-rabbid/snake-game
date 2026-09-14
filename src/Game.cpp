@@ -451,36 +451,30 @@ namespace SnakeGame
 	{
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
 		{
-			if (game.menuLayers.back().type != MenuType::SubMenu)
+			int previousItem = game.levelMangager.selected;
+			game.levelMangager.selected -= 1;
+			if (game.levelMangager.selected < 0)
 			{
-				int previousItem = game.levelMangager.selected;
-				game.levelMangager.selected -= 1;
-				if (game.levelMangager.selected < 0)
-				{
-					game.levelMangager.selected = game.levelMangager.levels.size() - 1;
-				}
-				SetLevelSelectedItem(game.ui, game.levelMangager);
-				if (previousItem != game.levelMangager.selected)
-				{
+				game.levelMangager.selected = game.levelMangager.levels.size() - 1;
+			}
+			SetLevelSelectedItem(game.ui, game.levelMangager);
+			if (previousItem != game.levelMangager.selected)
+			{
 					PlaySound(game, game.soundFX, game.resources.uiMoveHorizontal);
-				}
 			}
 		}
 		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
 		{
-			if (game.menuLayers.back().type != MenuType::SubMenu)
+			int previousItem = game.levelMangager.selected;
+			game.levelMangager.selected += 1;
+			if (game.levelMangager.selected > game.levelMangager.levels.size() - 1)
 			{
-				int previousItem = game.levelMangager.selected;
-				game.levelMangager.selected += 1;
-				if (game.levelMangager.selected > game.levelMangager.levels.size() - 1)
-				{
-					game.levelMangager.selected = 0;
-				}
-				SetLevelSelectedItem(game.ui, game.levelMangager);
-				if (previousItem != game.levelMangager.selected)
-				{
-					PlaySound(game, game.soundFX, game.resources.uiMoveHorizontal);
-				}
+				game.levelMangager.selected = 0;
+			}
+			SetLevelSelectedItem(game.ui, game.levelMangager);
+			if (previousItem != game.levelMangager.selected)
+			{
+				PlaySound(game, game.soundFX, game.resources.uiMoveHorizontal);
 			}
 		}
 	}
@@ -489,7 +483,7 @@ namespace SnakeGame
 	{
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
 		{
-			if (game.menuLayers.back().type != MenuType::SubMenu)
+			if (game.leaderboard.entries.size() > 0)
 			{
 				int previousItem = game.leaderboard.firstDisplayedItem;
 				game.leaderboard.firstDisplayedItem -= LEADERBOARD_DISPLAYED;
@@ -506,7 +500,7 @@ namespace SnakeGame
 		}
 		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
 		{
-			if (game.menuLayers.back().type != MenuType::SubMenu)
+			if (game.leaderboard.entries.size() > 0)
 			{
 				int previousItem = game.leaderboard.firstDisplayedItem;
 				game.leaderboard.firstDisplayedItem += LEADERBOARD_DISPLAYED;
