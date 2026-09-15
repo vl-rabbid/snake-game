@@ -47,7 +47,7 @@ namespace SnakeGame
 	void HandleGameImput(Game &game, const sf::Event &event);
 	void UpdateGame(Game &game, const float deltaTime);
 	void DrawGame(Game &game, sf::RenderTexture &texture);
-	void DeinitializeGame(Game &game, sf::RenderWindow &window);
+	void DeinitializeGame(Game &game);
 
 	void SetGameState(Game &game, const GameState &gameState);
 

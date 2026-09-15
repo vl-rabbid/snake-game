@@ -111,9 +111,9 @@ namespace SnakeGame
 		}
 	}
 
-	void DeinitializeGame(Game &game, sf::RenderWindow &window)
+	void DeinitializeGame(Game &game)
 	{
-		window.close();
+		game.renderer.window.close();
 	}
 
 	void SetGameState(Game &game, const GameState &gameState)
@@ -460,7 +460,7 @@ namespace SnakeGame
 			SetLevelSelectedItem(game.ui, game.levelMangager);
 			if (previousItem != game.levelMangager.selected)
 			{
-					PlaySound(game, game.soundFX, game.resources.uiMoveHorizontal);
+				PlaySound(game, game.soundFX, game.resources.uiMoveHorizontal);
 			}
 		}
 		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
