@@ -14,8 +14,8 @@ namespace SnakeGame
 
     void Application::Run()
     {
-        renderer.SetWindow(RENDER_WIDTH, RENDER_HEIGHT, GAME_NAME);
-        renderer.SetWindowScale(GetGameWindowScale(game));
+        float windowScale = GetGameWindowScale(game);
+        renderer.SetWindow(RENDER_WIDTH, RENDER_HEIGHT, windowScale, GAME_NAME);
 
         sf::Clock gameClock;
         float lastTime = gameClock.getElapsedTime().asSeconds();
