@@ -8,6 +8,10 @@ namespace SnakeGame
 	const int LEVEL_WIDTH = 20;
 	const int LEVEL_HEIGHT = 13;
 	const int HUD_HEIGHT = 2;
+	const unsigned int RENDER_WIDTH = LEVEL_WIDTH * CELL_SIZE;
+	const unsigned int RENDER_HEIGHT = (LEVEL_HEIGHT + HUD_HEIGHT) * CELL_SIZE;
+	const std::string GAME_NAME = "Snake Game";
+
 	const std::string CONFIG_FILE_NAME = "config.ini";
 	const int LEADERBOARD_SIZE = 15;
 

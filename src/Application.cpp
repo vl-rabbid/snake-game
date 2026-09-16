@@ -14,6 +14,9 @@ namespace SnakeGame
 
     void Application::Run()
     {
+        renderer.SetWindow(RENDER_WIDTH, RENDER_HEIGHT, GAME_NAME);
+        renderer.SetWindowScale(GetGameWindowScale(game));
+
         sf::Clock gameClock;
         float lastTime = gameClock.getElapsedTime().asSeconds();
 
@@ -24,20 +27,16 @@ namespace SnakeGame
             lastTime = currentTime;
 
             sf::Event event;
-            while (game.renderer.window.pollEvent(event))
+            while (renderer.WindowPoolEvent(event))
             {
                 HandleGameImput(game, event);
             }
 
             UpdateGame(game, deltaTime);
 
-            game.renderer.gameTexture.clear();
-            DrawGame(game, game.renderer.gameTexture);
-            game.renderer.gameTexture.display();
-
-            game.renderer.window.clear();
-            game.renderer.window.draw(game.renderer.gameSprite);
-            game.renderer.window.display();
+            renderer.Clear();
+            DrawGame(game, renderer.GetTexture());
+            renderer.Display();
         }
     }
 }

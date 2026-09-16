@@ -21,11 +21,6 @@ namespace SnakeGame
 		game.background.setTexture(game.resources.background);
 		InitConfig(game.config);
 
-		float gameHeight = (LEVEL_HEIGHT + HUD_HEIGHT) * CELL_SIZE;
-		float gameWidth = LEVEL_WIDTH * CELL_SIZE;
-		InitRenderer(game.renderer, gameWidth, gameHeight);
-		SetRendererResolution(game.renderer, game.config.windowResolution);
-
 		InitMenues(game.menus);
 		InitUI(game.ui, game.resources);
 		SetGameState(game, GameState::Menu);
@@ -113,7 +108,6 @@ namespace SnakeGame
 
 	void DeinitializeGame(Game &game)
 	{
-		game.renderer.window.close();
 	}
 
 	void SetGameState(Game &game, const GameState &gameState)
@@ -408,7 +402,7 @@ namespace SnakeGame
 				case MenuActionType::SetScreenScale:
 					game.config.windowResolution = static_cast<WindowResolution>(game.menuLayers.back().items[game.menuLayers.back().selected].actionTarget);
 					SaveConfig(game.config);
-					SetRendererResolution(game.renderer, game.config.windowResolution);
+					// SetRendererResolution(game.renderer, game.config.windowResolution);
 					SetSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.windowResolution));
 					LoadMenuUIItems(game.ui, game.menuLayers.back());
 					break;
@@ -739,5 +733,10 @@ namespace SnakeGame
 			   (c >= U'0' && c <= U'9') ||
 			   c == U'_' ||
 			   c == U'-';
+	}
+
+	float GetGameWindowScale(Game &game)
+	{
+		return static_cast<float>(game.config.windowResolution);
 	}
 }

@@ -1,16 +1,25 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "Config.h"
 
 namespace SnakeGame
 {
-    struct Renderer
+    class Renderer
     {
-        sf::RenderWindow window;
-        sf::RenderTexture gameTexture;
-        sf::Sprite gameSprite;
-    };
+    public:
+        Renderer();
+        ~Renderer();
 
-    void InitRenderer(Renderer &renderer, float gameWidth, float gameHeight);
-    void SetRendererResolution(Renderer &renderer, WindowResolution windowResolution);
+        sf::RenderTexture &GetTexture();
+        void SetWindow(unsigned int renderWidth, unsigned int renderHeight, std::string windowTitle);
+        void SetWindowScale(float scale);
+        bool WindowPoolEvent(sf::Event &event);
+        void Clear();
+        void Display();
+
+    private:
+        std::string title;
+        sf::RenderWindow window;
+        sf::RenderTexture texture;
+        sf::Sprite sprite;
+    };
 }

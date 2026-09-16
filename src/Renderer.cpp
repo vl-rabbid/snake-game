@@ -3,24 +3,53 @@
 
 namespace SnakeGame
 {
-    void InitRenderer(Renderer &renderer, float gameWidth, float gameHeight)
+    Renderer::Renderer()
     {
-
-        renderer.window.create(sf::VideoMode(gameWidth, gameHeight), "Snake game!");
-        renderer.window.setFramerateLimit(60);
-
-        renderer.gameTexture.create(gameWidth, gameHeight);
-        renderer.gameTexture.setSmooth(false);
-
-        renderer.gameSprite.setTexture(renderer.gameTexture.getTexture());
-        renderer.gameSprite.setTextureRect(sf::IntRect(0, 0, gameWidth, gameHeight));
     }
 
-    void SetRendererResolution(Renderer &renderer, WindowResolution windowResolution)
+    Renderer::~Renderer()
     {
-        float screenScale = static_cast<float>(windowResolution);
-        sf::Vector2u gameSize = renderer.gameTexture.getSize();
-        renderer.window.create(sf::VideoMode(gameSize.x * screenScale, gameSize.y * screenScale), "Snake game!");
-        renderer.gameSprite.setScale(screenScale, screenScale);
+        window.close();
+    }
+
+    sf::RenderTexture &Renderer::GetTexture()
+    {
+        return texture;
+    }
+
+    void Renderer::SetWindow(unsigned int renderWidth, unsigned int renderHeight, std::string windowTitle)
+    {
+        title = windowTitle;
+        window.create(sf::VideoMode(renderWidth, renderHeight), windowTitle);
+        window.setFramerateLimit(60);
+        texture.create(renderWidth, renderHeight);
+        texture.setSmooth(false);
+        sprite.setTexture(texture.getTexture());
+        sprite.setTextureRect(sf::IntRect(0, 0, renderWidth, renderHeight));
+    }
+
+    void Renderer::SetWindowScale(float scale)
+    {
+        sf::Vector2u renderSize = texture.getSize();
+        window.create(sf::VideoMode(renderSize.x * scale, renderSize.y * scale), title);
+        sprite.setScale(scale, scale);
+    }
+
+    bool Renderer::WindowPoolEvent(sf::Event &event)
+    {
+        return window.pollEvent(event);
+    }
+
+    void Renderer::Clear()
+    {
+        texture.clear();
+    }
+
+    void Renderer::Display()
+    {
+        texture.display();
+        window.clear();
+        window.draw(sprite);
+        window.display();
     }
 }

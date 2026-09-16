@@ -1,5 +1,6 @@
 #pragma once
 #include "Game.h"
+#include "Renderer.h"
 
 namespace SnakeGame
 {
@@ -13,5 +14,6 @@ namespace SnakeGame
 
     private:
         Game game;
+        Renderer renderer;
     };
 }

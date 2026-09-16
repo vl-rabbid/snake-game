@@ -8,7 +8,6 @@
 #include "UI.h"
 #include "Menu.h"
 #include "Resources.h"
-#include "Renderer.h"
 #include "Config.h"
 #include "Leaderboard.h"
 #include "LevelManager.h"
@@ -18,7 +17,6 @@ namespace SnakeGame
 	struct Game
 	{
 		Config config;
-		Renderer renderer;
 		Resources resources;
 
 		sf::Sprite background;
@@ -77,4 +75,5 @@ namespace SnakeGame
 	void UpdateDelay(Game &game, const float deltaTime);
 
 	bool IsAllowedInputChar(char32_t c);
+	float GetGameWindowScale(Game &game);
 }
