@@ -12,7 +12,7 @@ namespace SnakeGame
         sf::RenderTexture &GetTexture();
         void SetWindow(unsigned int renderWidth, unsigned int renderHeight, std::string windowTitle);
         void SetWindowScale(float scale);
-        bool WindowPoolEvent(sf::Event &event);
+        bool WindowPollEvent(sf::Event &event);
         void Clear();
         void Display();
 

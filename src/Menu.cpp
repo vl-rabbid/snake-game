@@ -16,8 +16,8 @@ namespace SnakeGame
                   MenuActionType::SwitchMenuState,
                   static_cast<int>(MenuState::Settings)},
                  {"Exit Game",
-                  MenuActionType::SwitchGameState,
-                  static_cast<int>(GameState::Exit)}}};
+                  MenuActionType::ExitApplication,
+                  0}}};
 
         menus[MenuState::Pause] =
             {

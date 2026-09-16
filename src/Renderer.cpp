@@ -1,5 +1,4 @@
 #include "Renderer.h"
-#include <cmath>
 
 namespace SnakeGame
 {
@@ -35,7 +34,7 @@ namespace SnakeGame
         sprite.setScale(scale, scale);
     }
 
-    bool Renderer::WindowPoolEvent(sf::Event &event)
+    bool Renderer::WindowPollEvent(sf::Event &event)
     {
         return window.pollEvent(event);
     }

@@ -6,8 +6,7 @@ namespace SnakeGame
     {
         Menu = 0,
         GameLoop,
-        Delay,
-        Exit
+        Delay
     };
 
     enum class MenuState

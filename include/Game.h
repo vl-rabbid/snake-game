@@ -11,11 +11,13 @@
 #include "Config.h"
 #include "Leaderboard.h"
 #include "LevelManager.h"
+#include "ApplicationRequest.h"
 
 namespace SnakeGame
 {
 	struct Game
 	{
+		ApplicationRequest applicationRequest;
 		Config config;
 		Resources resources;
 
@@ -40,7 +42,7 @@ namespace SnakeGame
 		std::string newPlayerName;
 	};
 
-	bool IsGameRunning(Game &game);
+	ApplicationRequest GetApplicationRequest(Game &game);
 	void InitGame(Game &game);
 	void HandleGameImput(Game &game, const sf::Event &event);
 	void UpdateGame(Game &game, const float deltaTime);

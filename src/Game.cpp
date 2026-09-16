@@ -3,13 +3,11 @@
 
 namespace SnakeGame
 {
-	bool IsGameRunning(Game &game)
+	ApplicationRequest GetApplicationRequest(Game &game)
 	{
-		if (game.gameState == GameState::Exit)
-		{
-			return false;
-		}
-		return true;
+		ApplicationRequest request = game.applicationRequest;
+		game.applicationRequest = {ApplicationRequestType::None};
+		return request;
 	}
 
 	void InitGame(Game &game)
@@ -31,7 +29,7 @@ namespace SnakeGame
 	{
 		if (event.type == sf::Event::Closed)
 		{
-			SetGameState(game, GameState::Exit);
+			game.applicationRequest = {ApplicationRequestType::ExitApplication};
 			return;
 		}
 		switch (game.gameState)
@@ -402,7 +400,7 @@ namespace SnakeGame
 				case MenuActionType::SetScreenScale:
 					game.config.windowResolution = static_cast<WindowResolution>(game.menuLayers.back().items[game.menuLayers.back().selected].actionTarget);
 					SaveConfig(game.config);
-					// SetRendererResolution(game.renderer, game.config.windowResolution);
+					game.applicationRequest = {ApplicationRequestType::SetWindowScale};
 					SetSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.windowResolution));
 					LoadMenuUIItems(game.ui, game.menuLayers.back());
 					break;
@@ -432,6 +430,9 @@ namespace SnakeGame
 						game.menuLayers.pop_back();
 						LoadMenuUI(game.ui, game.menuLayers.back());
 					}
+					break;
+				case MenuActionType::ExitApplication:
+					game.applicationRequest = {ApplicationRequestType::ExitApplication};
 					break;
 				default:
 					break;

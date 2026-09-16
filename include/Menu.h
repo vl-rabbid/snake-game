@@ -25,7 +25,8 @@ namespace SnakeGame
         SetDifficulty,
         ToggleSound,
         ToggleMusic,
-        SavePlayerName
+        SavePlayerName,
+        ExitApplication
     };
 
     struct MenuItem
