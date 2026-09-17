@@ -53,6 +53,18 @@ namespace SnakeGame
         resources.music.setVolume(40.f);
     }
 
+    void SetSpriteAtlas(const Resources &resources, sf::Sprite &sprite, TextureID id)
+    {
+        sprite.setTexture(resources.atlas);
+        UpdateSpriteAtlas(sprite, id);
+    }
+
+    void UpdateSpriteAtlas(sf::Sprite &sprite, TextureID id)
+    {
+        sprite.setTextureRect(GetTextureRect(id));
+        sprite.setOrigin(GetTextureOrigin(id));
+    }
+
     sf::IntRect GetTextureRect(TextureID id)
     {
         switch (id)
@@ -224,6 +236,16 @@ namespace SnakeGame
             break;
         }
         return sf::IntRect(0, 0, 12, 12);
+    }
+
+    sf::Vector2f GetTextureOrigin(TextureID id)
+    {
+        switch (id)
+        {
+        default:
+            return {0.f, 0.f};
+            break;
+        }
     }
 
     sf::IntRect GetRandomWallRect()

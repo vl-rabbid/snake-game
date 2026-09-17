@@ -2,10 +2,6 @@
 
 namespace SnakeGame
 {
-    Renderer::Renderer()
-    {
-    }
-
     Renderer::~Renderer()
     {
         window.close();
@@ -43,12 +39,12 @@ namespace SnakeGame
     void Renderer::Clear()
     {
         texture.clear();
+        window.clear();
     }
 
     void Renderer::Display()
     {
         texture.display();
-        window.clear();
         window.draw(sprite);
         window.display();
     }

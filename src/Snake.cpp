@@ -2,288 +2,272 @@
 
 namespace SnakeGame
 {
-    void InitSnake(Snake &snake, Resources &resources, Position2D &spawn, int snakeSize, int maxLength)
+    void Snake::Reset(const Resources &resources, const Position2D &spawn, int length, int maxLength)
     {
-        snake.segments.clear();
-        snake.segments.resize(snakeSize);
-        snake.segments.reserve(maxLength);
-        for (int i = 0; i < snake.segments.size(); i++)
+        segments.clear();
+        segments.reserve(maxLength);
+        for (int i = 0; i < length; i++)
         {
-            snake.segments[i].position = {spawn.x, spawn.y + i};
-            snake.segments[i].direction = Direction::Up;
-            snake.segments[i].sprite.setTexture(resources.atlas);
-            snake.segments[i].sprite.setTextureRect(GetTextureRect(TextureID::SnakeBodyUp));
+            SnakeSegment segment;
+            segment.position = {spawn.x, spawn.y + i};
+            segment.direction = Direction::Up;
+            SetSpriteAtlas(resources, segment.sprite, TextureID::SnakeBodyUp);
+            segments.push_back(segment);
         }
-        UpdateSnakeTexture(snake, false, false);
+        UpdateSprites(false, false);
     }
 
-    void AddSnakeSegment(Snake &snake, SnakeSegment &previous)
+    void Snake::UpdatePosition()
     {
-        snake.segments.push_back(previous);
+        lastTailPosition = segments.back().position;
+        lastTailDirection = segments.back().direction;
+
+        UpdateHeadDirection();
+        MoveSegments();
+        WrapSegments();
     }
 
-    void DrawSnake(Snake &snake, sf::RenderTexture &texture)
+    void Snake::UpdateSprites(bool isDead, bool isMouthOpen)
     {
-        for (int i = snake.segments.size() - 1; i >= 0; i--)
+        for (int i = segments.size() - 1; i >= 0; i--)
         {
-            texture.draw(snake.segments[i].sprite);
-        }
-    }
-
-    void UpdateSnake(Snake &snake)
-    {
-        UpdateHeadDirection(snake);
-        for (int i = snake.segments.size() - 1; i >= 0; i--)
-        {
-            UpdateSegmentPosition(snake.segments[i]);
-            if (i != 0)
-            {
-                snake.segments[i].direction = snake.segments[i - 1].direction;
-            }
-        }
-
-        for (int i = 0; i < snake.segments.size(); i++)
-        {
-            // Loop by x
-            if (snake.segments[i].position.x == LEVEL_WIDTH)
-            {
-                snake.segments[i].position.x -= LEVEL_WIDTH;
-            }
-            else if (snake.segments[i].position.x < 0)
-            {
-                snake.segments[i].position.x += LEVEL_WIDTH;
-            }
-            // Loop by y
-            if (snake.segments[i].position.y == LEVEL_HEIGHT)
-            {
-                snake.segments[i].position.y -= LEVEL_HEIGHT;
-            }
-            else if (snake.segments[i].position.y < 0)
-            {
-                snake.segments[i].position.y += LEVEL_HEIGHT;
-            }
-        }
-    }
-
-    void UpdateSegmentPosition(SnakeSegment &previous)
-    {
-        switch (previous.direction)
-        {
-        case Direction::Right:
-        {
-            previous.position.x++;
-            break;
-        }
-        case Direction::Up:
-        {
-            previous.position.y--;
-            break;
-        }
-        case Direction::Left:
-        {
-            previous.position.x--;
-            break;
-        }
-        case Direction::Down:
-        {
-            previous.position.y++;
-            break;
-        }
-        }
-    }
-
-    void UpdateSnakeTexture(Snake &snake, bool isDead, bool isMouthOpen)
-    {
-        for (int i = snake.segments.size() - 1; i >= 0; i--)
-        {
-            SetSpritePosition(snake.segments[i].sprite, snake.segments[i].position);
+            SetSpritePosition(segments[i].sprite, segments[i].position);
             if (i == 0)
-            {
-                UpdateHeadTexture(snake.segments[i], isDead, isMouthOpen);
-            }
-            else if (i == snake.segments.size() - 1)
-            {
-                UpdateTailTexture(snake.segments[i]);
-            }
+                SetHeadTexture(isDead, isMouthOpen);
+            else if (i == segments.size() - 1)
+                SetTailTexture();
             else if (i - 1 == 0)
-            {
-                UpdateBodyTexture(snake.segments[i], snake.segments[i + 1]);
-            }
+                SetBodyTexture(segments[i], segments[i + 1]);
             else
-            {
-                snake.segments[i].sprite.setTextureRect(snake.segments[i - 1].sprite.getTextureRect());
-            }
+                segments[i].sprite.setTextureRect(segments[i - 1].sprite.getTextureRect());
         }
     }
 
-    void UpdateHeadTexture(SnakeSegment &segment, bool isDead, bool isMouthOpen)
+    void Snake::Draw(sf::RenderTexture &texture) const
     {
-        switch (segment.direction)
+        for (int i = segments.size() - 1; i >= 0; i--)
         {
-        case Direction::Right:
-        {
-            if (isDead)
-                segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeDeadRight));
-            else if (isMouthOpen)
-                segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeMouthRight));
-            else
-                segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeHeadRight));
-            break;
-        }
-        case Direction::Up:
-        {
-            if (isDead)
-                segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeDeadUp));
-            else if (isMouthOpen)
-                segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeMouthUp));
-            else
-                segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeHeadUp));
-            break;
-        }
-        case Direction::Left:
-        {
-            if (isDead)
-                segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeDeadLeft));
-            else if (isMouthOpen)
-                segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeMouthLeft));
-            else
-                segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeHeadLeft));
-            break;
-        }
-        case Direction::Down:
-        {
-            if (isDead)
-                segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeDeadDown));
-            else if (isMouthOpen)
-                segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeMouthDown));
-            else
-                segment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeHeadDown));
-            break;
-        }
+            texture.draw(segments[i].sprite);
         }
     }
 
-    void UpdateBodyTexture(SnakeSegment &currentSegment, SnakeSegment &previousSegment)
-    {
-        if (previousSegment.direction == Direction::Up && currentSegment.direction == Direction::Right || previousSegment.direction == Direction::Left && currentSegment.direction == Direction::Down)
-        {
-            currentSegment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeCornerUpRight));
-        }
-        else if (previousSegment.direction == Direction::Up && currentSegment.direction == Direction::Left || previousSegment.direction == Direction::Right && currentSegment.direction == Direction::Down)
-        {
-            currentSegment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeCornerUpLeft));
-        }
-        else if (previousSegment.direction == Direction::Down && currentSegment.direction == Direction::Right || previousSegment.direction == Direction::Left && currentSegment.direction == Direction::Up)
-        {
-            currentSegment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeCornerDownRight));
-        }
-        else if (previousSegment.direction == Direction::Down && currentSegment.direction == Direction::Left || previousSegment.direction == Direction::Right && currentSegment.direction == Direction::Up)
-        {
-            currentSegment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeCornerDownLeft));
-        }
-        else if (previousSegment.direction == Direction::Right)
-        {
-            currentSegment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeBodyRight));
-        }
-        else if (previousSegment.direction == Direction::Up)
-        {
-            currentSegment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeBodyUp));
-        }
-        else if (previousSegment.direction == Direction::Left)
-        {
-            currentSegment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeBodyLeft));
-        }
-        else if (previousSegment.direction == Direction::Down)
-        {
-            currentSegment.sprite.setTextureRect(GetTextureRect(TextureID::SnakeBodyDown));
-        }
-    }
-
-    void UpdateTailTexture(SnakeSegment &previous)
-    {
-        switch (previous.direction)
-        {
-        case Direction::Right:
-        {
-            previous.sprite.setTextureRect(GetTextureRect(TextureID::SnakeTailRight));
-            break;
-        }
-        case Direction::Up:
-        {
-            previous.sprite.setTextureRect(GetTextureRect(TextureID::SnakeTailUp));
-            break;
-        }
-        case Direction::Left:
-        {
-            previous.sprite.setTextureRect(GetTextureRect(TextureID::SnakeTailLeft));
-            break;
-        }
-        case Direction::Down:
-        {
-            previous.sprite.setTextureRect(GetTextureRect(TextureID::SnakeTailDown));
-            break;
-        }
-        }
-    }
-
-    void UpdateHeadDirection(Snake &snake)
-    {
-        while (snake.inputBuffer.size() > 0)
-        {
-            if (snake.inputBuffer.front() == Direction::Right || snake.inputBuffer.front() == Direction::Left)
-            {
-                if (snake.segments[0].direction == Direction::Up || snake.segments[0].direction == Direction::Down)
-                {
-                    snake.segments[0].direction = snake.inputBuffer.front();
-                    snake.inputBuffer.pop_front();
-                    return;
-                }
-            }
-            else if (snake.inputBuffer.front() == Direction::Up || snake.inputBuffer.front() == Direction::Down)
-            {
-                if (snake.segments[0].direction == Direction::Right || snake.segments[0].direction == Direction::Left)
-                {
-                    snake.segments[0].direction = snake.inputBuffer.front();
-                    snake.inputBuffer.pop_front();
-                    return;
-                }
-            }
-            snake.inputBuffer.pop_front();
-        }
-    }
-
-    void HandleSnakeImput(Snake &snake, const sf::Event &event)
+    void Snake::HandleInput(const sf::Event &event)
     {
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
-        {
-            AddImputToBuffer(snake, Direction::Right);
-        }
+            AddInputToBuffer(Direction::Right);
         else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
-        {
-            AddImputToBuffer(snake, Direction::Up);
-        }
+            AddInputToBuffer(Direction::Up);
         else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
-        {
-            AddImputToBuffer(snake, Direction::Left);
-        }
+            AddInputToBuffer(Direction::Left);
         else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
+            AddInputToBuffer(Direction::Down);
+    }
+
+    void Snake::Grow(const Resources &resources)
+    {
+        SnakeSegment segment;
+        segment.position = lastTailPosition;
+        segment.direction = lastTailDirection;
+        SetSpriteAtlas(resources, segment.sprite, TextureID::SnakeBodyUp);
+        segments.push_back(segment);
+    }
+
+    Position2D Snake::GetHeadPosition() const
+    {
+        return segments.front().position;
+    }
+
+    Position2D Snake::GetTailPosition() const
+    {
+        return segments.back().position;
+    }
+
+    unsigned int Snake::GetLength() const
+    {
+        return segments.size();
+    }
+
+    void Snake::UpdateHeadDirection()
+    {
+        while (inputBuffer.size() > 0)
         {
-            AddImputToBuffer(snake, Direction::Down);
+            if (inputBuffer.front() == Direction::Right || inputBuffer.front() == Direction::Left)
+            {
+                if (segments[0].direction == Direction::Up || segments[0].direction == Direction::Down)
+                {
+                    segments[0].direction = inputBuffer.front();
+                    inputBuffer.pop_front();
+                    return;
+                }
+            }
+            else if (inputBuffer.front() == Direction::Up || inputBuffer.front() == Direction::Down)
+            {
+                if (segments[0].direction == Direction::Right || segments[0].direction == Direction::Left)
+                {
+                    segments[0].direction = inputBuffer.front();
+                    inputBuffer.pop_front();
+                    return;
+                }
+            }
+            inputBuffer.pop_front();
         }
     }
 
-    void AddImputToBuffer(Snake &snake, const Direction &direction)
+    void Snake::MoveSegments()
     {
-        if (snake.inputBuffer.size() < INPUT_BUFFER_SIZE)
+        for (int i = segments.size() - 1; i >= 0; i--)
         {
-            if (snake.inputBuffer.size() == 0)
+            switch (segments[i].direction)
             {
-                snake.inputBuffer.push_back(direction);
-            }
-            else if (snake.inputBuffer.back() != direction)
+            case Direction::Right:
             {
-                snake.inputBuffer.push_back(direction);
+                segments[i].position.x++;
+                break;
             }
+            case Direction::Up:
+            {
+                segments[i].position.y--;
+                break;
+            }
+            case Direction::Left:
+            {
+                segments[i].position.x--;
+                break;
+            }
+            case Direction::Down:
+            {
+                segments[i].position.y++;
+                break;
+            }
+            }
+
+            if (i != 0)
+            {
+                segments[i].direction = segments[i - 1].direction;
+            }
+        }
+    }
+
+    void Snake::WrapSegments()
+    {
+        for (auto &segment : segments)
+        {
+            if (segment.position.x == LEVEL_WIDTH)
+                segment.position.x -= LEVEL_WIDTH;
+            else if (segment.position.x < 0)
+                segment.position.x += LEVEL_WIDTH;
+
+            if (segment.position.y == LEVEL_HEIGHT)
+                segment.position.y -= LEVEL_HEIGHT;
+            else if (segment.position.y < 0)
+                segment.position.y += LEVEL_HEIGHT;
+        }
+    }
+
+    void Snake::SetHeadTexture(bool isDead, bool isMouthOpen)
+    {
+        SnakeSegment &head = segments.front();
+        switch (head.direction)
+        {
+        case Direction::Right:
+        {
+            if (isDead)
+                UpdateSpriteAtlas(head.sprite, TextureID::SnakeDeadRight);
+            else if (isMouthOpen)
+                UpdateSpriteAtlas(head.sprite, TextureID::SnakeMouthRight);
+            else
+                UpdateSpriteAtlas(head.sprite, TextureID::SnakeHeadRight);
+            break;
+        }
+        case Direction::Up:
+        {
+            if (isDead)
+                UpdateSpriteAtlas(head.sprite, TextureID::SnakeDeadUp);
+            else if (isMouthOpen)
+                UpdateSpriteAtlas(head.sprite, TextureID::SnakeMouthUp);
+            else
+                UpdateSpriteAtlas(head.sprite, TextureID::SnakeHeadUp);
+            break;
+        }
+        case Direction::Left:
+        {
+            if (isDead)
+                UpdateSpriteAtlas(head.sprite, TextureID::SnakeDeadLeft);
+            else if (isMouthOpen)
+                UpdateSpriteAtlas(head.sprite, TextureID::SnakeMouthLeft);
+            else
+                UpdateSpriteAtlas(head.sprite, TextureID::SnakeHeadLeft);
+            break;
+        }
+        case Direction::Down:
+        {
+            if (isDead)
+                UpdateSpriteAtlas(head.sprite, TextureID::SnakeDeadDown);
+            else if (isMouthOpen)
+                UpdateSpriteAtlas(head.sprite, TextureID::SnakeMouthDown);
+            else
+                UpdateSpriteAtlas(head.sprite, TextureID::SnakeHeadDown);
+            break;
+        }
+        }
+    }
+
+    void Snake::SetBodyTexture(SnakeSegment &segment, const SnakeSegment &nextSegment)
+    {
+        if (nextSegment.direction == Direction::Up && segment.direction == Direction::Right || nextSegment.direction == Direction::Left && segment.direction == Direction::Down)
+            UpdateSpriteAtlas(segment.sprite, TextureID::SnakeCornerUpRight);
+        else if (nextSegment.direction == Direction::Up && segment.direction == Direction::Left || nextSegment.direction == Direction::Right && segment.direction == Direction::Down)
+            UpdateSpriteAtlas(segment.sprite, TextureID::SnakeCornerUpLeft);
+        else if (nextSegment.direction == Direction::Down && segment.direction == Direction::Right || nextSegment.direction == Direction::Left && segment.direction == Direction::Up)
+            UpdateSpriteAtlas(segment.sprite, TextureID::SnakeCornerDownRight);
+        else if (nextSegment.direction == Direction::Down && segment.direction == Direction::Left || nextSegment.direction == Direction::Right && segment.direction == Direction::Up)
+            UpdateSpriteAtlas(segment.sprite, TextureID::SnakeCornerDownLeft);
+        else if (nextSegment.direction == Direction::Right)
+            UpdateSpriteAtlas(segment.sprite, TextureID::SnakeBodyRight);
+        else if (nextSegment.direction == Direction::Up)
+            UpdateSpriteAtlas(segment.sprite, TextureID::SnakeBodyUp);
+        else if (nextSegment.direction == Direction::Left)
+            UpdateSpriteAtlas(segment.sprite, TextureID::SnakeBodyLeft);
+        else if (nextSegment.direction == Direction::Down)
+            UpdateSpriteAtlas(segment.sprite, TextureID::SnakeBodyDown);
+    }
+
+    void Snake::SetTailTexture()
+    {
+        SnakeSegment &tail = segments.back();
+        switch (tail.direction)
+        {
+        case Direction::Right:
+        {
+            UpdateSpriteAtlas(tail.sprite, TextureID::SnakeTailRight);
+            break;
+        }
+        case Direction::Up:
+        {
+            UpdateSpriteAtlas(tail.sprite, TextureID::SnakeTailUp);
+            break;
+        }
+        case Direction::Left:
+        {
+            UpdateSpriteAtlas(tail.sprite, TextureID::SnakeTailLeft);
+            break;
+        }
+        case Direction::Down:
+        {
+            UpdateSpriteAtlas(tail.sprite, TextureID::SnakeTailDown);
+            break;
+        }
+        }
+    }
+
+    void Snake::AddInputToBuffer(const Direction &direction)
+    {
+        if (inputBuffer.size() < INPUT_BUFFER_SIZE)
+        {
+            if (inputBuffer.size() == 0)
+                inputBuffer.push_back(direction);
+            else if (inputBuffer.back() != direction)
+                inputBuffer.push_back(direction);
         }
     }
 }

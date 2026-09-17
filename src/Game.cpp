@@ -43,7 +43,7 @@ namespace SnakeGame
 				SetGameState(game, GameState::Menu);
 				SetMenuState(game, MenuState::Pause);
 			}
-			HandleSnakeImput(game.snake, event);
+			game.snake.HandleInput(event);
 			break;
 		default:
 			break;
@@ -89,12 +89,12 @@ namespace SnakeGame
 			break;
 		case GameState::GameLoop:
 			DrawLevel(game.level, texture);
-			DrawSnake(game.snake, texture);
+			game.snake.Draw(texture);
 			DrawHud(game.ui, texture);
 			break;
 		case GameState::Delay:
 			DrawLevel(game.level, texture);
-			DrawSnake(game.snake, texture);
+			game.snake.Draw(texture);
 			DrawHud(game.ui, texture);
 			DrawUITint(game.ui, texture);
 			DrawDelayUI(game.ui, texture);
@@ -177,7 +177,7 @@ namespace SnakeGame
 		game.level.config = game.levelMangager.levels[game.levelMangager.selected];
 		InitLevel(game.level, game.resources);
 		LoadLeaderboard(game.leaderboard, game.level.config.id);
-		InitSnake(game.snake, game.resources, game.level.config.snakeSpawn, game.level.config.snakeSize, game.level.countEmptyCells);
+		game.snake.Reset(game.resources, game.level.config.snakeSpawn, game.level.config.snakeSize, game.level.countEmptyCells);
 		SpawnApple(game.level);
 		game.score = 0;
 		UpdateHud(game.ui, game.level.config.name, game.score);
@@ -193,17 +193,17 @@ namespace SnakeGame
 		{
 			bool isDead = false;
 
-			SnakeSegment snakeTail = game.snake.segments.back();
-			UpdateSnake(game.snake);
-			SnakeSegment snakeHead = game.snake.segments.front();
+			Position2D oldTailPosition = game.snake.GetTailPosition();
+			game.snake.UpdatePosition();
+			Position2D headPosition = game.snake.GetHeadPosition();
 
-			if (GetCellType(game.level.config, snakeHead.position) == CellType::Apple)
+			if (GetCellType(game.level.config, headPosition) == CellType::Apple)
 			{
-				AddSnakeSegment(game.snake, snakeTail);
-				SetCellType(game.level.config, snakeHead.position, CellType::Snake);
+				game.snake.Grow(game.resources);
+				SetCellType(game.level.config, headPosition, CellType::Snake);
 				game.score += GetScoreMultiplier(game.config.difficulty);
 				UpdateHud(game.ui, game.level.config.name, game.score);
-				if (game.snake.segments.size() < game.level.countEmptyCells)
+				if (game.snake.GetLength() < game.level.countEmptyCells)
 				{
 					SpawnApple(game.level);
 				}
@@ -211,8 +211,8 @@ namespace SnakeGame
 			}
 			else
 			{
-				SetCellType(game.level.config, snakeTail.position, CellType::Empty);
-				if (GetCellType(game.level.config, snakeHead.position) == CellType::Snake || GetCellType(game.level.config, snakeHead.position) == CellType::Wall)
+				SetCellType(game.level.config, oldTailPosition, CellType::Empty);
+				if (GetCellType(game.level.config, headPosition) == CellType::Snake || GetCellType(game.level.config, headPosition) == CellType::Wall)
 				{
 					PlaySound(game, game.soundFX, game.resources.wall);
 					PlaySound(game, game.soundJingle, game.resources.gameOver);
@@ -227,11 +227,11 @@ namespace SnakeGame
 				}
 				else
 				{
-					SetCellType(game.level.config, snakeHead.position, CellType::Snake);
+					SetCellType(game.level.config, headPosition, CellType::Snake);
 				}
 			}
-			bool isMouthOpen = CellsBetween(snakeHead.position, game.level.apple.position) <= 2;
-			UpdateSnakeTexture(game.snake, isDead, isMouthOpen);
+			bool isMouthOpen = CellsBetween(headPosition, game.level.apple.position) <= 2;
+			game.snake.UpdateSprites(isDead, isMouthOpen);
 			timer -= interval;
 		}
 	}
@@ -252,7 +252,7 @@ namespace SnakeGame
 			break;
 		case MenuState::GameOver:
 			DrawLevel(game.level, texture);
-			DrawSnake(game.snake, texture);
+			game.snake.Draw(texture);
 			DrawHud(game.ui, texture);
 			DrawUITint(game.ui, texture);
 			DrawLeaderboardUI(game.ui, game.leaderboard, texture);
@@ -260,7 +260,7 @@ namespace SnakeGame
 			break;
 		case MenuState::Pause:
 			DrawLevel(game.level, texture);
-			DrawSnake(game.snake, texture);
+			game.snake.Draw(texture);
 			DrawHud(game.ui, texture);
 			DrawUITint(game.ui, texture);
 			DrawMenuUI(game.ui, menu, texture);

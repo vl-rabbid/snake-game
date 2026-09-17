@@ -21,24 +21,33 @@ namespace SnakeGame
         sf::Sprite sprite;
     };
 
-    struct Snake
+    class Snake
     {
+    public:
+        Snake() = default;
+
+        void Reset(const Resources &resources, const Position2D &spawn, int length, int maxLength);
+        void UpdatePosition();
+        void UpdateSprites(bool isDead, bool isMouthOpen);
+        void Draw(sf::RenderTexture &texture) const;
+        void HandleInput(const sf::Event &event);
+        void Grow(const Resources &resources);
+        Position2D GetHeadPosition() const;
+        Position2D GetTailPosition() const;
+        unsigned int GetLength() const;
+
+    private:
+        void UpdateHeadDirection();
+        void MoveSegments();
+        void WrapSegments();
+        void SetHeadTexture(bool isDead, bool isMouthOpen);
+        void SetBodyTexture(SnakeSegment &segment, const SnakeSegment &nextSegment);
+        void SetTailTexture();
+        void AddInputToBuffer(const Direction &direction);
+
         std::vector<SnakeSegment> segments;
         std::deque<Direction> inputBuffer;
+        Position2D lastTailPosition;
+        Direction lastTailDirection;
     };
-
-    struct Game;
-
-    void InitSnake(Snake &snake, Resources &resources, Position2D &spawn, int snakeSize, int maxLength);
-    void AddSnakeSegment(Snake &snake, SnakeSegment &segment);
-    void DrawSnake(Snake &snake, sf::RenderTexture &texture);
-    void UpdateSnake(Snake &snake);
-    void UpdateSegmentPosition(SnakeSegment &segment);
-    void UpdateSnakeTexture(Snake &snake, bool isDead, bool isMouthOpen);
-    void UpdateHeadTexture(SnakeSegment &segment, bool isDead, bool isMouthOpen);
-    void UpdateBodyTexture(SnakeSegment &segment, SnakeSegment &head);
-    void UpdateTailTexture(SnakeSegment &segment);
-    void UpdateHeadDirection(Snake &snake);
-    void HandleSnakeImput(Snake &snake, const sf::Event &event);
-    void AddImputToBuffer(Snake &snake, const Direction &direction);
 }

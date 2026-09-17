@@ -6,7 +6,7 @@ namespace SnakeGame
     class Renderer
     {
     public:
-        Renderer();
+        Renderer() = default;
         ~Renderer();
 
         sf::RenderTexture &GetTexture();

@@ -39,7 +39,7 @@ namespace SnakeGame
         text.setPosition(position);
     }
 
-    int CellsBetween(Position2D &firstPosition, Position2D &secondPosition)
+    int CellsBetween(const Position2D &firstPosition, const Position2D &secondPosition)
     {
         int dx = std::abs(secondPosition.x - firstPosition.x);
         int dy = std::abs(secondPosition.y - firstPosition.y);
