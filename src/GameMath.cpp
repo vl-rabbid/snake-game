@@ -13,6 +13,13 @@ namespace SnakeGame
         sprite.setPosition(position.x * CELL_SIZE, (position.y + HUD_HEIGHT) * CELL_SIZE);
     }
 
+    void CenterTextOnSprite(sf::Text &text, const sf::Sprite &sprite)
+    {
+        text.setOrigin({std::round(text.getLocalBounds().width / 2), 0.f});
+        sf::FloatRect spriteBounds = sprite.getGlobalBounds();
+        text.setPosition({spriteBounds.left + std::round(spriteBounds.width / 2), 0.f});
+    }
+
     int GetRandomInt(int minValue, int maxValue)
     {
         return minValue + rand() % (maxValue - minValue + 1);

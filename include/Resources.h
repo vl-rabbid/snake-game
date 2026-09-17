@@ -121,6 +121,7 @@ namespace SnakeGame
     void InitResources(Resources &resources);
     void SetSpriteAtlas(const Resources &resources, sf::Sprite &sprite, TextureID id);
     void UpdateSpriteAtlas(sf::Sprite &sprite, TextureID id);
+    void SetDefaultText(const Resources &resources, sf::Text &text, const std::string &string);
 
     sf::IntRect GetTextureRect(TextureID id);
     sf::Vector2f GetTextureOrigin(TextureID id);

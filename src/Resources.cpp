@@ -65,6 +65,14 @@ namespace SnakeGame
         sprite.setOrigin(GetTextureOrigin(id));
     }
 
+    void SetDefaultText(const Resources &resources, sf::Text &text, const std::string &string)
+    {
+        text.setString(string);
+        text.setFont(resources.font);
+        text.setCharacterSize(16);
+        text.setFillColor(COLOR_TEXT);
+    }
+
     sf::IntRect GetTextureRect(TextureID id)
     {
         switch (id)

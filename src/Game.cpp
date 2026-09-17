@@ -23,6 +23,8 @@ namespace SnakeGame
 		InitUI(game.ui, game.resources);
 		SetGameState(game, GameState::Menu);
 		SetMenuState(game, MenuState::Main);
+
+		game.hud.Init(game.resources);
 	}
 
 	void HandleGameImput(Game &game, const sf::Event &event)
@@ -90,12 +92,12 @@ namespace SnakeGame
 		case GameState::GameLoop:
 			DrawLevel(game.level, texture);
 			game.snake.Draw(texture);
-			DrawHud(game.ui, texture);
+			game.hud.Draw(texture);
 			break;
 		case GameState::Delay:
 			DrawLevel(game.level, texture);
 			game.snake.Draw(texture);
-			DrawHud(game.ui, texture);
+			game.hud.Draw(texture);
 			DrawUITint(game.ui, texture);
 			DrawDelayUI(game.ui, texture);
 			break;
@@ -180,7 +182,7 @@ namespace SnakeGame
 		game.snake.Reset(game.resources, game.level.config.snakeSpawn, game.level.config.snakeSize, game.level.countEmptyCells);
 		SpawnApple(game.level);
 		game.score = 0;
-		UpdateHud(game.ui, game.level.config.name, game.score);
+		game.hud.Update(game.level.config.name, game.score);
 	}
 
 	void UpdateGameLoop(Game &game, const float deltaTime)
@@ -202,7 +204,7 @@ namespace SnakeGame
 				game.snake.Grow(game.resources);
 				SetCellType(game.level.config, headPosition, CellType::Snake);
 				game.score += GetScoreMultiplier(game.config.difficulty);
-				UpdateHud(game.ui, game.level.config.name, game.score);
+				game.hud.Update(game.level.config.name, game.score);
 				if (game.snake.GetLength() < game.level.countEmptyCells)
 				{
 					SpawnApple(game.level);
@@ -253,7 +255,7 @@ namespace SnakeGame
 		case MenuState::GameOver:
 			DrawLevel(game.level, texture);
 			game.snake.Draw(texture);
-			DrawHud(game.ui, texture);
+			game.hud.Draw(texture);
 			DrawUITint(game.ui, texture);
 			DrawLeaderboardUI(game.ui, game.leaderboard, texture);
 			DrawMenuUI(game.ui, menu, texture);
@@ -261,7 +263,7 @@ namespace SnakeGame
 		case MenuState::Pause:
 			DrawLevel(game.level, texture);
 			game.snake.Draw(texture);
-			DrawHud(game.ui, texture);
+			game.hud.Draw(texture);
 			DrawUITint(game.ui, texture);
 			DrawMenuUI(game.ui, menu, texture);
 			break;

@@ -12,6 +12,7 @@
 #include "Leaderboard.h"
 #include "LevelManager.h"
 #include "ApplicationRequest.h"
+#include "Hud.h"
 
 namespace SnakeGame
 {
@@ -40,6 +41,8 @@ namespace SnakeGame
 		sf::Sound soundJingle;
 
 		std::string newPlayerName;
+
+		Hud hud;
 	};
 
 	ApplicationRequest GetApplicationRequest(Game &game);

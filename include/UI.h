@@ -38,12 +38,6 @@ namespace SnakeGame
 
     struct UI
     {
-        sf::Sprite hud;
-        sf::Sprite hudLevelName;
-        sf::Text hudLevelNameLabel;
-        sf::Sprite hudScore;
-        sf::Text hudScoreLabel;
-
         Selector selectorMenu;
         std::vector<Button> menuButtons;
         sf::Text menuLabel;
@@ -89,8 +83,6 @@ namespace SnakeGame
     void DrawUITint(UI &ui, sf::RenderTexture &texture);
     void DrawMenuUI(UI &ui, Menu &menu, sf::RenderTexture &texture);
     void DrawLevelSelect(UI &ui, const LevelManager &levelManager, sf::RenderTexture &texture);
-    void UpdateHud(UI &ui, std::string levelName, int score);
-    void DrawHud(UI &ui, sf::RenderTexture &texture);
     void InitMenuButton(Button &button, Resources &resources);
     void SetMenuBottonPosition(Button &button, int positionY);
     void SetMenuBottonText(Button &button, std::string text, bool enabled, bool pressed);
