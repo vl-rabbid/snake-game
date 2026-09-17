@@ -12,7 +12,10 @@ namespace SnakeGame
 
         void Init(const Resources &resources);
         void Update(std::string levelName, unsigned int score);
-        void Draw(sf::RenderTexture &texture);
+        void Draw(sf::RenderTexture &texture) const;
+
+        void SetDelayText(const std::string &string);
+        void DrawDelay(sf::RenderTexture &texture) const;
 
     private:
         sf::Sprite background;
@@ -20,6 +23,10 @@ namespace SnakeGame
         sf::Text levelNameText;
         sf::Sprite scoreFrame;
         sf::Text scoreText;
+
+        sf::RectangleShape windowTint;
+        sf::Text delayText;
+        sf::Text delayTextShadow;
     };
 
 }

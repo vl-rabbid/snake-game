@@ -176,7 +176,7 @@ namespace SnakeGame
         bool enabled = menu.items[menu.selected].enabled;
         bool pressed = menu.items[menu.selected].pressed;
         const sf::FloatRect itemRect = ui.menuButtons[menu.selected - menu.firstDisplayedItem].GetSelectorBounds(enabled, pressed);
-        ui.selectorMenu.SetTrgetPosition(itemRect);
+        ui.selectorMenu.SetTargetPosition(itemRect);
 
         if (menu.displayedItemAmount < menu.items.size())
         {
@@ -320,7 +320,7 @@ namespace SnakeGame
             LoadLevelSelectUIItems(ui, levelManager);
         }
         sf::FloatRect itemRect = ui.levelButtons[levelManager.selected - levelManager.firstDisplayedItem].GetSelectorBounds();
-        ui.selectorLevel.SetTrgetPosition(itemRect);
+        ui.selectorLevel.SetTargetPosition(itemRect);
 
         if (ui.levelButtons.size() < levelManager.levels.size())
         {
@@ -416,21 +416,5 @@ namespace SnakeGame
         }
 
         ui.leaderboardLevel.Draw(texture);
-    }
-
-    void SetDelayUIText(UI &ui, std::string text)
-    {
-        SetTextRelativePosition(ui.menuLabel, 0.5f, 0.25f);
-        ui.menuLabelShadow.setPosition({ui.menuLabel.getPosition().x + 2, ui.menuLabel.getPosition().y + 2});
-        ui.menuLabelShadow.setString(text);
-        SetTextRelativeOrigin(ui.menuLabelShadow, 0.5f, 0.5f);
-        ui.menuLabel.setString(text);
-        SetTextRelativeOrigin(ui.menuLabel, 0.5f, 0.5f);
-    }
-
-    void DrawDelayUI(UI &ui, sf::RenderTexture &texture)
-    {
-        texture.draw(ui.menuLabelShadow);
-        texture.draw(ui.menuLabel);
     }
 }

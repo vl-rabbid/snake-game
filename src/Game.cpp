@@ -98,8 +98,7 @@ namespace SnakeGame
 			DrawLevel(game.level, texture);
 			game.snake.Draw(texture);
 			game.hud.Draw(texture);
-			DrawUITint(game.ui, texture);
-			DrawDelayUI(game.ui, texture);
+			game.hud.DrawDelay(texture);
 			break;
 		default:
 			break;
@@ -693,18 +692,18 @@ namespace SnakeGame
 				wholeNumber = (int)std::round(timeLeft);
 				if (wholeNumber == 0)
 				{
-					SetDelayUIText(game.ui, "Go!");
+					game.hud.SetDelayText("Go!");
 					PlaySound(game, game.soundFX, game.resources.countdownGo);
 				}
 				else
 				{
-					SetDelayUIText(game.ui, std::to_string(wholeNumber));
+					game.hud.SetDelayText(std::to_string(wholeNumber));
 					PlaySound(game, game.soundFX, game.resources.countdown);
 				}
 			}
 			break;
 		case DelayType::GameOver:
-			SetDelayUIText(game.ui, "GAME OVER!");
+			game.hud.SetDelayText("GAME OVER!");
 			break;
 		default:
 			break;

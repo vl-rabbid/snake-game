@@ -42,7 +42,7 @@ namespace SnakeGame
     {
     public:
         void Init(const Resources &resources);
-        void SetTrgetPosition(sf::FloatRect target);
+        void SetTargetPosition(sf::FloatRect target);
         void ApplyTargetPosition();
         void Update(const float deltaTime);
         void Draw(sf::RenderTexture &texture) const;

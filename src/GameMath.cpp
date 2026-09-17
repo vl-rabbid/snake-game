@@ -42,7 +42,7 @@ namespace SnakeGame
 
     void SetTextRelativePosition(sf::Text &text, float relativePositionX, float relativePositionY)
     {
-        sf::Vector2f position = {std::round(LEVEL_WIDTH * CELL_SIZE * relativePositionX), std::round((LEVEL_HEIGHT + HUD_HEIGHT) * CELL_SIZE * relativePositionY)};
+        sf::Vector2f position = {std::round(RENDER_WIDTH * relativePositionX), std::round(RENDER_HEIGHT * relativePositionY)};
         text.setPosition(position);
     }
 

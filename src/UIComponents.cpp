@@ -105,7 +105,7 @@ namespace SnakeGame
         SetSpriteAtlas(resources, bottomRight, TextureID::SelectorBottomRight);
     }
 
-    void Selector::SetTrgetPosition(sf::FloatRect target)
+    void Selector::SetTargetPosition(sf::FloatRect target)
     {
         targetPosition[0] = {target.left, target.top};
         targetPosition[1] = {target.left + target.width, target.top};
