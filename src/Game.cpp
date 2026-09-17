@@ -90,12 +90,12 @@ namespace SnakeGame
 			}
 			break;
 		case GameState::GameLoop:
-			DrawLevel(game.level, texture);
+			game.level.Draw(texture);
 			game.snake.Draw(texture);
 			game.hud.Draw(texture);
 			break;
 		case GameState::Delay:
-			DrawLevel(game.level, texture);
+			game.level.Draw(texture);
 			game.snake.Draw(texture);
 			game.hud.Draw(texture);
 			game.hud.DrawDelay(texture);
@@ -149,7 +149,7 @@ namespace SnakeGame
 			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
 			break;
 		case MenuState::Leaderboard:
-			LoadLeaderboard(game.leaderboard, game.levelMangager.levels[game.levelMangager.selected].id);
+			LoadLeaderboard(game.leaderboard, game.levelMangager.levels[game.levelMangager.selected].GetId());
 			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
 			break;
 		case MenuState::Resolution:
@@ -175,13 +175,12 @@ namespace SnakeGame
 	{
 		StopMusic(game);
 		game.speed = static_cast<float>(game.config.difficulty);
-		game.level.config = game.levelMangager.levels[game.levelMangager.selected];
-		InitLevel(game.level, game.resources);
-		LoadLeaderboard(game.leaderboard, game.level.config.id);
-		game.snake.Reset(game.resources, game.level.config.snakeSpawn, game.level.config.snakeSize, game.level.countEmptyCells);
-		SpawnApple(game.level);
+		game.level.Init(game.levelMangager.levels[game.levelMangager.selected], game.resources);
+		LoadLeaderboard(game.leaderboard, game.level.GetId());
+		game.snake.Reset(game.resources, game.level.GetSnakeSpawn(), game.level.GetSnakeSize(), game.level.GetMaxSnakeLength());
+		game.level.SpawnApple();
 		game.score = 0;
-		game.hud.Update(game.level.config.name, game.score);
+		game.hud.Update(game.level.GetName(), game.score);
 	}
 
 	void UpdateGameLoop(Game &game, const float deltaTime)
@@ -198,22 +197,20 @@ namespace SnakeGame
 			game.snake.UpdatePosition();
 			Position2D headPosition = game.snake.GetHeadPosition();
 
-			if (GetCellType(game.level.config, headPosition) == CellType::Apple)
+			if (game.level.GetState(headPosition) == CellType::Apple)
 			{
 				game.snake.Grow(game.resources);
-				SetCellType(game.level.config, headPosition, CellType::Snake);
+				game.level.SetState(headPosition, CellType::Snake);
 				game.score += GetScoreMultiplier(game.config.difficulty);
-				game.hud.Update(game.level.config.name, game.score);
-				if (game.snake.GetLength() < game.level.countEmptyCells)
-				{
-					SpawnApple(game.level);
-				}
+				game.hud.Update(game.level.GetName(), game.score);
+				if (game.snake.GetLength() < game.level.GetMaxSnakeLength())
+					game.level.SpawnApple();
 				PlaySound(game, game.soundFX, game.resources.appleEaten);
 			}
 			else
 			{
-				SetCellType(game.level.config, oldTailPosition, CellType::Empty);
-				if (GetCellType(game.level.config, headPosition) == CellType::Snake || GetCellType(game.level.config, headPosition) == CellType::Wall)
+				game.level.SetState(oldTailPosition, CellType::Empty);
+				if (game.level.GetState(headPosition) == CellType::Snake || game.level.GetState(headPosition) == CellType::Wall)
 				{
 					PlaySound(game, game.soundFX, game.resources.wall);
 					PlaySound(game, game.soundJingle, game.resources.gameOver);
@@ -228,10 +225,10 @@ namespace SnakeGame
 				}
 				else
 				{
-					SetCellType(game.level.config, headPosition, CellType::Snake);
+					game.level.SetState(headPosition, CellType::Snake);
 				}
 			}
-			bool isMouthOpen = CellsBetween(headPosition, game.level.apple.position) <= 2;
+			bool isMouthOpen = CellsBetween(headPosition, game.level.GetApplePosition()) <= 2;
 			game.snake.UpdateSprites(isDead, isMouthOpen);
 			timer -= interval;
 		}
@@ -252,7 +249,7 @@ namespace SnakeGame
 			DrawMenuUI(game.ui, menu, texture);
 			break;
 		case MenuState::GameOver:
-			DrawLevel(game.level, texture);
+			game.level.Draw(texture);
 			game.snake.Draw(texture);
 			game.hud.Draw(texture);
 			DrawUITint(game.ui, texture);
@@ -260,7 +257,7 @@ namespace SnakeGame
 			DrawMenuUI(game.ui, menu, texture);
 			break;
 		case MenuState::Pause:
-			DrawLevel(game.level, texture);
+			game.level.Draw(texture);
 			game.snake.Draw(texture);
 			game.hud.Draw(texture);
 			DrawUITint(game.ui, texture);

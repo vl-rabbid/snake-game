@@ -2,43 +2,94 @@
 
 namespace SnakeGame
 {
-    void InitLevel(Level &level, Resources &resources)
+    void Level::Init(const LevelConfig &config, const Resources &resources)
     {
-        level.apple.sprite.setTexture(resources.atlas);
-        level.apple.sprite.setTextureRect(GetTextureRect(TextureID::Apple));
+        SetSpriteAtlas(resources, apple.sprite, TextureID::Apple);
 
-        level.walls.clear();
-        level.walls.resize(level.config.walls.size());
-        for (int i = 0; i < level.walls.size(); i++)
+        id = config.GetId();
+        name = config.GetName();
+        snakeSpawn = config.GetSnakeSpawn();
+        snakeSize = config.GetSnakeSize();
+
+        state.SetEmpty();
+        const std::vector<Position2D> &configWalls = config.GetWalls();
+        walls.clear();
+        walls.resize(configWalls.size());
+        for (int i = 0; i < walls.size(); i++)
         {
-            level.walls[i].position = level.config.walls[i];
-            level.walls[i].sprite.setTexture(resources.atlas);
-            level.walls[i].sprite.setTextureRect(GetRandomWallRect());
-            SetSpritePosition(level.walls[i].sprite, level.walls[i].position);
+            walls[i].position = configWalls[i];
+            walls[i].sprite.setTexture(resources.atlas);
+            walls[i].sprite.setTextureRect(GetRandomWallRect());
+            SetSpritePosition(walls[i].sprite, walls[i].position);
+            state.SetCellType(walls[i].position, CellType::Wall);
         }
-
-        level.countEmptyCells = (LEVEL_WIDTH * LEVEL_HEIGHT) - level.walls.size();
+        Position2D snakePosition = snakeSpawn;
+        for (int i = 0; i < snakeSize; i++)
+        {
+            state.SetCellType(snakePosition, CellType::Snake);
+            snakePosition.y += 1;
+        }
+        maxSnakeLength = (LEVEL_WIDTH * LEVEL_HEIGHT) - walls.size();
     }
 
-    void SpawnApple(Level &level)
+    void Level::SpawnApple()
     {
         Position2D position;
         do
         {
             position = GetRandomPositionOnLevel(LEVEL_WIDTH, LEVEL_HEIGHT);
-        } while (GetCellType(level.config, position) != CellType::Empty);
+        } while (state.GetCellType(position) != CellType::Empty);
 
-        level.apple.position = position;
-        SetCellType(level.config, position, CellType::Apple);
-        SetSpritePosition(level.apple.sprite, position);
+        apple.position = position;
+        state.SetCellType(position, CellType::Apple);
+        SetSpritePosition(apple.sprite, position);
     }
 
-    void DrawLevel(Level &level, sf::RenderTexture &texture)
+    void Level::Draw(sf::RenderTexture &texture) const
     {
-        texture.draw(level.apple.sprite);
-        for (int i = 0; i < level.walls.size(); i++)
-        {
-            texture.draw(level.walls[i].sprite);
-        }
+        texture.draw(apple.sprite);
+        for (auto &wall : walls)
+            texture.draw(wall.sprite);
     }
+
+    void Level::SetState(const Position2D &position, const CellType &type)
+    {
+        state.SetCellType(position, type);
+    }
+
+    CellType Level::GetState(const Position2D &position) const
+    {
+        return state.GetCellType(position);
+    }
+
+    Position2D Level::GetApplePosition() const
+    {
+        return apple.position;
+    }
+
+    const std::string &Level::GetId() const
+    {
+        return id;
+    }
+
+    const std::string &Level::GetName() const
+    {
+        return name;
+    }
+
+    Position2D Level::GetSnakeSpawn() const
+    {
+        return snakeSpawn;
+    }
+
+    int Level::GetSnakeSize() const
+    {
+        return snakeSize;
+    }
+
+    int Level::GetMaxSnakeLength() const
+    {
+        return maxSnakeLength;
+    }
+
 }

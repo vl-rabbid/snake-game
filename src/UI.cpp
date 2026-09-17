@@ -301,8 +301,8 @@ namespace SnakeGame
         {
             if (i + levelManager.firstDisplayedItem < levelManager.levels.size())
             {
-                ui.levelButtons[i].SetLevelName(levelManager.levels[i + levelManager.firstDisplayedItem].name);
-                ui.levelButtons[i].SetLevelPreview(GenerateLevelPreview(levelManager.levels[i + levelManager.firstDisplayedItem]));
+                ui.levelButtons[i].SetLevelName(levelManager.levels[i + levelManager.firstDisplayedItem].GetName());
+                ui.levelButtons[i].SetLevelPreview(levelManager.levels[i + levelManager.firstDisplayedItem].GenerateLevelPreview());
             }
         }
     }
@@ -390,8 +390,8 @@ namespace SnakeGame
                 ui.leaderboardEntry[i].setString(text + score);
             }
         }
-        ui.leaderboardLevel.SetLevelName(levelManager.levels[levelManager.selected].name);
-        ui.leaderboardLevel.SetLevelPreview(GenerateLevelPreview(levelManager.levels[levelManager.selected]));
+        ui.leaderboardLevel.SetLevelName(levelManager.levels[levelManager.selected].GetName());
+        ui.leaderboardLevel.SetLevelPreview(levelManager.levels[levelManager.selected].GenerateLevelPreview());
     }
 
     void DrawLeaderboardUI(UI &ui, Leaderboard &leaderboard, sf::RenderTexture &texture)
