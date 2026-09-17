@@ -3,7 +3,7 @@
 
 namespace SnakeGame
 {
-    void Hud::Init(Resources &resources)
+    void Hud::Init(const Resources &resources)
     {
         background.setTexture(resources.hud);
         levelNameFrame.setTexture(resources.hudLevelName);

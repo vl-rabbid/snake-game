@@ -10,7 +10,7 @@ namespace SnakeGame
     public:
         Hud() = default;
 
-        void Init(Resources &resources);
+        void Init(const Resources &resources);
         void Update(std::string levelName, unsigned int score);
         void Draw(sf::RenderTexture &texture);
 

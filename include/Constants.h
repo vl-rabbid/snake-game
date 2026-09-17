@@ -18,7 +18,7 @@ namespace SnakeGame
 	const int INPUT_BUFFER_SIZE = 2;
 	const int MAX_MENU_BUTTONS = 4;
 	const int DISPLAYED_LEVEL_COUNT = 3;
-	const float SELECT_SPEED = 40.f;
+	const float SELECTOR_SPEED = 40.f;
 	const float SLIDER_SPEED = 30.f;
 	const float INPUT_MARKER_INTERVAL = 0.5f;
 	const int LEADERBOARD_DISPLAYED = 5;

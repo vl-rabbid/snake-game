@@ -17,7 +17,7 @@ namespace SnakeGame
     {
         text.setOrigin({std::round(text.getLocalBounds().width / 2), 0.f});
         sf::FloatRect spriteBounds = sprite.getGlobalBounds();
-        text.setPosition({spriteBounds.left + std::round(spriteBounds.width / 2), 0.f});
+        text.setPosition({spriteBounds.left + std::round(spriteBounds.width / 2), spriteBounds.top - 4.f});
     }
 
     int GetRandomInt(int minValue, int maxValue)

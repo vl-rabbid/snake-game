@@ -250,6 +250,18 @@ namespace SnakeGame
     {
         switch (id)
         {
+        case TextureID::SelectorTopLeft:
+            return {2.f, 3.f};
+            break;
+        case TextureID::SelectorTopRight:
+            return {6.f, 3.f};
+            break;
+        case TextureID::SelectorBottomLeft:
+            return {2.f, 11.f};
+            break;
+        case TextureID::SelectorBottomRight:
+            return {6.f, 11.f};
+            break;
         default:
             return {0.f, 0.f};
             break;

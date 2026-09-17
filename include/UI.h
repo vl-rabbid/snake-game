@@ -5,37 +5,10 @@
 #include "Resources.h"
 #include "LevelManager.h"
 #include "Leaderboard.h"
+#include "UIComponents.h"
 
 namespace SnakeGame
 {
-    struct Button
-    {
-        sf::Sprite spriteEnabled;
-        sf::Sprite spriteDisabled;
-        sf::Sprite spritePressed;
-        sf::Text label;
-    };
-
-    struct LevelButton
-    {
-        sf::Text label;
-        sf::Sprite spriteLabel;
-        sf::Sprite spriteButton;
-        sf::Sprite spritePreviewFrame;
-        sf::VertexArray preview;
-        sf::RenderStates previewStates;
-    };
-
-    struct Selector
-    {
-        sf::Sprite topLeft;
-        sf::Sprite topRight;
-        sf::Sprite bottomLeft;
-        sf::Sprite bottomRight;
-        sf::Vector2f currentPosition[4];
-        sf::Vector2f targetPosition[4];
-    };
-
     struct UI
     {
         Selector selectorMenu;
@@ -83,19 +56,10 @@ namespace SnakeGame
     void DrawUITint(UI &ui, sf::RenderTexture &texture);
     void DrawMenuUI(UI &ui, Menu &menu, sf::RenderTexture &texture);
     void DrawLevelSelect(UI &ui, const LevelManager &levelManager, sf::RenderTexture &texture);
-    void InitMenuButton(Button &button, Resources &resources);
-    void SetMenuBottonPosition(Button &button, int positionY);
-    void SetMenuBottonText(Button &button, std::string text, bool enabled, bool pressed);
     void SetMenuButtonsListPosition(UI &ui, int displayedAmount);
-    void InitLevelButton(LevelButton &button, Resources &resources, int positionX);
-    void SetLevelBottonText(LevelButton &button, std::string text);
     void LoadLevelSelectUI(UI &ui, LevelManager &levelManager);
     void LoadLevelSelectUIItems(UI &ui, const LevelManager &levelManager);
     void SetLevelSelectedItem(UI &ui, LevelManager &levelManager);
-    void SetSelectorTargetPosition(Selector &selector, sf::FloatRect target);
-    void ApplySelectorTargetPosition(Selector &selector);
-    void ApplySelectorCurrentPosition(Selector &selector);
-    void UpdateSelector(Selector &selector, const float deltaTime, const float speed);
     void UpdateMenuUI(UI &ui, const float deltaTime);
     void UpdateLevelSelectUI(UI &ui, const float deltaTime);
     void UpdateInputMarker(UI &ui, const float deltaTime);
