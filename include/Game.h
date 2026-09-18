@@ -11,6 +11,7 @@
 #include "Config.h"
 #include "Leaderboard.h"
 #include "LevelManager.h"
+#include "LeaderboardManager.h"
 #include "ApplicationRequest.h"
 #include "Hud.h"
 
@@ -43,6 +44,7 @@ namespace SnakeGame
 
 		Hud hud;
 		LevelManager levelMangager;
+		LeaderboardManager leaderboardManager;
 	};
 
 	ApplicationRequest GetApplicationRequest(Game &game);
@@ -54,7 +56,8 @@ namespace SnakeGame
 
 	void SetGameState(Game &game, const GameState &gameState);
 
-	void StartGameLoop(Game &game);
+	void StartGameLoop(Game &game, const LevelConfig &levelConfig);
+	void ResetGameLoop(Game &game);
 	void UpdateGameLoop(Game &game, const float deltaTime);
 	int GetScoreMultiplier(GameDifficulty gameDifficulty);
 

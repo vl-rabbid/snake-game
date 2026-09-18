@@ -26,7 +26,7 @@ namespace SnakeGame
 
 		game.hud.Init(game.resources);
 		game.levelMangager.Init(game.resources);
-		game.leaderboard.Init(game.resources);
+		game.leaderboardManager.Init(game.resources);
 	}
 
 	void HandleGameImput(Game &game, const sf::Event &event)
@@ -138,6 +138,8 @@ namespace SnakeGame
 		menu.firstDisplayedItem = 0;
 		game.menuLayers.push_back(menu);
 
+		Leaderboard leaderboard;
+
 		switch (game.menuLayers.back().state)
 		{
 		case MenuState::LevelSelect:
@@ -147,11 +149,11 @@ namespace SnakeGame
 			PauseMusic(game);
 			break;
 		case MenuState::GameOver:
-			game.leaderboard.LoadUI();
+			game.leaderboardManager.LoadUI(game.leaderboard);
 			break;
 		case MenuState::Leaderboard:
-			game.leaderboard.LoadFromFile(game.levelMangager.GetSelectedLevelConfig());
-			game.leaderboard.LoadUI();
+			leaderboard.LoadFromFile(game.levelMangager.GetSelectedLevelConfig());
+			game.leaderboardManager.LoadUI(leaderboard);
 			break;
 		case MenuState::Resolution:
 			SetSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.windowResolution));
@@ -172,12 +174,18 @@ namespace SnakeGame
 		LoadMenuUI(game.ui, game.menuLayers.back());
 	}
 
-	void StartGameLoop(Game &game)
+	void StartGameLoop(Game &game, const LevelConfig &levelConfig)
+	{
+		game.level.Init(levelConfig, game.resources);
+		game.leaderboard.LoadFromFile(levelConfig);
+		ResetGameLoop(game);
+	}
+
+	void ResetGameLoop(Game &game)
 	{
 		StopMusic(game);
+		game.level.ResetState();
 		game.speed = static_cast<float>(game.config.difficulty);
-		game.level.Init(game.levelMangager.GetSelectedLevelConfig(), game.resources);
-		game.leaderboard.LoadFromFile(game.levelMangager.GetSelectedLevelConfig());
 		game.snake.Reset(game.resources, game.level.GetSnakeSpawn(), game.level.GetSnakeSize(), game.level.GetMaxSnakeLength());
 		game.level.SpawnApple();
 		game.score = 0;
@@ -244,7 +252,7 @@ namespace SnakeGame
 			break;
 		case MenuState::Leaderboard:
 			DrawUITint(game.ui, texture);
-			game.leaderboard.Draw(texture);
+			game.leaderboardManager.Draw(texture);
 			DrawMenuUI(game.ui, menu, texture);
 			break;
 		case MenuState::GameOver:
@@ -252,7 +260,7 @@ namespace SnakeGame
 			game.snake.Draw(texture);
 			game.hud.Draw(texture);
 			DrawUITint(game.ui, texture);
-			game.leaderboard.Draw(texture);
+			game.leaderboardManager.Draw(texture);
 			DrawMenuUI(game.ui, menu, texture);
 			break;
 		case MenuState::Pause:
@@ -292,7 +300,7 @@ namespace SnakeGame
 		switch (game.menuLayers.back().state)
 		{
 		case MenuState::Leaderboard:
-			game.leaderboard.HandleInput(event);
+			game.leaderboardManager.HandleInput(event);
 			HandleMainMenuImput(game, event);
 			break;
 		case MenuState::LevelSelect:
@@ -300,7 +308,7 @@ namespace SnakeGame
 			HandleMainMenuImput(game, event);
 			break;
 		case MenuState::GameOver:
-			game.leaderboard.HandleInput(event);
+			game.leaderboardManager.HandleInput(event);
 			HandleMainMenuImput(game, event);
 			break;
 		case MenuState::SetPlayerName:
@@ -381,7 +389,11 @@ namespace SnakeGame
 					SetMenuState(game, static_cast<MenuState>(game.menuLayers.back().items[game.menuLayers.back().selected].actionTarget));
 					break;
 				case MenuActionType::StartGame:
-					StartGameLoop(game);
+					StartGameLoop(game, game.levelMangager.GetSelectedLevelConfig());
+					StartGameStateDelay(game, GameState::GameLoop, DelayType::GameStart);
+					break;
+				case MenuActionType::ResetGame:
+					ResetGameLoop(game);
 					StartGameStateDelay(game, GameState::GameLoop, DelayType::GameStart);
 					break;
 				case MenuActionType::ResumeGame:

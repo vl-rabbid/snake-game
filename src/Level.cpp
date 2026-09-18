@@ -11,7 +11,6 @@ namespace SnakeGame
         snakeSpawn = config.GetSnakeSpawn();
         snakeSize = config.GetSnakeSize();
 
-        state.SetEmpty();
         const std::vector<Position2D> &configWalls = config.GetWalls();
         walls.clear();
         walls.resize(configWalls.size());
@@ -21,15 +20,21 @@ namespace SnakeGame
             walls[i].sprite.setTexture(resources.atlas);
             walls[i].sprite.setTextureRect(GetRandomWallRect());
             SetSpritePosition(walls[i].sprite, walls[i].position);
-            state.SetCellType(walls[i].position, CellType::Wall);
         }
+        maxSnakeLength = (LEVEL_WIDTH * LEVEL_HEIGHT) - walls.size();
+    }
+
+    void Level::ResetState()
+    {
+        state.SetEmpty();
+        for (auto &wall : walls)
+            state.SetCellType(wall.position, CellType::Wall);
         Position2D snakePosition = snakeSpawn;
         for (int i = 0; i < snakeSize; i++)
         {
             state.SetCellType(snakePosition, CellType::Snake);
             snakePosition.y += 1;
         }
-        maxSnakeLength = (LEVEL_WIDTH * LEVEL_HEIGHT) - walls.size();
     }
 
     void Level::SpawnApple()

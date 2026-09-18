@@ -22,6 +22,7 @@ namespace SnakeGame
     {
     public:
         void Init(const LevelConfig &config, const Resources &resources);
+        void ResetState();
         void SpawnApple();
         void Draw(sf::RenderTexture &texture) const;
 

@@ -19,6 +19,7 @@ namespace SnakeGame
         SwitchMenuState = 0,
         SwitchGameState,
         StartGame,
+        ResetGame,
         ResumeGame,
         PreviousMenu,
         SetScreenScale,
