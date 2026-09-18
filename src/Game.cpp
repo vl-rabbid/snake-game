@@ -25,6 +25,7 @@ namespace SnakeGame
 		SetMenuState(game, MenuState::Main);
 
 		game.hud.Init(game.resources);
+		game.levelMangager.Init(game.resources);
 	}
 
 	void HandleGameImput(Game &game, const sf::Event &event)
@@ -139,8 +140,7 @@ namespace SnakeGame
 		switch (game.menuLayers.back().state)
 		{
 		case MenuState::LevelSelect:
-			LoadLevelManager(game.levelMangager);
-			LoadLevelSelectUI(game.ui, game.levelMangager);
+			game.levelMangager.LoadFromFiles();
 			break;
 		case MenuState::Pause:
 			PauseMusic(game);
@@ -149,7 +149,7 @@ namespace SnakeGame
 			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
 			break;
 		case MenuState::Leaderboard:
-			LoadLeaderboard(game.leaderboard, game.levelMangager.levels[game.levelMangager.selected].GetId());
+			LoadLeaderboard(game.leaderboard, game.levelMangager.GetSelectedLevelConfig().GetId());
 			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
 			break;
 		case MenuState::Resolution:
@@ -175,7 +175,7 @@ namespace SnakeGame
 	{
 		StopMusic(game);
 		game.speed = static_cast<float>(game.config.difficulty);
-		game.level.Init(game.levelMangager.levels[game.levelMangager.selected], game.resources);
+		game.level.Init(game.levelMangager.GetSelectedLevelConfig(), game.resources);
 		LoadLeaderboard(game.leaderboard, game.level.GetId());
 		game.snake.Reset(game.resources, game.level.GetSnakeSpawn(), game.level.GetSnakeSize(), game.level.GetMaxSnakeLength());
 		game.level.SpawnApple();
@@ -240,7 +240,7 @@ namespace SnakeGame
 		{
 		case MenuState::LevelSelect:
 			DrawUITint(game.ui, texture);
-			DrawLevelSelect(game.ui, game.levelMangager, texture);
+			game.levelMangager.Draw(texture);
 			DrawMenuUI(game.ui, menu, texture);
 			break;
 		case MenuState::Leaderboard:
@@ -276,7 +276,7 @@ namespace SnakeGame
 		{
 		case MenuState::LevelSelect:
 			UpdateMenuUI(game.ui, deltaTime);
-			UpdateLevelSelectUI(game.ui, deltaTime);
+			game.levelMangager.Update(deltaTime);
 			break;
 		case MenuState::SetPlayerName:
 			UpdateInputMarker(game.ui, deltaTime);
@@ -297,7 +297,7 @@ namespace SnakeGame
 			HandleMainMenuImput(game, event);
 			break;
 		case MenuState::LevelSelect:
-			HandleLevelSelectImput(game, event);
+			game.levelMangager.HandleInput(event);
 			HandleMainMenuImput(game, event);
 			break;
 		case MenuState::GameOver:
@@ -438,38 +438,6 @@ namespace SnakeGame
 				PlaySound(game, game.soundFX, game.resources.uiSelect);
 			}
 		};
-	}
-
-	void HandleLevelSelectImput(Game &game, const sf::Event &event)
-	{
-		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
-		{
-			int previousItem = game.levelMangager.selected;
-			game.levelMangager.selected -= 1;
-			if (game.levelMangager.selected < 0)
-			{
-				game.levelMangager.selected = game.levelMangager.levels.size() - 1;
-			}
-			SetLevelSelectedItem(game.ui, game.levelMangager);
-			if (previousItem != game.levelMangager.selected)
-			{
-				PlaySound(game, game.soundFX, game.resources.uiMoveHorizontal);
-			}
-		}
-		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
-		{
-			int previousItem = game.levelMangager.selected;
-			game.levelMangager.selected += 1;
-			if (game.levelMangager.selected > game.levelMangager.levels.size() - 1)
-			{
-				game.levelMangager.selected = 0;
-			}
-			SetLevelSelectedItem(game.ui, game.levelMangager);
-			if (previousItem != game.levelMangager.selected)
-			{
-				PlaySound(game, game.soundFX, game.resources.uiMoveHorizontal);
-			}
-		}
 	}
 
 	void HandleLeaderboardImput(Game &game, const sf::Event &event)

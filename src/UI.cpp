@@ -56,30 +56,6 @@ namespace SnakeGame
         ui.sliderVertical.setOrigin({3.f, 5.f});
         ui.sliderBarVertical.setFillColor(COLOR_TEXT);
 
-        ui.selectorLevel.Init(resources);
-
-        ui.levelButtons.clear();
-        ui.levelButtons.resize(DISPLAYED_LEVEL_COUNT);
-        for (int i = 0; i < ui.levelButtons.size(); ++i)
-        {
-            ui.levelButtons[i].Init(resources, 9 + (i * 75));
-        }
-        ui.levelRight.setTexture(resources.atlas);
-        ui.levelRight.setTextureRect(GetTextureRect(TextureID::Right));
-        ui.levelRight.setOrigin({6.f, 4.f});
-        ui.levelRight.setPosition({238.f, 67.f});
-        ui.levelLeft.setTexture(resources.atlas);
-        ui.levelLeft.setTextureRect(GetTextureRect(TextureID::Left));
-        ui.levelLeft.setOrigin({0.f, 4.f});
-        ui.levelLeft.setPosition({1.f, 67.f});
-
-        ui.sliderHorizontal.setTexture(resources.atlas);
-        ui.sliderHorizontal.setTextureRect(GetTextureRect(TextureID::SliderHorizontal));
-        ui.sliderHorizontal.setOrigin({5.f, 3.f});
-        ui.sliderBarHorizontal.setFillColor(COLOR_TEXT);
-        ui.sliderBarHorizontal.setPosition({11.f, 111.f});
-        ui.sliderBarHorizontal.setSize(sf::Vector2f(218.f, 2.f));
-
         ui.leaderboardFrame.setTexture(resources.leaderboardFrame);
         ui.leaderboardFrame.setPosition(93.f, 31.f);
         ui.leaderboardLabelFrame.setTexture(resources.leaderboardLabelFrame);
@@ -245,35 +221,6 @@ namespace SnakeGame
         }
     }
 
-    void DrawLevelSelect(UI &ui, const LevelManager &levelManager, sf::RenderTexture &texture)
-    {
-
-        for (int i = 0; i < ui.levelButtons.size(); ++i)
-        {
-            if (i < levelManager.levels.size())
-            {
-                ui.levelButtons[i].Draw(texture);
-            }
-        }
-
-        ui.selectorLevel.Draw(texture);
-
-        if (ui.levelButtons.size() < levelManager.levels.size() && levelManager.firstDisplayedItem + ui.levelButtons.size() < levelManager.levels.size())
-        {
-            texture.draw(ui.levelRight);
-        }
-        if (levelManager.firstDisplayedItem > 0)
-        {
-            texture.draw(ui.levelLeft);
-        }
-
-        if (ui.levelButtons.size() < levelManager.levels.size())
-        {
-            texture.draw(ui.sliderBarHorizontal);
-            texture.draw(ui.sliderHorizontal);
-        }
-    }
-
     void SetMenuButtonsListPosition(UI &ui, int displayedAmount)
     {
         int positionY = 167;
@@ -287,49 +234,6 @@ namespace SnakeGame
         ui.sliderBarVertical.setSize(sf::Vector2f(2.f, 163.f - (float)(positionY + 2)));
     }
 
-    void LoadLevelSelectUI(UI &ui, LevelManager &levelManager)
-    {
-        LoadLevelSelectUIItems(ui, levelManager);
-        SetLevelSelectedItem(ui, levelManager);
-        ui.selectorLevel.ApplyTargetPosition();
-        ui.sliderHorizontal.setPosition(ui.sliderBarHorizontal.getPosition());
-    }
-
-    void LoadLevelSelectUIItems(UI &ui, const LevelManager &levelManager)
-    {
-        for (int i = 0; i < ui.levelButtons.size(); i++)
-        {
-            if (i + levelManager.firstDisplayedItem < levelManager.levels.size())
-            {
-                ui.levelButtons[i].SetLevelName(levelManager.levels[i + levelManager.firstDisplayedItem].GetName());
-                ui.levelButtons[i].SetLevelPreview(levelManager.levels[i + levelManager.firstDisplayedItem].GenerateLevelPreview());
-            }
-        }
-    }
-
-    void SetLevelSelectedItem(UI &ui, LevelManager &levelManager)
-    {
-        if (levelManager.selected >= levelManager.firstDisplayedItem + ui.levelButtons.size())
-        {
-            levelManager.firstDisplayedItem = levelManager.selected - ui.levelButtons.size() + 1;
-            LoadLevelSelectUIItems(ui, levelManager);
-        }
-        else if (levelManager.selected < levelManager.firstDisplayedItem)
-        {
-            levelManager.firstDisplayedItem = levelManager.selected;
-            LoadLevelSelectUIItems(ui, levelManager);
-        }
-        sf::FloatRect itemRect = ui.levelButtons[levelManager.selected - levelManager.firstDisplayedItem].GetSelectorBounds();
-        ui.selectorLevel.SetTargetPosition(itemRect);
-
-        if (ui.levelButtons.size() < levelManager.levels.size())
-        {
-            sf::Vector2f sliderPosition = ui.sliderBarHorizontal.getPosition();
-            sliderPosition.x += std::round(ui.sliderBarHorizontal.getSize().x * (float)(levelManager.selected / (float)(levelManager.levels.size() - 1)));
-            ui.sliderHorizontalTargetPositionX = sliderPosition.x;
-        }
-    }
-
     void UpdateMenuUI(UI &ui, const float deltaTime)
     {
         ui.selectorMenu.Update(deltaTime);
@@ -341,19 +245,6 @@ namespace SnakeGame
         else
             currentPosition.y += delta * SLIDER_SPEED * deltaTime;
         ui.sliderVertical.setPosition(currentPosition);
-    }
-
-    void UpdateLevelSelectUI(UI &ui, const float deltaTime)
-    {
-        ui.selectorLevel.Update(deltaTime);
-
-        sf::Vector2f currentPosition = ui.sliderHorizontal.getPosition();
-        float delta = ui.sliderHorizontalTargetPositionX - currentPosition.x;
-        if (std::abs(delta) < 0.5f)
-            currentPosition.x = ui.sliderHorizontalTargetPositionX;
-        else
-            currentPosition.x += delta * SLIDER_SPEED * deltaTime;
-        ui.sliderHorizontal.setPosition(currentPosition);
     }
 
     void UpdateInputMarker(UI &ui, const float deltaTime)
@@ -390,8 +281,8 @@ namespace SnakeGame
                 ui.leaderboardEntry[i].setString(text + score);
             }
         }
-        ui.leaderboardLevel.SetLevelName(levelManager.levels[levelManager.selected].GetName());
-        ui.leaderboardLevel.SetLevelPreview(levelManager.levels[levelManager.selected].GenerateLevelPreview());
+        ui.leaderboardLevel.SetLevelName(levelManager.GetSelectedLevelConfig().GetName());
+        ui.leaderboardLevel.SetLevelPreview(levelManager.GetSelectedLevelConfig().GenerateLevelPreview());
     }
 
     void DrawLeaderboardUI(UI &ui, Leaderboard &leaderboard, sf::RenderTexture &texture)

@@ -35,7 +35,6 @@ namespace SnakeGame
 		std::map<MenuState, Menu> menus;
 		std::vector<Menu> menuLayers;
 		UI ui;
-		LevelManager levelMangager;
 
 		sf::Sound soundFX;
 		sf::Sound soundJingle;
@@ -43,6 +42,7 @@ namespace SnakeGame
 		std::string newPlayerName;
 
 		Hud hud;
+		LevelManager levelMangager;
 	};
 
 	ApplicationRequest GetApplicationRequest(Game &game);
@@ -63,7 +63,6 @@ namespace SnakeGame
 	void SetMenuState(Game &game, MenuState menuState);
 	void HandleMenuImput(Game &game, const sf::Event &event);
 	void HandleMainMenuImput(Game &game, const sf::Event &event);
-	void HandleLevelSelectImput(Game &game, const sf::Event &event);
 	void HandleLeaderboardImput(Game &game, const sf::Event &event);
 	void HandleTypingInput(Game &game, const sf::Event &event);
 	void SetInputMenuItems(Menu &menu, Game &game);

@@ -26,14 +26,6 @@ namespace SnakeGame
         float sliderVerticalTargetPositionY;
         sf::RectangleShape sliderBarVertical;
 
-        std::vector<LevelButton> levelButtons;
-        Selector selectorLevel;
-        sf::Sprite sliderHorizontal;
-        float sliderHorizontalTargetPositionX;
-        sf::RectangleShape sliderBarHorizontal;
-        sf::Sprite levelRight;
-        sf::Sprite levelLeft;
-
         sf::Sprite leaderboardFrame;
         sf::Sprite leaderboardLabelFrame;
         sf::Text leaderboardLabel;
@@ -55,13 +47,8 @@ namespace SnakeGame
     void SetMenuSelectedItem(UI &ui, Menu &menu);
     void DrawUITint(UI &ui, sf::RenderTexture &texture);
     void DrawMenuUI(UI &ui, Menu &menu, sf::RenderTexture &texture);
-    void DrawLevelSelect(UI &ui, const LevelManager &levelManager, sf::RenderTexture &texture);
     void SetMenuButtonsListPosition(UI &ui, int displayedAmount);
-    void LoadLevelSelectUI(UI &ui, LevelManager &levelManager);
-    void LoadLevelSelectUIItems(UI &ui, const LevelManager &levelManager);
-    void SetLevelSelectedItem(UI &ui, LevelManager &levelManager);
     void UpdateMenuUI(UI &ui, const float deltaTime);
-    void UpdateLevelSelectUI(UI &ui, const float deltaTime);
     void UpdateInputMarker(UI &ui, const float deltaTime);
     void SetInputLabel(UI &ui, std::string text);
     void LoadLeaderboardUI(UI &ui, Leaderboard &leaderboard, LevelManager &levelManager);
