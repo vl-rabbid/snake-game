@@ -63,7 +63,6 @@ namespace SnakeGame
 	void SetMenuState(Game &game, MenuState menuState);
 	void HandleMenuImput(Game &game, const sf::Event &event);
 	void HandleMainMenuImput(Game &game, const sf::Event &event);
-	void HandleLeaderboardImput(Game &game, const sf::Event &event);
 	void HandleTypingInput(Game &game, const sf::Event &event);
 	void SetInputMenuItems(Menu &menu, Game &game);
 	void SetSubMenuItems(Menu &menu, Game &game, int actionTarget);

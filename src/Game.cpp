@@ -26,6 +26,7 @@ namespace SnakeGame
 
 		game.hud.Init(game.resources);
 		game.levelMangager.Init(game.resources);
+		game.leaderboard.Init(game.resources);
 	}
 
 	void HandleGameImput(Game &game, const sf::Event &event)
@@ -146,11 +147,11 @@ namespace SnakeGame
 			PauseMusic(game);
 			break;
 		case MenuState::GameOver:
-			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
+			game.leaderboard.LoadUI();
 			break;
 		case MenuState::Leaderboard:
-			LoadLeaderboard(game.leaderboard, game.levelMangager.GetSelectedLevelConfig().GetId());
-			LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
+			game.leaderboard.LoadFromFile(game.levelMangager.GetSelectedLevelConfig());
+			game.leaderboard.LoadUI();
 			break;
 		case MenuState::Resolution:
 			SetSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.windowResolution));
@@ -176,7 +177,7 @@ namespace SnakeGame
 		StopMusic(game);
 		game.speed = static_cast<float>(game.config.difficulty);
 		game.level.Init(game.levelMangager.GetSelectedLevelConfig(), game.resources);
-		LoadLeaderboard(game.leaderboard, game.level.GetId());
+		game.leaderboard.LoadFromFile(game.levelMangager.GetSelectedLevelConfig());
 		game.snake.Reset(game.resources, game.level.GetSnakeSpawn(), game.level.GetSnakeSize(), game.level.GetMaxSnakeLength());
 		game.level.SpawnApple();
 		game.score = 0;
@@ -216,10 +217,8 @@ namespace SnakeGame
 					PlaySound(game, game.soundJingle, game.resources.gameOver);
 					isDead = true;
 					if (game.score > 0)
-					{
-						AddLeaderboardEntry(game.leaderboard, game.config.playerName, game.score);
-						SaveLeaderboard(game.leaderboard);
-					}
+						game.leaderboard.AddEntry(game.config.playerName, game.score);
+
 					StopMusic(game);
 					StartMenuStateDelay(game, MenuState::GameOver, DelayType::GameOver);
 				}
@@ -245,7 +244,7 @@ namespace SnakeGame
 			break;
 		case MenuState::Leaderboard:
 			DrawUITint(game.ui, texture);
-			DrawLeaderboardUI(game.ui, game.leaderboard, texture);
+			game.leaderboard.Draw(texture);
 			DrawMenuUI(game.ui, menu, texture);
 			break;
 		case MenuState::GameOver:
@@ -253,7 +252,7 @@ namespace SnakeGame
 			game.snake.Draw(texture);
 			game.hud.Draw(texture);
 			DrawUITint(game.ui, texture);
-			DrawLeaderboardUI(game.ui, game.leaderboard, texture);
+			game.leaderboard.Draw(texture);
 			DrawMenuUI(game.ui, menu, texture);
 			break;
 		case MenuState::Pause:
@@ -293,7 +292,7 @@ namespace SnakeGame
 		switch (game.menuLayers.back().state)
 		{
 		case MenuState::Leaderboard:
-			HandleLeaderboardImput(game, event);
+			game.leaderboard.HandleInput(event);
 			HandleMainMenuImput(game, event);
 			break;
 		case MenuState::LevelSelect:
@@ -301,7 +300,7 @@ namespace SnakeGame
 			HandleMainMenuImput(game, event);
 			break;
 		case MenuState::GameOver:
-			HandleLeaderboardImput(game, event);
+			game.leaderboard.HandleInput(event);
 			HandleMainMenuImput(game, event);
 			break;
 		case MenuState::SetPlayerName:
@@ -438,44 +437,6 @@ namespace SnakeGame
 				PlaySound(game, game.soundFX, game.resources.uiSelect);
 			}
 		};
-	}
-
-	void HandleLeaderboardImput(Game &game, const sf::Event &event)
-	{
-		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
-		{
-			if (game.leaderboard.entries.size() > 0)
-			{
-				int previousItem = game.leaderboard.firstDisplayedItem;
-				game.leaderboard.firstDisplayedItem -= LEADERBOARD_DISPLAYED;
-				if (game.leaderboard.firstDisplayedItem < 0)
-				{
-					game.leaderboard.firstDisplayedItem = ((game.leaderboard.entries.size() - 1) / LEADERBOARD_DISPLAYED) * LEADERBOARD_DISPLAYED;
-				}
-				LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
-				if (previousItem != game.leaderboard.firstDisplayedItem)
-				{
-					PlaySound(game, game.soundFX, game.resources.uiMoveHorizontal);
-				}
-			}
-		}
-		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
-		{
-			if (game.leaderboard.entries.size() > 0)
-			{
-				int previousItem = game.leaderboard.firstDisplayedItem;
-				game.leaderboard.firstDisplayedItem += LEADERBOARD_DISPLAYED;
-				if (game.leaderboard.firstDisplayedItem > game.leaderboard.entries.size() - 1)
-				{
-					game.leaderboard.firstDisplayedItem = 0;
-				}
-				LoadLeaderboardUI(game.ui, game.leaderboard, game.levelMangager);
-				if (previousItem != game.leaderboard.firstDisplayedItem)
-				{
-					PlaySound(game, game.soundFX, game.resources.uiMoveHorizontal);
-				}
-			}
-		}
 	}
 
 	void HandleTypingInput(Game &game, const sf::Event &event)

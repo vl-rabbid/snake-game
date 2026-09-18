@@ -19,7 +19,7 @@ namespace SnakeGame
     class LevelManager
     {
     public:
-        void Init(Resources &resources);
+        void Init(const Resources &resources);
         void Update(const float deltaTime);
         void Draw(sf::RenderTexture &texture) const;
         void HandleInput(const sf::Event &event);

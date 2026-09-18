@@ -56,34 +56,6 @@ namespace SnakeGame
         ui.sliderVertical.setOrigin({3.f, 5.f});
         ui.sliderBarVertical.setFillColor(COLOR_TEXT);
 
-        ui.leaderboardFrame.setTexture(resources.leaderboardFrame);
-        ui.leaderboardFrame.setPosition(93.f, 31.f);
-        ui.leaderboardLabelFrame.setTexture(resources.leaderboardLabelFrame);
-        ui.leaderboardLabelFrame.setPosition(112.f, 25.f);
-        ui.leaderboardLabel.setString("Leaderboard");
-        ui.leaderboardLabel.setFont(resources.font);
-        ui.leaderboardLabel.setCharacterSize(16);
-        ui.leaderboardLabel.setFillColor(COLOR_TEXT);
-        ui.leaderboardLabel.setOrigin({std::round(ui.leaderboardLabel.getLocalBounds().width / 2), 0.f});
-        ui.leaderboardLabel.setPosition({std::round(ui.leaderboardLabelFrame.getGlobalBounds().left + ui.leaderboardLabelFrame.getGlobalBounds().width / 2), 21.f});
-        for (int i = 0; i < LEADERBOARD_DISPLAYED; i++)
-        {
-            ui.leaderboardEntry[i].setString(std::to_string(i + 1) + ".Entry...........10");
-            ui.leaderboardEntry[i].setFont(resources.font);
-            ui.leaderboardEntry[i].setCharacterSize(16);
-            ui.leaderboardEntry[i].setFillColor(COLOR_TEXT);
-            ui.leaderboardEntry[i].setPosition({100.f, 36.f + (14.f * i)});
-        }
-        ui.leaderboardRight.setTexture(resources.atlas);
-        ui.leaderboardRight.setTextureRect(GetTextureRect(TextureID::Right));
-        ui.leaderboardRight.setOrigin({6.f, 4.f});
-        ui.leaderboardRight.setPosition({233.f, 74.f});
-        ui.leaderboardLeft.setTexture(resources.atlas);
-        ui.leaderboardLeft.setTextureRect(GetTextureRect(TextureID::Left));
-        ui.leaderboardLeft.setOrigin({0.f, 4.f});
-        ui.leaderboardLeft.setPosition({85.f, 74.f});
-        ui.leaderboardLevel.Init(resources, 9);
-
         ui.inputMenu.setTexture(resources.inputMenu);
         ui.inputMenu.setOrigin({std::round(ui.inputMenu.getLocalBounds().width / 2), 0.f});
         ui.inputMenu.setPosition({(float)std::round(LEVEL_WIDTH * CELL_SIZE / 2), 64.f});
@@ -262,50 +234,5 @@ namespace SnakeGame
     {
         ui.inputLabel.setString(text);
         ui.inputMarker.setPosition({ui.inputLabel.getGlobalBounds().left + ui.inputLabel.getGlobalBounds().width + 1.f, ui.inputField.getGlobalBounds().top + 2.f});
-    }
-
-    void LoadLeaderboardUI(UI &ui, Leaderboard &leaderboard, LevelManager &levelManager)
-    {
-        for (int i = 0; i < LEADERBOARD_DISPLAYED; i++)
-        {
-            if (i + leaderboard.firstDisplayedItem < leaderboard.entries.size())
-            {
-                std::string text = std::to_string(i + leaderboard.firstDisplayedItem + 1) + ".";
-                text += leaderboard.entries[i + leaderboard.firstDisplayedItem].playerName;
-                std::string score = std::to_string(leaderboard.entries[i + leaderboard.firstDisplayedItem].score);
-                int dotNumber = 20 - text.size() - score.size();
-                for (int i = 0; i < dotNumber; i++)
-                {
-                    text += ".";
-                }
-                ui.leaderboardEntry[i].setString(text + score);
-            }
-        }
-        ui.leaderboardLevel.SetLevelName(levelManager.GetSelectedLevelConfig().GetName());
-        ui.leaderboardLevel.SetLevelPreview(levelManager.GetSelectedLevelConfig().GenerateLevelPreview());
-    }
-
-    void DrawLeaderboardUI(UI &ui, Leaderboard &leaderboard, sf::RenderTexture &texture)
-    {
-        texture.draw(ui.leaderboardFrame);
-        texture.draw(ui.leaderboardLabelFrame);
-        texture.draw(ui.leaderboardLabel);
-        for (int i = 0; i < LEADERBOARD_DISPLAYED; i++)
-        {
-            if (i + leaderboard.firstDisplayedItem < leaderboard.entries.size())
-            {
-                texture.draw(ui.leaderboardEntry[i]);
-            }
-        }
-        if (LEADERBOARD_DISPLAYED < leaderboard.entries.size() && leaderboard.firstDisplayedItem + LEADERBOARD_DISPLAYED < leaderboard.entries.size())
-        {
-            texture.draw(ui.leaderboardRight);
-        }
-        if (leaderboard.firstDisplayedItem > 0)
-        {
-            texture.draw(ui.leaderboardLeft);
-        }
-
-        ui.leaderboardLevel.Draw(texture);
     }
 }

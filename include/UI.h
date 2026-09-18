@@ -26,14 +26,6 @@ namespace SnakeGame
         float sliderVerticalTargetPositionY;
         sf::RectangleShape sliderBarVertical;
 
-        sf::Sprite leaderboardFrame;
-        sf::Sprite leaderboardLabelFrame;
-        sf::Text leaderboardLabel;
-        sf::Text leaderboardEntry[LEADERBOARD_DISPLAYED];
-        sf::Sprite leaderboardRight;
-        sf::Sprite leaderboardLeft;
-        LevelButton leaderboardLevel;
-
         sf::Sprite inputMenu;
         sf::Sprite inputField;
         sf::Text inputLabel;
@@ -51,6 +43,4 @@ namespace SnakeGame
     void UpdateMenuUI(UI &ui, const float deltaTime);
     void UpdateInputMarker(UI &ui, const float deltaTime);
     void SetInputLabel(UI &ui, std::string text);
-    void LoadLeaderboardUI(UI &ui, Leaderboard &leaderboard, LevelManager &levelManager);
-    void DrawLeaderboardUI(UI &ui, Leaderboard &leaderboard, sf::RenderTexture &texture);
 }

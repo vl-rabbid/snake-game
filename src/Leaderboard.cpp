@@ -4,50 +4,87 @@
 
 namespace SnakeGame
 {
-    void AddLeaderboardEntry(Leaderboard &leaderboard, std::string playerName, int score)
+    void Leaderboard::Init(const Resources &resources)
     {
-        LeaderboardEntry entry;
-        entry.playerName = playerName;
-        entry.score = score;
-        if (!EntryExists(leaderboard, entry))
-        {
-            leaderboard.entries.push_back(entry);
+        ui.background.setTexture(resources.leaderboardFrame);
+        ui.background.setPosition(93.f, 31.f);
+        ui.titleFrame.setTexture(resources.leaderboardLabelFrame);
+        ui.titleFrame.setPosition(112.f, 25.f);
 
-            SortLeaderboard(leaderboard);
-            if (leaderboard.entries.size() > LEADERBOARD_SIZE)
-                leaderboard.entries.resize(LEADERBOARD_SIZE);
+        SetDefaultText(resources, ui.title, "Leaderboard");
+        CenterTextOnSprite(ui.title, ui.titleFrame);
+        for (int i = 0; i < LEADERBOARD_DISPLAYED; i++)
+        {
+            SetDefaultText(resources, ui.entry[i], "Entry");
+            ui.entry[i].setPosition({100.f, 36.f + (14.f * i)});
         }
+
+        SetSpriteAtlas(resources, ui.arrowRight, TextureID::Right);
+        ui.arrowRight.setPosition({233.f, 74.f});
+        SetSpriteAtlas(resources, ui.arrowLeft, TextureID::Left);
+        ui.arrowLeft.setPosition({85.f, 74.f});
+        ui.levelButton.Init(resources, 9);
     }
 
-    bool EntryExists(Leaderboard &leaderboard, LeaderboardEntry &entry)
+    void Leaderboard::Draw(sf::RenderTexture &texture) const
     {
-        for (int i = 0; i < leaderboard.entries.size(); i++)
+        texture.draw(ui.background);
+        texture.draw(ui.titleFrame);
+        texture.draw(ui.title);
+        for (int i = 0; i < LEADERBOARD_DISPLAYED; i++)
+            if (i + firstDisplayedItem < entries.size())
+                texture.draw(ui.entry[i]);
+
+        if (LEADERBOARD_DISPLAYED < entries.size() && firstDisplayedItem + LEADERBOARD_DISPLAYED < entries.size())
+            texture.draw(ui.arrowRight);
+        if (firstDisplayedItem > 0)
+            texture.draw(ui.arrowLeft);
+
+        ui.levelButton.Draw(texture);
+    }
+
+    void Leaderboard::HandleInput(const sf::Event &event)
+    {
+        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
         {
-            if (leaderboard.entries[i].playerName == entry.playerName && leaderboard.entries[i].score == entry.score)
+            if (entries.size() > 0)
             {
-                return true;
+                int previousItem = firstDisplayedItem;
+                firstDisplayedItem -= LEADERBOARD_DISPLAYED;
+                if (firstDisplayedItem < 0)
+                    firstDisplayedItem = ((entries.size() - 1) / LEADERBOARD_DISPLAYED) * LEADERBOARD_DISPLAYED;
+                LoadUIEntries();
+                // if (previousItem != firstDisplayedItem)
+                // {
+                //     PlaySound(game, game.soundFX, game.resources.uiMoveHorizontal);
+                // }
             }
         }
-        return false;
-    }
-
-    void SortLeaderboard(Leaderboard &leaderboard)
-    {
-        std::sort(
-            leaderboard.entries.begin(),
-            leaderboard.entries.end(),
-            [](const LeaderboardEntry &a, const LeaderboardEntry &b)
+        else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
+        {
+            if (entries.size() > 0)
             {
-                return a.score > b.score;
-            });
+                int previousItem = firstDisplayedItem;
+                firstDisplayedItem += LEADERBOARD_DISPLAYED;
+                if (firstDisplayedItem > entries.size() - 1)
+                    firstDisplayedItem = 0;
+                LoadUIEntries();
+                // if (previousItem != firstDisplayedItem)
+                // {
+                //     PlaySound(game, game.soundFX, game.resources.uiMoveHorizontal);
+                // }
+            }
+        }
     }
 
-    bool LoadLeaderboard(Leaderboard &leaderboard, std::string levelId)
+    bool Leaderboard::LoadFromFile(const LevelConfig &levelConfig)
     {
-        leaderboard.levelId = levelId;
-        leaderboard.firstDisplayedItem = 0;
-        leaderboard.entries.clear();
-        leaderboard.entries.reserve(LEADERBOARD_SIZE);
+        levelId = levelConfig.GetId();
+        levelName = levelConfig.GetName();
+        levelPreview = levelConfig.GenerateLevelPreview();
+        firstDisplayedItem = 0;
+        entries.clear();
+        entries.reserve(LEADERBOARD_SIZE);
 
         std::ifstream file("leaderboards/" + levelId + ".lb");
         if (file.is_open())
@@ -65,10 +102,10 @@ namespace SnakeGame
                 LeaderboardEntry entry;
                 entry.playerName = key;
                 entry.score = std::stoi(value);
-                leaderboard.entries.push_back(entry);
+                entries.push_back(entry);
             }
-            if (leaderboard.entries.size() > LEADERBOARD_SIZE)
-                leaderboard.entries.resize(LEADERBOARD_SIZE);
+            if (entries.size() > LEADERBOARD_SIZE)
+                entries.resize(LEADERBOARD_SIZE);
 
             file.close();
             return true;
@@ -76,16 +113,77 @@ namespace SnakeGame
         return false;
     }
 
-    bool SaveLeaderboard(Leaderboard &leaderboard)
+    void Leaderboard::AddEntry(const std::string &playerName, int score)
+    {
+        LeaderboardEntry entry;
+        entry.playerName = playerName;
+        entry.score = score;
+        if (!DoesEntryExists(entry))
+        {
+            entries.push_back(entry);
+            Sort();
+            if (entries.size() > LEADERBOARD_SIZE)
+                entries.resize(LEADERBOARD_SIZE);
+        }
+        SaveToFile();
+    }
+
+    void Leaderboard::LoadUI()
+    {
+        ui.levelButton.SetLevelName(levelName);
+        ui.levelButton.SetLevelPreview(levelPreview);
+        LoadUIEntries();
+    }
+
+    void Leaderboard::LoadUIEntries()
+    {
+        for (int i = 0; i < LEADERBOARD_DISPLAYED; i++)
+        {
+            if (i + firstDisplayedItem < entries.size())
+            {
+                std::string text = std::to_string(i + firstDisplayedItem + 1) + ".";
+                text += entries[i + firstDisplayedItem].playerName;
+                std::string score = std::to_string(entries[i + firstDisplayedItem].score);
+                int dotNumber = 20 - text.size() - score.size();
+                for (int i = 0; i < dotNumber; i++)
+                {
+                    text += ".";
+                }
+                ui.entry[i].setString(text + score);
+            }
+        }
+    }
+
+    bool Leaderboard::DoesEntryExists(const LeaderboardEntry &entry) const
+    {
+        for (int i = 0; i < entries.size(); i++)
+            if (entries[i].playerName == entry.playerName && entries[i].score == entry.score)
+                return true;
+
+        return false;
+    }
+
+    void Leaderboard::Sort()
+    {
+        std::sort(
+            entries.begin(),
+            entries.end(),
+            [](const LeaderboardEntry &a, const LeaderboardEntry &b)
+            {
+                return a.score > b.score;
+            });
+    }
+
+    bool Leaderboard::SaveToFile()
     {
         const std::filesystem::path directory = "leaderboards";
         std::filesystem::create_directories(directory);
-        std::ofstream file("leaderboards/" + leaderboard.levelId + ".lb");
+        std::ofstream file("leaderboards/" + levelId + ".lb");
         if (file.is_open())
         {
-            for (int i = 0; i < leaderboard.entries.size(); i++)
+            for (int i = 0; i < entries.size(); i++)
             {
-                file << leaderboard.entries[i].playerName << "=" << leaderboard.entries[i].score << "\n";
+                file << entries[i].playerName << "=" << entries[i].score << "\n";
             }
             file.close();
             return true;

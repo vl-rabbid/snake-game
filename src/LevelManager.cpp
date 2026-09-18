@@ -5,7 +5,7 @@
 
 namespace SnakeGame
 {
-    void LevelManager::Init(Resources &resources)
+    void LevelManager::Init(const Resources &resources)
     {
         ui.selector.Init(resources);
 
@@ -158,7 +158,7 @@ namespace SnakeGame
         if (ui.buttons.size() < levels.size())
         {
             sf::Vector2f sliderPosition = ui.sliderBar.getPosition();
-            sliderPosition.x += std::round(ui.sliderBar.getSize().x * (float)(selected / (float)(levels.size() - 1)));
+            sliderPosition.x += std::round(ui.sliderBar.getSize().x * static_cast<float>(selected / static_cast<float>(levels.size() - 1)));
             ui.sliderTargetPositionX = sliderPosition.x;
         }
     }
