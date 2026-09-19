@@ -269,8 +269,17 @@ namespace SnakeGame
         case TextureID::Left:
             return {0.f, 4.f};
             break;
+        case TextureID::Up:
+            return {4.f, 8.f};
+            break;
+        case TextureID::Down:
+            return {4.f, 0.f};
+            break;
         case TextureID::SliderHorizontal:
             return {5.f, 3.f};
+            break;
+        case TextureID::SliderVertical:
+            return {3.f, 5.f};
             break;
 
         default:

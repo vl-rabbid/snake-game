@@ -20,7 +20,7 @@ namespace SnakeGame
 		InitConfig(game.config);
 
 		InitMenues(game.menus);
-		InitUI(game.ui, game.resources);
+		game.ui.Init(game.resources);
 		SetGameState(game, GameState::Menu);
 		SetMenuState(game, MenuState::Main);
 
@@ -166,12 +166,12 @@ namespace SnakeGame
 			break;
 		case MenuState::SetPlayerName:
 			game.newPlayerName = game.config.playerName;
-			SetInputLabel(game.ui, game.newPlayerName);
+			game.ui.SetImputLabel(game.newPlayerName);
 			break;
 		default:
 			break;
 		}
-		LoadMenuUI(game.ui, game.menuLayers.back());
+		game.ui.Load(game.menuLayers.back());
 	}
 
 	void StartGameLoop(Game &game, const LevelConfig &levelConfig)
@@ -246,33 +246,33 @@ namespace SnakeGame
 		switch (menu.state)
 		{
 		case MenuState::LevelSelect:
-			DrawUITint(game.ui, texture);
+			game.ui.DrawWindowTint(texture);
 			game.levelMangager.Draw(texture);
-			DrawMenuUI(game.ui, menu, texture);
+			game.ui.Draw(texture);
 			break;
 		case MenuState::Leaderboard:
-			DrawUITint(game.ui, texture);
+			game.ui.DrawWindowTint(texture);
 			game.leaderboardManager.Draw(texture);
-			DrawMenuUI(game.ui, menu, texture);
+			game.ui.Draw(texture);
 			break;
 		case MenuState::GameOver:
 			game.level.Draw(texture);
 			game.snake.Draw(texture);
 			game.hud.Draw(texture);
-			DrawUITint(game.ui, texture);
+			game.ui.DrawWindowTint(texture);
 			game.leaderboardManager.Draw(texture);
-			DrawMenuUI(game.ui, menu, texture);
+			game.ui.Draw(texture);
 			break;
 		case MenuState::Pause:
 			game.level.Draw(texture);
 			game.snake.Draw(texture);
 			game.hud.Draw(texture);
-			DrawUITint(game.ui, texture);
-			DrawMenuUI(game.ui, menu, texture);
+			game.ui.DrawWindowTint(texture);
+			game.ui.Draw(texture);
 			break;
 		default:
-			DrawUITint(game.ui, texture);
-			DrawMenuUI(game.ui, menu, texture);
+			game.ui.DrawWindowTint(texture);
+			game.ui.Draw(texture);
 			break;
 		}
 	}
@@ -282,15 +282,15 @@ namespace SnakeGame
 		switch (game.menuLayers.back().state)
 		{
 		case MenuState::LevelSelect:
-			UpdateMenuUI(game.ui, deltaTime);
+			game.ui.Update(deltaTime);
 			game.levelMangager.Update(deltaTime);
 			break;
 		case MenuState::SetPlayerName:
-			UpdateInputMarker(game.ui, deltaTime);
-			UpdateMenuUI(game.ui, deltaTime);
+			game.ui.Update(deltaTime);
+			game.ui.UpdateInputMarker(deltaTime);
 			break;
 		default:
-			UpdateMenuUI(game.ui, deltaTime);
+			game.ui.Update(deltaTime);
 			break;
 		}
 	}
@@ -326,10 +326,11 @@ namespace SnakeGame
 		static bool enterHeld = false;
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter)
 		{
-			if (!game.menuLayers.back().items[game.menuLayers.back().selected].pressed)
+			Menu &menu = game.menuLayers.back();
+			if (!menu.items[menu.selected].pressed)
 			{
-				game.menuLayers.back().items[game.menuLayers.back().selected].pressed = true;
-				LoadMenuUIItems(game.ui, game.menuLayers.back());
+				menu.items[menu.selected].pressed = true;
+				game.ui.LoadButtons(menu);
 				enterHeld = true;
 			}
 		}
@@ -338,7 +339,7 @@ namespace SnakeGame
 			if (game.menuLayers.size() > 1)
 			{
 				game.menuLayers.pop_back();
-				LoadMenuUI(game.ui, game.menuLayers.back());
+				game.ui.Load(game.menuLayers.back());
 				PlaySound(game, game.soundFX, game.resources.uiSelect);
 			}
 			else if (game.menuLayers.back().state == MenuState::Pause)
@@ -348,45 +349,74 @@ namespace SnakeGame
 		}
 		else if (!enterHeld && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
 		{
-			int previousItem = game.menuLayers.back().selected;
-			game.menuLayers.back().selected -= 1;
-			if (game.menuLayers.back().selected < 0)
+			Menu &menu = game.menuLayers.back();
+			int previousItem = menu.selected;
+			menu.selected -= 1;
+			if (menu.selected < 0)
+				menu.selected = menu.items.size() - 1;
+
+			if (menu.selected >= menu.firstDisplayedItem + menu.displayedItemAmount)
 			{
-				game.menuLayers.back().selected = game.menuLayers.back().items.size() - 1;
+				menu.firstDisplayedItem = menu.selected - menu.displayedItemAmount + 1;
+				game.ui.LoadButtons(menu);
 			}
-			SetMenuSelectedItem(game.ui, game.menuLayers.back());
-			if (previousItem != game.menuLayers.back().selected)
+			else if ((menu.selected < menu.firstDisplayedItem))
 			{
+				menu.firstDisplayedItem = menu.selected;
+				game.ui.LoadButtons(menu);
+			}
+			else
+			{
+				game.ui.SetSelector(menu.selected);
+			}
+
+			if (previousItem != menu.selected)
 				PlaySound(game, game.soundFX, game.resources.uiMoveVertical);
-			}
 		}
 		else if (!enterHeld && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
 		{
-			int previousItem = game.menuLayers.back().selected;
-			game.menuLayers.back().selected += 1;
-			if (game.menuLayers.back().selected > game.menuLayers.back().items.size() - 1)
+			Menu &menu = game.menuLayers.back();
+			int previousItem = menu.selected;
+			menu.selected += 1;
+			if (menu.selected > menu.items.size() - 1)
 			{
-				game.menuLayers.back().selected = 0;
+				menu.selected = 0;
 			}
-			SetMenuSelectedItem(game.ui, game.menuLayers.back());
-			if (previousItem != game.menuLayers.back().selected)
+
+			if (menu.selected >= menu.firstDisplayedItem + menu.displayedItemAmount)
+			{
+				menu.firstDisplayedItem = menu.selected - menu.displayedItemAmount + 1;
+				game.ui.LoadButtons(menu);
+			}
+			else if ((menu.selected < menu.firstDisplayedItem))
+			{
+				menu.firstDisplayedItem = menu.selected;
+				game.ui.LoadButtons(menu);
+			}
+			else
+			{
+				game.ui.SetSelector(menu.selected);
+			}
+
+			if (previousItem != menu.selected)
 			{
 				PlaySound(game, game.soundFX, game.resources.uiMoveVertical);
 			}
 		}
 		else if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Enter)
 		{
+			Menu &menu = game.menuLayers.back();
 			enterHeld = false;
-			game.menuLayers.back().items[game.menuLayers.back().selected].pressed = false;
-			if (game.menuLayers.back().items[game.menuLayers.back().selected].enabled)
+			menu.items[menu.selected].pressed = false;
+			if (menu.items[menu.selected].enabled)
 			{
-				switch (game.menuLayers.back().items[game.menuLayers.back().selected].actionType)
+				switch (menu.items[menu.selected].actionType)
 				{
 				case MenuActionType::SwitchGameState:
-					SetGameState(game, static_cast<GameState>(game.menuLayers.back().items[game.menuLayers.back().selected].actionTarget));
+					SetGameState(game, static_cast<GameState>(menu.items[menu.selected].actionTarget));
 					break;
 				case MenuActionType::SwitchMenuState:
-					SetMenuState(game, static_cast<MenuState>(game.menuLayers.back().items[game.menuLayers.back().selected].actionTarget));
+					SetMenuState(game, static_cast<MenuState>(menu.items[menu.selected].actionTarget));
 					break;
 				case MenuActionType::StartGame:
 					StartGameLoop(game, game.levelMangager.GetSelectedLevelConfig());
@@ -403,33 +433,33 @@ namespace SnakeGame
 					if (game.menuLayers.size() > 1)
 					{
 						game.menuLayers.pop_back();
-						LoadMenuUI(game.ui, game.menuLayers.back());
+						game.ui.Load(game.menuLayers.back());
 					}
 					break;
 				case MenuActionType::SetScreenScale:
-					game.config.windowResolution = static_cast<WindowResolution>(game.menuLayers.back().items[game.menuLayers.back().selected].actionTarget);
+					game.config.windowResolution = static_cast<WindowResolution>(menu.items[menu.selected].actionTarget);
 					SaveConfig(game.config);
 					game.applicationRequest = {ApplicationRequestType::SetWindowScale};
-					SetSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.windowResolution));
-					LoadMenuUIItems(game.ui, game.menuLayers.back());
+					SetSubMenuItems(menu, game, static_cast<int>(game.config.windowResolution));
+					game.ui.LoadButtons(menu);
 					break;
 				case MenuActionType::SetDifficulty:
-					game.config.difficulty = static_cast<GameDifficulty>(game.menuLayers.back().items[game.menuLayers.back().selected].actionTarget);
+					game.config.difficulty = static_cast<GameDifficulty>(menu.items[menu.selected].actionTarget);
 					SaveConfig(game.config);
-					SetSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.difficulty));
-					LoadMenuUIItems(game.ui, game.menuLayers.back());
+					SetSubMenuItems(menu, game, static_cast<int>(game.config.difficulty));
+					game.ui.LoadButtons(menu);
 					break;
 				case MenuActionType::ToggleSound:
 					game.config.soundEnabled = !game.config.soundEnabled;
 					SaveConfig(game.config);
-					SetSettingsItems(game.menuLayers.back(), game);
-					LoadMenuUIItems(game.ui, game.menuLayers.back());
+					SetSettingsItems(menu, game);
+					game.ui.LoadButtons(menu);
 					break;
 				case MenuActionType::ToggleMusic:
 					game.config.musicEnabled = !game.config.musicEnabled;
 					SaveConfig(game.config);
-					SetSettingsItems(game.menuLayers.back(), game);
-					LoadMenuUIItems(game.ui, game.menuLayers.back());
+					SetSettingsItems(menu, game);
+					game.ui.LoadButtons(menu);
 					break;
 				case MenuActionType::SavePlayerName:
 					game.config.playerName = game.newPlayerName;
@@ -437,7 +467,7 @@ namespace SnakeGame
 					if (game.menuLayers.size() > 1)
 					{
 						game.menuLayers.pop_back();
-						LoadMenuUI(game.ui, game.menuLayers.back());
+						game.ui.Load(game.menuLayers.back());
 					}
 					break;
 				case MenuActionType::ExitApplication:
@@ -461,19 +491,19 @@ namespace SnakeGame
 				if (!game.newPlayerName.empty())
 				{
 					game.newPlayerName.pop_back();
-					SetInputLabel(game.ui, game.newPlayerName);
+					game.ui.SetImputLabel(game.newPlayerName);
 					PlaySound(game, game.soundFX, game.resources.input);
 					SetInputMenuItems(game.menuLayers.back(), game);
-					LoadMenuUIItems(game.ui, game.menuLayers.back());
+					game.ui.LoadButtons(game.menuLayers.back());
 				}
 			}
 			else if (game.newPlayerName.size() < 10 && IsAllowedInputChar(c))
 			{
 				game.newPlayerName += static_cast<char>(c);
-				SetInputLabel(game.ui, game.newPlayerName);
+				game.ui.SetImputLabel(game.newPlayerName);
 				PlaySound(game, game.soundFX, game.resources.input);
 				SetInputMenuItems(game.menuLayers.back(), game);
-				LoadMenuUIItems(game.ui, game.menuLayers.back());
+				game.ui.LoadButtons(game.menuLayers.back());
 			}
 		}
 	}

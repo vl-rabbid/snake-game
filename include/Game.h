@@ -5,7 +5,7 @@
 #include "Snake.h"
 #include "Level.h"
 #include "StateManager.h"
-#include "UI.h"
+#include "MenuUI.h"
 #include "Menu.h"
 #include "Resources.h"
 #include "Config.h"
@@ -35,7 +35,7 @@ namespace SnakeGame
 
 		std::map<MenuState, Menu> menus;
 		std::vector<Menu> menuLayers;
-		UI ui;
+		MenuUI ui;
 
 		sf::Sound soundFX;
 		sf::Sound soundJingle;
