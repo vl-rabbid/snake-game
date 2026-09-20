@@ -16,12 +16,17 @@ namespace SnakeGame
         void SetState(const MenuState &state, const Config &gameConfig, const Leaderboard &gameLeaderboard);
         MenuCommand HandleInput(const sf::Event &event);
         void ClearLayers();
-        void ReloadUI(bool setSelector, bool loadButtons, bool loadMenu, bool previousMenu);
+        void LoadMenu();
+        void LoadButtons();
+        void SetSelector();
+        bool PreviousMenu();
         void SetMenuItems(const Config &config);
+        const LevelConfig &GetSelectedLevelConfig() const;
+        const std::string &GetInputString() const;
 
     private:
         void DrawMenu(const Menu &menu, sf::RenderTexture &texture) const;
-        void HandleTypingInput(const sf::Event &event, SoundID &sound);
+        void HandleTypingInput(MenuCommand &command, const sf::Event &event);
         bool IsAllowedInputChar(char32_t c);
 
         std::vector<Menu> layers;

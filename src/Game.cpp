@@ -312,16 +312,31 @@ namespace SnakeGame
 	{
 		switch (command.action)
 		{
+		case MenuAction::MenuMoveVertical:
+			game.menu.SetSelector();
+			game.audio.PlaySound(SoundID::UIMoveVertical, game.config.soundEnabled);
+			break;
+		case MenuAction::MenuMoveHorizontal:
+			game.audio.PlaySound(SoundID::UIMoveHorizontal, game.config.soundEnabled);
+			break;
+		case MenuAction::MenuInput:
+			game.audio.PlaySound(SoundID::Input, game.config.soundEnabled);
+			break;
+		case MenuAction::MenuPress:
+			game.menu.LoadButtons();
+			break;
 		case MenuAction::SwitchGameState:
 			SetGameState(game, static_cast<GameState>(command.actionTarget));
+			game.audio.PlaySound(SoundID::UISelect, game.config.soundEnabled);
 			break;
 		case MenuAction::SwitchMenuState:
 			if (static_cast<MenuState>(command.actionTarget) == MenuState::Main)
 				SetGameState(game, GameState::Menu);
 			game.menu.SetState(static_cast<MenuState>(command.actionTarget), game.config, game.leaderboard);
+			game.audio.PlaySound(SoundID::UISelect, game.config.soundEnabled);
 			break;
 		case MenuAction::StartGame:
-			StartGameLoop(game, command.levelConfig);
+			StartGameLoop(game, game.menu.GetSelectedLevelConfig());
 			StartGameStateDelay(game, GameState::GameLoop, DelayType::GameStart);
 			break;
 		case MenuAction::ResetGame:
@@ -331,30 +346,44 @@ namespace SnakeGame
 		case MenuAction::ResumeGame:
 			StartGameStateDelay(game, GameState::GameLoop, DelayType::GameStart);
 			break;
+		case MenuAction::PreviousMenu:
+			if (game.menu.PreviousMenu())
+				game.audio.PlaySound(SoundID::UISelect, game.config.soundEnabled);
+			break;
 		case MenuAction::SetScreenScale:
 			game.config.windowResolution = static_cast<WindowResolution>(command.actionTarget);
 			SaveConfig(game.config);
 			game.applicationRequest = {ApplicationRequestType::SetWindowScale};
 			game.menu.SetMenuItems(game.config);
+			game.menu.PreviousMenu();
+			game.audio.PlaySound(SoundID::UISelect, game.config.soundEnabled);
 			break;
 		case MenuAction::SetDifficulty:
 			game.config.difficulty = static_cast<GameDifficulty>(command.actionTarget);
 			SaveConfig(game.config);
 			game.menu.SetMenuItems(game.config);
+			game.menu.PreviousMenu();
+			game.audio.PlaySound(SoundID::UISelect, game.config.soundEnabled);
 			break;
 		case MenuAction::ToggleSound:
 			game.config.soundEnabled = !game.config.soundEnabled;
 			SaveConfig(game.config);
 			game.menu.SetMenuItems(game.config);
+			game.menu.LoadButtons();
+			game.audio.PlaySound(SoundID::UISelect, game.config.soundEnabled);
 			break;
 		case MenuAction::ToggleMusic:
 			game.config.musicEnabled = !game.config.musicEnabled;
 			SaveConfig(game.config);
 			game.menu.SetMenuItems(game.config);
+			game.menu.LoadButtons();
+			game.audio.PlaySound(SoundID::UISelect, game.config.soundEnabled);
 			break;
 		case MenuAction::SavePlayerName:
-			game.config.playerName = command.inputString;
+			game.config.playerName = game.menu.GetInputString();
 			SaveConfig(game.config);
+			game.menu.PreviousMenu();
+			game.audio.PlaySound(SoundID::UISelect, game.config.soundEnabled);
 			break;
 		case MenuAction::ExitApplication:
 			game.applicationRequest = {ApplicationRequestType::ExitApplication};
@@ -362,7 +391,7 @@ namespace SnakeGame
 		default:
 			break;
 		}
-		game.menu.ReloadUI(command.setSelector, command.loadButtons, command.loadMenu, command.previousMenu);
-		game.audio.PlaySound(command.sound, game.config.soundEnabled);
+		// game.menu.ReloadUI(command.setSelector, command.loadButtons, command.loadMenu, command.previousMenu);
+		// game.audio.PlaySound(command.sound, game.config.soundEnabled);
 	}
 }

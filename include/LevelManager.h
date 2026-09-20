@@ -2,6 +2,7 @@
 #include "GameMath.h"
 #include "LevelConfig.h"
 #include "UIComponents.h"
+#include "MenuCommand.h"
 
 namespace SnakeGame
 {
@@ -22,7 +23,7 @@ namespace SnakeGame
         void Init(const Resources &resources);
         void Update(const float deltaTime);
         void Draw(sf::RenderTexture &texture) const;
-        void HandleInput(const sf::Event &event, SoundID &sound);
+        void HandleInput(MenuCommand &command, const sf::Event &event);
         void LoadFromFiles();
 
         const LevelConfig &GetSelectedLevelConfig() const;

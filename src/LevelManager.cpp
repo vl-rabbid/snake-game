@@ -57,7 +57,7 @@ namespace SnakeGame
         }
     }
 
-    void LevelManager::HandleInput(const sf::Event &event, SoundID &sound)
+    void LevelManager::HandleInput(MenuCommand &command, const sf::Event &event)
     {
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
         {
@@ -68,7 +68,7 @@ namespace SnakeGame
 
             SetSelector();
             if (previousItem != selected)
-                sound = SoundID::UIMoveHorizontal;
+                command.action = MenuAction::MenuMoveHorizontal;
         }
         else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
         {
@@ -80,7 +80,7 @@ namespace SnakeGame
             }
             SetSelector();
             if (previousItem != selected)
-                sound = SoundID::UIMoveHorizontal;
+                command.action = MenuAction::MenuMoveHorizontal;
         }
     }
 

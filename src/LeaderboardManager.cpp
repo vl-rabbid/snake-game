@@ -41,8 +41,9 @@ namespace SnakeGame
         ui.levelButton.Draw(texture);
     }
 
-    void LeaderboardManager::HandleInput(const sf::Event &event, SoundID &sound)
+    void LeaderboardManager::HandleInput(MenuCommand &command, const sf::Event &event)
     {
+
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
         {
             if (entries.size() > 0)
@@ -53,7 +54,7 @@ namespace SnakeGame
                     firstDisplayedItem = ((entries.size() - 1) / LEADERBOARD_DISPLAYED) * LEADERBOARD_DISPLAYED;
                 LoadUIEntries();
                 if (previousItem != firstDisplayedItem)
-                    sound = SoundID::UIMoveHorizontal;
+                    command.action = MenuAction::MenuMoveHorizontal;
             }
         }
         else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
@@ -66,7 +67,7 @@ namespace SnakeGame
                     firstDisplayedItem = 0;
                 LoadUIEntries();
                 if (previousItem != firstDisplayedItem)
-                    sound = SoundID::UIMoveHorizontal;
+                    command.action = MenuAction::MenuMoveHorizontal;
             }
         }
     }

@@ -7,6 +7,12 @@ namespace SnakeGame
     enum class MenuAction
     {
         None = 0,
+
+        MenuMoveVertical,
+        MenuMoveHorizontal,
+        MenuInput,
+        MenuPress,
+
         SwitchMenuState,
         SwitchGameState,
         StartGame,
@@ -25,16 +31,6 @@ namespace SnakeGame
     {
         MenuAction action;
         int actionTarget;
-
-        LevelConfig levelConfig;
-        std::string inputString;
-
-        bool setSelector;
-        bool loadButtons;
-        bool loadMenu;
-        bool previousMenu;
-
-        SoundID sound;
     };
 
 }

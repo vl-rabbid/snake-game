@@ -59,9 +59,6 @@ namespace SnakeGame
         case MenuState::LevelSelect:
             levelMangager.LoadFromFiles();
             break;
-        case MenuState::Pause:
-            // PauseMusic(game);
-            break;
         case MenuState::GameOver:
             leaderboardManager.LoadUI(gameLeaderboard);
             break;
@@ -95,20 +92,16 @@ namespace SnakeGame
         switch (layers.back().GetState())
         {
         case MenuState::Leaderboard:
-            leaderboardManager.HandleInput(event, command.sound);
+            leaderboardManager.HandleInput(command, event);
             break;
         case MenuState::LevelSelect:
-            levelMangager.HandleInput(event, command.sound);
-            if (command.action == MenuAction::StartGame)
-                command.levelConfig = levelMangager.GetSelectedLevelConfig();
+            levelMangager.HandleInput(command, event);
             break;
         case MenuState::GameOver:
-            leaderboardManager.HandleInput(event, command.sound);
+            leaderboardManager.HandleInput(command, event);
             break;
         case MenuState::SetPlayerName:
-            HandleTypingInput(event, command.sound);
-            if (command.action == MenuAction::SavePlayerName)
-                command.inputString = inputString;
+            HandleTypingInput(command, event);
             break;
         default:
             break;
@@ -121,22 +114,30 @@ namespace SnakeGame
         layers.clear();
     }
 
-    void MenuManager::ReloadUI(bool setSelector, bool loadButtons, bool loadMenu, bool previousMenu)
+    void MenuManager::LoadMenu()
     {
-        if (previousMenu)
+        menuUi.Load(layers.back());
+    }
+
+    void MenuManager::LoadButtons()
+    {
+        menuUi.LoadButtons(layers.back());
+    }
+
+    void MenuManager::SetSelector()
+    {
+        menuUi.SetSelector(layers.back().GetSelected(), layers.back().GetFirstDisplayedItem());
+    }
+
+    bool MenuManager::PreviousMenu()
+    {
+        if (layers.size() > 1)
         {
-            if (layers.size() > 1)
-            {
-                layers.pop_back();
-                menuUi.Load(layers.back());
-            }
-        }
-        else if (loadMenu)
+            layers.pop_back();
             menuUi.Load(layers.back());
-        else if (loadButtons)
-            menuUi.LoadButtons(layers.back());
-        else if (setSelector)
-            menuUi.SetSelector(layers.back().GetSelected());
+            return true;
+        }
+        return false;
     }
 
     void MenuManager::SetMenuItems(const Config &config)
@@ -155,6 +156,16 @@ namespace SnakeGame
         default:
             break;
         }
+    }
+
+    const LevelConfig &MenuManager::GetSelectedLevelConfig() const
+    {
+        return levelMangager.GetSelectedLevelConfig();
+    }
+
+    const std::string &MenuManager::GetInputString() const
+    {
+        return inputString;
     }
 
     void MenuManager::DrawMenu(const Menu &menu, sf::RenderTexture &texture) const
@@ -183,7 +194,7 @@ namespace SnakeGame
         }
     }
 
-    void MenuManager::HandleTypingInput(const sf::Event &event, SoundID &sound)
+    void MenuManager::HandleTypingInput(MenuCommand &command, const sf::Event &event)
     {
         if (event.type == sf::Event::TextEntered)
         {
@@ -194,18 +205,18 @@ namespace SnakeGame
                 {
                     inputString.pop_back();
                     menuUi.SetImputLabel(inputString);
-                    sound = SoundID::Input;
                     layers.back().SetInputItems(inputString);
                     menuUi.LoadButtons(layers.back());
+                    command.action = MenuAction::MenuInput;
                 }
             }
             else if (inputString.size() < 10 && IsAllowedInputChar(c))
             {
                 inputString += static_cast<char>(c);
                 menuUi.SetImputLabel(inputString);
-                sound = SoundID::Input;
                 layers.back().SetInputItems(inputString);
                 menuUi.LoadButtons(layers.back());
+                command.action = MenuAction::MenuInput;
             }
         }
     }

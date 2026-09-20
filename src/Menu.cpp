@@ -6,11 +6,6 @@ namespace SnakeGame
     {
         MenuCommand command;
         command.action = MenuAction::None;
-        command.sound = SoundID::None;
-        command.setSelector = false;
-        command.loadButtons = false;
-        command.loadMenu = false;
-        command.previousMenu = false;
 
         static bool enterHeld = false;
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter)
@@ -19,7 +14,7 @@ namespace SnakeGame
             {
                 config.items[selected].pressed = true;
                 enterHeld = true;
-                command.loadButtons = true;
+                command.action = MenuAction::MenuPress;
             }
             return command;
         }
@@ -28,7 +23,8 @@ namespace SnakeGame
             if (config.state == MenuState::Pause)
                 command.action = MenuAction::ResumeGame;
             else
-                command.previousMenu = true;
+                command.action = MenuAction::PreviousMenu;
+
             return command;
         }
         else if (!enterHeld && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
@@ -39,20 +35,12 @@ namespace SnakeGame
                 selected = config.items.size() - 1;
 
             if (selected >= firstDisplayedItem + config.displayedItemAmount)
-            {
                 firstDisplayedItem = selected - config.displayedItemAmount + 1;
-                command.loadButtons = true;
-            }
             else if ((selected < firstDisplayedItem))
-            {
                 firstDisplayedItem = selected;
-                command.loadButtons = true;
-            }
-            else
-                command.setSelector = true;
 
             if (previousItem != selected)
-                command.sound = SoundID::UIMoveVertical;
+                command.action = MenuAction::MenuMoveVertical;
 
             return command;
         }
@@ -61,25 +49,15 @@ namespace SnakeGame
             int previousItem = selected;
             selected += 1;
             if (selected > config.items.size() - 1)
-            {
                 selected = 0;
-            }
 
             if (selected >= firstDisplayedItem + config.displayedItemAmount)
-            {
                 firstDisplayedItem = selected - config.displayedItemAmount + 1;
-                command.loadButtons = true;
-            }
             else if ((selected < firstDisplayedItem))
-            {
                 firstDisplayedItem = selected;
-                command.loadButtons = true;
-            }
-            else
-                command.setSelector = true;
 
             if (previousItem != selected)
-                command.sound = SoundID::UIMoveVertical;
+                command.action = MenuAction::MenuMoveVertical;
 
             return command;
         }
@@ -89,30 +67,6 @@ namespace SnakeGame
             config.items[selected].pressed = false;
             if (config.items[selected].enabled)
             {
-                switch (config.items[selected].action)
-                {
-                case MenuAction::PreviousMenu:
-                    command.previousMenu = true;
-                    break;
-                case MenuAction::SetScreenScale:
-                    command.previousMenu = true;
-                    break;
-                case MenuAction::SetDifficulty:
-                    command.previousMenu = true;
-                    break;
-                case MenuAction::ToggleSound:
-                    command.loadButtons = true;
-                    break;
-                case MenuAction::ToggleMusic:
-                    command.loadButtons = true;
-                    break;
-                case MenuAction::SavePlayerName:
-                    command.previousMenu = true;
-                    break;
-                default:
-                    break;
-                }
-                command.sound = SoundID::UISelect;
                 command.action = config.items[selected].action;
                 command.actionTarget = config.items[selected].actionTarget;
             }

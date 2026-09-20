@@ -1,6 +1,7 @@
 #pragma once
 #include "UIComponents.h"
 #include "Leaderboard.h"
+#include "MenuCommand.h"
 
 namespace SnakeGame
 {
@@ -20,7 +21,7 @@ namespace SnakeGame
     public:
         void Init(const Resources &resources);
         void Draw(sf::RenderTexture &texture) const;
-        void HandleInput(const sf::Event &event, SoundID &sound);
+        void HandleInput(MenuCommand &command, const sf::Event &event);
         void LoadUI(const Leaderboard &leaderboard);
 
     private:

@@ -15,7 +15,7 @@ namespace SnakeGame
         void Init(const Resources &resources);
         void Load(const Menu &menu);
         void LoadButtons(const Menu &menu);
-        void SetSelector(int selected);
+        void SetSelector(int selected, int firstDisplayedMenuItem);
         void DrawWindowTint(sf::RenderTexture &texture) const;
         void Draw(sf::RenderTexture &texture) const;
         void Update(const float deltaTime);

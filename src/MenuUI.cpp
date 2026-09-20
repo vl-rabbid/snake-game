@@ -96,11 +96,24 @@ namespace SnakeGame
                 buttons[i].SetText(item.label, item.enabled, item.pressed);
             }
         }
-        SetSelector(menu.GetSelected());
+        SetSelector(menu.GetSelected(), menu.GetFirstDisplayedItem());
     }
 
-    void MenuUI::SetSelector(int selected)
+    void MenuUI::SetSelector(int selected, int firstDisplayedMenuItem)
     {
+        if (firstDisplayedItem != firstDisplayedMenuItem)
+        {
+            firstDisplayedItem = firstDisplayedMenuItem;
+            for (int i = 0; i < displayedItemAmount; i++)
+            {
+                if (i + firstDisplayedItem < items.size())
+                {
+                    MenuItem &item = items[i + firstDisplayedItem];
+                    buttons[i].SetText(item.label, item.enabled, item.pressed);
+                }
+            }
+        }
+
         bool enabled = items[selected].enabled;
         bool pressed = items[selected].pressed;
         const sf::FloatRect itemRect = buttons[selected - firstDisplayedItem].GetSelectorBounds(enabled, pressed);
