@@ -9,7 +9,6 @@ namespace SnakeGame
 
     Application::~Application()
     {
-        DeinitializeGame(game);
     }
 
     void Application::Run()

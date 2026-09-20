@@ -63,19 +63,19 @@ namespace SnakeGame
 
     void MenuUI::Load(const Menu &menu)
     {
-        type = menu.type;
-        displayedItemAmount = menu.displayedItemAmount;
+        type = menu.GetType();
+        displayedItemAmount = menu.GetDisplayedItemAmount();
 
         if (type == MenuType::FullMenu)
         {
-            title.setString(menu.label);
+            title.setString(menu.GetTitle());
             SetTextRelativeOrigin(title, 0.5f, 0.5f);
-            titleShadow.setString(menu.label);
+            titleShadow.setString(menu.GetTitle());
             SetTextRelativeOrigin(titleShadow, 0.5f, 0.5f);
         }
         else if (type == MenuType::SubMenu || type == MenuType::InputString)
         {
-            subTitleText.setString(menu.label);
+            subTitleText.setString(menu.GetTitle());
             CenterTextOnSprite(subTitleText, subTitleFrame);
         }
         ShiftButtonPosition();
@@ -86,8 +86,8 @@ namespace SnakeGame
 
     void MenuUI::LoadButtons(const Menu &menu)
     {
-        items = menu.items;
-        firstDisplayedItem = menu.firstDisplayedItem;
+        items = menu.GetItems();
+        firstDisplayedItem = menu.GetFirstDisplayedItem();
         for (int i = 0; i < displayedItemAmount; i++)
         {
             if (i + firstDisplayedItem < items.size())
@@ -96,7 +96,7 @@ namespace SnakeGame
                 buttons[i].SetText(item.label, item.enabled, item.pressed);
             }
         }
-        SetSelector(menu.selected);
+        SetSelector(menu.GetSelected());
     }
 
     void MenuUI::SetSelector(int selected)

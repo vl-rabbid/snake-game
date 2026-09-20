@@ -19,14 +19,11 @@ namespace SnakeGame
 		game.background.setTexture(game.resources.background);
 		InitConfig(game.config);
 
-		InitMenues(game.menus);
-		game.ui.Init(game.resources);
+		game.menu.Init(game.resources);
 		SetGameState(game, GameState::Menu);
-		SetMenuState(game, MenuState::Main);
+		game.menu.SetState(MenuState::Main, game.config, game.leaderboard);
 
 		game.hud.Init(game.resources);
-		game.levelMangager.Init(game.resources);
-		game.leaderboardManager.Init(game.resources);
 	}
 
 	void HandleGameImput(Game &game, const sf::Event &event)
@@ -36,16 +33,22 @@ namespace SnakeGame
 			game.applicationRequest = {ApplicationRequestType::ExitApplication};
 			return;
 		}
+		MenuCommand command;
 		switch (game.gameState)
 		{
 		case GameState::Menu:
-			HandleMenuImput(game, event);
+			command = game.menu.HandleInput(event);
+			HandleMenuCommand(game, command);
+			break;
+		case GameState::MenuOverlay:
+			command = game.menu.HandleInput(event);
+			HandleMenuCommand(game, command);
 			break;
 		case GameState::GameLoop:
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
 			{
-				SetGameState(game, GameState::Menu);
-				SetMenuState(game, MenuState::Pause);
+				SetGameState(game, GameState::MenuOverlay);
+				game.menu.SetState(MenuState::Pause, game.config, game.leaderboard);
 			}
 			game.snake.HandleInput(event);
 			break;
@@ -59,7 +62,10 @@ namespace SnakeGame
 		switch (game.gameState)
 		{
 		case GameState::Menu:
-			UpdateMenu(game, deltaTime);
+			game.menu.Update(deltaTime);
+			break;
+		case GameState::MenuOverlay:
+			game.menu.Update(deltaTime);
 			break;
 		case GameState::GameLoop:
 			UpdateGameLoop(game, deltaTime);
@@ -78,18 +84,13 @@ namespace SnakeGame
 		switch (game.gameState)
 		{
 		case GameState::Menu:
-			if (game.menuLayers.back().type == MenuType::FullMenu)
-			{
-				DrawMenu(game, game.menuLayers.back(), texture);
-			}
-			else if (game.menuLayers.size() > 1)
-			{
-				if (game.menuLayers.back().type == MenuType::SubMenu || game.menuLayers.back().type == MenuType::InputString)
-				{
-					DrawMenu(game, game.menuLayers[game.menuLayers.size() - 2], texture);
-					DrawMenu(game, game.menuLayers.back(), texture);
-				}
-			}
+			game.menu.Draw(texture);
+			break;
+		case GameState::MenuOverlay:
+			game.level.Draw(texture);
+			game.snake.Draw(texture);
+			game.hud.Draw(texture);
+			game.menu.Draw(texture);
 			break;
 		case GameState::GameLoop:
 			game.level.Draw(texture);
@@ -107,71 +108,24 @@ namespace SnakeGame
 		}
 	}
 
-	void DeinitializeGame(Game &game)
-	{
-	}
-
 	void SetGameState(Game &game, const GameState &gameState)
 	{
 		switch (gameState)
 		{
+		case GameState::Menu:
+			StopMusic(game);
+			break;
+		case GameState::MenuOverlay:
+			StopMusic(game);
+			break;
 		case GameState::GameLoop:
-			game.menuLayers.clear();
+			game.menu.ClearLayers();
 			PlayMusic(game);
 			break;
 		default:
 			break;
 		}
 		game.gameState = gameState;
-	}
-
-	void SetMenuState(Game &game, MenuState menuState)
-	{
-		if (menuState == MenuState::Main)
-		{
-			game.menuLayers.clear();
-		}
-
-		Menu menu;
-		menu = game.menus[menuState];
-		menu.selected = 0;
-		menu.firstDisplayedItem = 0;
-		game.menuLayers.push_back(menu);
-
-		Leaderboard leaderboard;
-
-		switch (game.menuLayers.back().state)
-		{
-		case MenuState::LevelSelect:
-			game.levelMangager.LoadFromFiles();
-			break;
-		case MenuState::Pause:
-			PauseMusic(game);
-			break;
-		case MenuState::GameOver:
-			game.leaderboardManager.LoadUI(game.leaderboard);
-			break;
-		case MenuState::Leaderboard:
-			leaderboard.LoadFromFile(game.levelMangager.GetSelectedLevelConfig());
-			game.leaderboardManager.LoadUI(leaderboard);
-			break;
-		case MenuState::Resolution:
-			SetSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.windowResolution));
-			break;
-		case MenuState::Difficulty:
-			SetSubMenuItems(game.menuLayers.back(), game, static_cast<int>(game.config.difficulty));
-			break;
-		case MenuState::Settings:
-			SetSettingsItems(game.menuLayers.back(), game);
-			break;
-		case MenuState::SetPlayerName:
-			game.newPlayerName = game.config.playerName;
-			game.ui.SetImputLabel(game.newPlayerName);
-			break;
-		default:
-			break;
-		}
-		game.ui.Load(game.menuLayers.back());
 	}
 
 	void StartGameLoop(Game &game, const LevelConfig &levelConfig)
@@ -238,326 +192,6 @@ namespace SnakeGame
 			bool isMouthOpen = CellsBetween(headPosition, game.level.GetApplePosition()) <= 2;
 			game.snake.UpdateSprites(isDead, isMouthOpen);
 			timer -= interval;
-		}
-	}
-
-	void DrawMenu(Game &game, Menu &menu, sf::RenderTexture &texture)
-	{
-		switch (menu.state)
-		{
-		case MenuState::LevelSelect:
-			game.ui.DrawWindowTint(texture);
-			game.levelMangager.Draw(texture);
-			game.ui.Draw(texture);
-			break;
-		case MenuState::Leaderboard:
-			game.ui.DrawWindowTint(texture);
-			game.leaderboardManager.Draw(texture);
-			game.ui.Draw(texture);
-			break;
-		case MenuState::GameOver:
-			game.level.Draw(texture);
-			game.snake.Draw(texture);
-			game.hud.Draw(texture);
-			game.ui.DrawWindowTint(texture);
-			game.leaderboardManager.Draw(texture);
-			game.ui.Draw(texture);
-			break;
-		case MenuState::Pause:
-			game.level.Draw(texture);
-			game.snake.Draw(texture);
-			game.hud.Draw(texture);
-			game.ui.DrawWindowTint(texture);
-			game.ui.Draw(texture);
-			break;
-		default:
-			game.ui.DrawWindowTint(texture);
-			game.ui.Draw(texture);
-			break;
-		}
-	}
-
-	void UpdateMenu(Game &game, const float deltaTime)
-	{
-		switch (game.menuLayers.back().state)
-		{
-		case MenuState::LevelSelect:
-			game.ui.Update(deltaTime);
-			game.levelMangager.Update(deltaTime);
-			break;
-		case MenuState::SetPlayerName:
-			game.ui.Update(deltaTime);
-			game.ui.UpdateInputMarker(deltaTime);
-			break;
-		default:
-			game.ui.Update(deltaTime);
-			break;
-		}
-	}
-
-	void HandleMenuImput(Game &game, const sf::Event &event)
-	{
-		switch (game.menuLayers.back().state)
-		{
-		case MenuState::Leaderboard:
-			game.leaderboardManager.HandleInput(event);
-			HandleMainMenuImput(game, event);
-			break;
-		case MenuState::LevelSelect:
-			game.levelMangager.HandleInput(event);
-			HandleMainMenuImput(game, event);
-			break;
-		case MenuState::GameOver:
-			game.leaderboardManager.HandleInput(event);
-			HandleMainMenuImput(game, event);
-			break;
-		case MenuState::SetPlayerName:
-			HandleMainMenuImput(game, event);
-			HandleTypingInput(game, event);
-			break;
-		default:
-			HandleMainMenuImput(game, event);
-			break;
-		}
-	}
-
-	void HandleMainMenuImput(Game &game, const sf::Event &event)
-	{
-		static bool enterHeld = false;
-		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter)
-		{
-			Menu &menu = game.menuLayers.back();
-			if (!menu.items[menu.selected].pressed)
-			{
-				menu.items[menu.selected].pressed = true;
-				game.ui.LoadButtons(menu);
-				enterHeld = true;
-			}
-		}
-		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
-		{
-			if (game.menuLayers.size() > 1)
-			{
-				game.menuLayers.pop_back();
-				game.ui.Load(game.menuLayers.back());
-				PlaySound(game, game.soundFX, game.resources.uiSelect);
-			}
-			else if (game.menuLayers.back().state == MenuState::Pause)
-			{
-				StartGameStateDelay(game, GameState::GameLoop, DelayType::GameStart);
-			}
-		}
-		else if (!enterHeld && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
-		{
-			Menu &menu = game.menuLayers.back();
-			int previousItem = menu.selected;
-			menu.selected -= 1;
-			if (menu.selected < 0)
-				menu.selected = menu.items.size() - 1;
-
-			if (menu.selected >= menu.firstDisplayedItem + menu.displayedItemAmount)
-			{
-				menu.firstDisplayedItem = menu.selected - menu.displayedItemAmount + 1;
-				game.ui.LoadButtons(menu);
-			}
-			else if ((menu.selected < menu.firstDisplayedItem))
-			{
-				menu.firstDisplayedItem = menu.selected;
-				game.ui.LoadButtons(menu);
-			}
-			else
-			{
-				game.ui.SetSelector(menu.selected);
-			}
-
-			if (previousItem != menu.selected)
-				PlaySound(game, game.soundFX, game.resources.uiMoveVertical);
-		}
-		else if (!enterHeld && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
-		{
-			Menu &menu = game.menuLayers.back();
-			int previousItem = menu.selected;
-			menu.selected += 1;
-			if (menu.selected > menu.items.size() - 1)
-			{
-				menu.selected = 0;
-			}
-
-			if (menu.selected >= menu.firstDisplayedItem + menu.displayedItemAmount)
-			{
-				menu.firstDisplayedItem = menu.selected - menu.displayedItemAmount + 1;
-				game.ui.LoadButtons(menu);
-			}
-			else if ((menu.selected < menu.firstDisplayedItem))
-			{
-				menu.firstDisplayedItem = menu.selected;
-				game.ui.LoadButtons(menu);
-			}
-			else
-			{
-				game.ui.SetSelector(menu.selected);
-			}
-
-			if (previousItem != menu.selected)
-			{
-				PlaySound(game, game.soundFX, game.resources.uiMoveVertical);
-			}
-		}
-		else if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Enter)
-		{
-			Menu &menu = game.menuLayers.back();
-			enterHeld = false;
-			menu.items[menu.selected].pressed = false;
-			if (menu.items[menu.selected].enabled)
-			{
-				switch (menu.items[menu.selected].actionType)
-				{
-				case MenuActionType::SwitchGameState:
-					SetGameState(game, static_cast<GameState>(menu.items[menu.selected].actionTarget));
-					break;
-				case MenuActionType::SwitchMenuState:
-					SetMenuState(game, static_cast<MenuState>(menu.items[menu.selected].actionTarget));
-					break;
-				case MenuActionType::StartGame:
-					StartGameLoop(game, game.levelMangager.GetSelectedLevelConfig());
-					StartGameStateDelay(game, GameState::GameLoop, DelayType::GameStart);
-					break;
-				case MenuActionType::ResetGame:
-					ResetGameLoop(game);
-					StartGameStateDelay(game, GameState::GameLoop, DelayType::GameStart);
-					break;
-				case MenuActionType::ResumeGame:
-					StartGameStateDelay(game, GameState::GameLoop, DelayType::GameStart);
-					break;
-				case MenuActionType::PreviousMenu:
-					if (game.menuLayers.size() > 1)
-					{
-						game.menuLayers.pop_back();
-						game.ui.Load(game.menuLayers.back());
-					}
-					break;
-				case MenuActionType::SetScreenScale:
-					game.config.windowResolution = static_cast<WindowResolution>(menu.items[menu.selected].actionTarget);
-					SaveConfig(game.config);
-					game.applicationRequest = {ApplicationRequestType::SetWindowScale};
-					SetSubMenuItems(menu, game, static_cast<int>(game.config.windowResolution));
-					game.ui.LoadButtons(menu);
-					break;
-				case MenuActionType::SetDifficulty:
-					game.config.difficulty = static_cast<GameDifficulty>(menu.items[menu.selected].actionTarget);
-					SaveConfig(game.config);
-					SetSubMenuItems(menu, game, static_cast<int>(game.config.difficulty));
-					game.ui.LoadButtons(menu);
-					break;
-				case MenuActionType::ToggleSound:
-					game.config.soundEnabled = !game.config.soundEnabled;
-					SaveConfig(game.config);
-					SetSettingsItems(menu, game);
-					game.ui.LoadButtons(menu);
-					break;
-				case MenuActionType::ToggleMusic:
-					game.config.musicEnabled = !game.config.musicEnabled;
-					SaveConfig(game.config);
-					SetSettingsItems(menu, game);
-					game.ui.LoadButtons(menu);
-					break;
-				case MenuActionType::SavePlayerName:
-					game.config.playerName = game.newPlayerName;
-					SaveConfig(game.config);
-					if (game.menuLayers.size() > 1)
-					{
-						game.menuLayers.pop_back();
-						game.ui.Load(game.menuLayers.back());
-					}
-					break;
-				case MenuActionType::ExitApplication:
-					game.applicationRequest = {ApplicationRequestType::ExitApplication};
-					break;
-				default:
-					break;
-				}
-				PlaySound(game, game.soundFX, game.resources.uiSelect);
-			}
-		};
-	}
-
-	void HandleTypingInput(Game &game, const sf::Event &event)
-	{
-		if (event.type == sf::Event::TextEntered)
-		{
-			char32_t c = event.text.unicode;
-			if (c == '\b')
-			{
-				if (!game.newPlayerName.empty())
-				{
-					game.newPlayerName.pop_back();
-					game.ui.SetImputLabel(game.newPlayerName);
-					PlaySound(game, game.soundFX, game.resources.input);
-					SetInputMenuItems(game.menuLayers.back(), game);
-					game.ui.LoadButtons(game.menuLayers.back());
-				}
-			}
-			else if (game.newPlayerName.size() < 10 && IsAllowedInputChar(c))
-			{
-				game.newPlayerName += static_cast<char>(c);
-				game.ui.SetImputLabel(game.newPlayerName);
-				PlaySound(game, game.soundFX, game.resources.input);
-				SetInputMenuItems(game.menuLayers.back(), game);
-				game.ui.LoadButtons(game.menuLayers.back());
-			}
-		}
-	}
-
-	void SetInputMenuItems(Menu &menu, Game &game)
-	{
-		for (int i = 0; i < menu.items.size(); i++)
-		{
-			if (menu.items[i].actionType == MenuActionType::SavePlayerName)
-			{
-				if (game.newPlayerName.empty())
-					menu.items[i].enabled = false;
-				else
-					menu.items[i].enabled = true;
-			}
-		}
-	}
-
-	void SetSubMenuItems(Menu &menu, Game &game, int actionTarget)
-	{
-		for (int i = 0; i < menu.items.size(); i++)
-		{
-			if (menu.items[i].actionTarget == actionTarget)
-			{
-				menu.items[i].enabled = false;
-			}
-			else
-			{
-				menu.items[i].enabled = true;
-			}
-		}
-	}
-
-	void SetSettingsItems(Menu &menu, Game &game)
-	{
-		for (int i = 0; i < menu.items.size(); i++)
-		{
-			switch (menu.items[i].actionType)
-			{
-			case MenuActionType::ToggleSound:
-				if (game.config.soundEnabled)
-					menu.items[i].label = "Sound: ON";
-				else
-					menu.items[i].label = "Sound: OFF";
-				break;
-			case MenuActionType::ToggleMusic:
-				if (game.config.musicEnabled)
-					menu.items[i].label = "Music: ON";
-				else
-					menu.items[i].label = "Music: OFF";
-				break;
-			default:
-				break;
-			}
 		}
 	}
 
@@ -686,8 +320,8 @@ namespace SnakeGame
 				SetGameState(game, game.delay.nextGameState);
 				break;
 			case DelayType::GameOver:
-				SetGameState(game, GameState::Menu);
-				SetMenuState(game, game.delay.nextMenuState);
+				SetGameState(game, GameState::MenuOverlay);
+				game.menu.SetState(game.delay.nextMenuState, game.config, game.leaderboard);
 				break;
 			default:
 				break;
@@ -696,17 +330,65 @@ namespace SnakeGame
 		}
 	}
 
-	bool IsAllowedInputChar(char32_t c)
-	{
-		return (c >= U'A' && c <= U'Z') ||
-			   (c >= U'a' && c <= U'z') ||
-			   (c >= U'0' && c <= U'9') ||
-			   c == U'_' ||
-			   c == U'-';
-	}
-
 	float GetGameWindowScale(Game &game)
 	{
 		return static_cast<float>(game.config.windowResolution);
+	}
+
+	void HandleMenuCommand(Game &game, MenuCommand &command)
+	{
+		switch (command.action)
+		{
+		case MenuAction::SwitchGameState:
+			SetGameState(game, static_cast<GameState>(command.actionTarget));
+			break;
+		case MenuAction::SwitchMenuState:
+			if (static_cast<MenuState>(command.actionTarget) == MenuState::Main)
+				SetGameState(game, GameState::Menu);
+			game.menu.SetState(static_cast<MenuState>(command.actionTarget), game.config, game.leaderboard);
+			break;
+		case MenuAction::StartGame:
+			StartGameLoop(game, command.levelConfig);
+			StartGameStateDelay(game, GameState::GameLoop, DelayType::GameStart);
+			break;
+		case MenuAction::ResetGame:
+			ResetGameLoop(game);
+			StartGameStateDelay(game, GameState::GameLoop, DelayType::GameStart);
+			break;
+		case MenuAction::ResumeGame:
+			StartGameStateDelay(game, GameState::GameLoop, DelayType::GameStart);
+			break;
+		case MenuAction::SetScreenScale:
+			game.config.windowResolution = static_cast<WindowResolution>(command.actionTarget);
+			SaveConfig(game.config);
+			game.applicationRequest = {ApplicationRequestType::SetWindowScale};
+			game.menu.SetMenuItems(game.config);
+			break;
+		case MenuAction::SetDifficulty:
+			game.config.difficulty = static_cast<GameDifficulty>(command.actionTarget);
+			SaveConfig(game.config);
+			game.menu.SetMenuItems(game.config);
+			break;
+		case MenuAction::ToggleSound:
+			game.config.soundEnabled = !game.config.soundEnabled;
+			SaveConfig(game.config);
+			game.menu.SetMenuItems(game.config);
+			break;
+		case MenuAction::ToggleMusic:
+			game.config.musicEnabled = !game.config.musicEnabled;
+			SaveConfig(game.config);
+			game.menu.SetMenuItems(game.config);
+			break;
+		case MenuAction::SavePlayerName:
+			game.config.playerName = command.inputString;
+			SaveConfig(game.config);
+			break;
+		case MenuAction::ExitApplication:
+			game.applicationRequest = {ApplicationRequestType::ExitApplication};
+			break;
+		default:
+			break;
+		}
+		game.menu.ReloadUI(command.setSelector, command.loadButtons, command.loadMenu, command.previousMenu);
 	}
 }

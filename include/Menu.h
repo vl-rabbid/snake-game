@@ -4,6 +4,7 @@
 #include "Constants.h"
 #include "StateManager.h"
 #include "Config.h"
+#include "MenuCommand.h"
 
 namespace SnakeGame
 {
@@ -14,41 +15,46 @@ namespace SnakeGame
         InputString
     };
 
-    enum class MenuActionType
-    {
-        SwitchMenuState = 0,
-        SwitchGameState,
-        StartGame,
-        ResetGame,
-        ResumeGame,
-        PreviousMenu,
-        SetScreenScale,
-        SetDifficulty,
-        ToggleSound,
-        ToggleMusic,
-        SavePlayerName,
-        ExitApplication
-    };
-
     struct MenuItem
     {
         std::string label;
-        MenuActionType actionType;
+        MenuAction action;
         int actionTarget;
         bool enabled = true;
         bool pressed = false;
     };
 
-    struct Menu
+    struct MenuConfig
     {
         MenuState state;
-        std::string label;
+        std::string title;
         MenuType type;
         std::vector<MenuItem> items;
         int displayedItemAmount = MAX_MENU_BUTTONS;
+    };
+
+    class Menu
+    {
+    public:
+        MenuCommand HandleInput(const sf::Event &event);
+        void SetConfig(const MenuConfig &menuConfig);
+        void SetInputItems(const std::string &inputString);
+        void SetSubMenuItems(int actionTarget);
+        void SetSettingsItems(bool soundEnabled, bool musicEnabled);
+
+        const MenuState &GetState() const;
+        const MenuType &GetType() const;
+        const std::string &GetTitle() const;
+        const std::vector<MenuItem> &GetItems() const;
+        int GetDisplayedItemAmount() const;
+        int GetSelected() const;
+        int GetFirstDisplayedItem() const;
+
+    private:
+        MenuConfig config;
         int selected = 0;
         int firstDisplayedItem = 0;
     };
 
-    void InitMenues(std::map<MenuState, Menu> &menus);
+    void InitMenues(std::map<MenuState, MenuConfig> &menus);
 }
