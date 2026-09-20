@@ -1,11 +1,12 @@
 #pragma once
 #include "LevelConfig.h"
+#include "Resources.h"
 
 namespace SnakeGame
 {
     enum class MenuAction
     {
-        Empty = 0,
+        None = 0,
         SwitchMenuState,
         SwitchGameState,
         StartGame,
@@ -32,6 +33,8 @@ namespace SnakeGame
         bool loadButtons;
         bool loadMenu;
         bool previousMenu;
+
+        SoundID sound;
     };
 
 }

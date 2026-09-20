@@ -5,7 +5,8 @@ namespace SnakeGame
     MenuCommand Menu::HandleInput(const sf::Event &event)
     {
         MenuCommand command;
-        command.action = MenuAction::Empty;
+        command.action = MenuAction::None;
+        command.sound = SoundID::None;
         command.setSelector = false;
         command.loadButtons = false;
         command.loadMenu = false;
@@ -50,8 +51,8 @@ namespace SnakeGame
             else
                 command.setSelector = true;
 
-            // if (previousItem != selected)
-            //     PlaySound(game, game.soundFX, game.resources.uiMoveVertical);
+            if (previousItem != selected)
+                command.sound = SoundID::UIMoveVertical;
 
             return command;
         }
@@ -77,8 +78,8 @@ namespace SnakeGame
             else
                 command.setSelector = true;
 
-            // if (previousItem != selected)
-            //     PlaySound(game, game.soundFX, game.resources.uiMoveVertical);
+            if (previousItem != selected)
+                command.sound = SoundID::UIMoveVertical;
 
             return command;
         }
@@ -111,7 +112,7 @@ namespace SnakeGame
                 default:
                     break;
                 }
-                // PlaySound(game, game.soundFX, game.resources.uiSelect);
+                command.sound = SoundID::UISelect;
                 command.action = config.items[selected].action;
                 command.actionTarget = config.items[selected].actionTarget;
             }

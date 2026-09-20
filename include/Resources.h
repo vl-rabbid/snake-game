@@ -73,11 +73,18 @@ namespace SnakeGame
         UIFrame6
     };
 
-    struct GameSound
+    enum class SoundID
     {
-        sf::SoundBuffer buffer;
-        float volume = 100.f;
-        std::string path;
+        None = 0,
+        UIMoveVertical,
+        UIMoveHorizontal,
+        UISelect,
+        AppleEaten,
+        Wall,
+        GameOver,
+        Countdown,
+        CountdownGo,
+        Input,
     };
 
     struct Resources
@@ -104,18 +111,6 @@ namespace SnakeGame
 
         sf::Texture inputMenu;
         sf::Texture inputField;
-
-        GameSound uiMoveVertical;
-        GameSound uiMoveHorizontal;
-        GameSound uiSelect;
-        GameSound appleEaten;
-        GameSound wall;
-        GameSound gameOver;
-        GameSound countdown;
-        GameSound countdownGo;
-        GameSound input;
-
-        sf::Music music;
     };
 
     void InitResources(Resources &resources);

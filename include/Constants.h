@@ -4,6 +4,7 @@
 
 namespace SnakeGame
 {
+	const int AUDIO_TRACK_COUNT = 2;
 	const int CELL_SIZE = 12;
 	const int LEVEL_WIDTH = 20;
 	const int LEVEL_HEIGHT = 13;

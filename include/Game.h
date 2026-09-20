@@ -11,6 +11,7 @@
 #include "ApplicationRequest.h"
 #include "Hud.h"
 #include "MenuManager.h"
+#include "AudioManager.h"
 
 namespace SnakeGame
 {
@@ -19,6 +20,7 @@ namespace SnakeGame
 		ApplicationRequest applicationRequest;
 		Config config;
 		Resources resources;
+		AudioManager audio;
 
 		MenuManager menu;
 
@@ -31,9 +33,6 @@ namespace SnakeGame
 		int score;
 		Leaderboard leaderboard;
 		Hud hud;
-
-		sf::Sound soundFX;
-		sf::Sound soundJingle;
 	};
 
 	ApplicationRequest GetApplicationRequest(Game &game);
@@ -48,11 +47,6 @@ namespace SnakeGame
 	void ResetGameLoop(Game &game);
 	void UpdateGameLoop(Game &game, const float deltaTime);
 	int GetScoreMultiplier(GameDifficulty gameDifficulty);
-
-	void PlaySound(Game &game, sf::Sound &sound, const GameSound &gameSound);
-	void PlayMusic(Game &game);
-	void StopMusic(Game &game);
-	void PauseMusic(Game &game);
 
 	void StartGameStateDelay(Game &game, GameState nextGameState, DelayType type);
 	void StartMenuStateDelay(Game &game, MenuState nextMenuState, DelayType type);

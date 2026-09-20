@@ -21,7 +21,7 @@ namespace SnakeGame
 
     private:
         void DrawMenu(const Menu &menu, sf::RenderTexture &texture) const;
-        void HandleTypingInput(const sf::Event &event);
+        void HandleTypingInput(const sf::Event &event, SoundID &sound);
         bool IsAllowedInputChar(char32_t c);
 
         std::vector<Menu> layers;

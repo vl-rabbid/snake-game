@@ -20,7 +20,7 @@ namespace SnakeGame
     public:
         void Init(const Resources &resources);
         void Draw(sf::RenderTexture &texture) const;
-        void HandleInput(const sf::Event &event);
+        void HandleInput(const sf::Event &event, SoundID &sound);
         void LoadUI(const Leaderboard &leaderboard);
 
     private:

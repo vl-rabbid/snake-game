@@ -24,6 +24,7 @@ namespace SnakeGame
 		game.menu.SetState(MenuState::Main, game.config, game.leaderboard);
 
 		game.hud.Init(game.resources);
+		game.audio.Init();
 	}
 
 	void HandleGameImput(Game &game, const sf::Event &event)
@@ -113,14 +114,14 @@ namespace SnakeGame
 		switch (gameState)
 		{
 		case GameState::Menu:
-			StopMusic(game);
+			game.audio.StopMusic();
 			break;
 		case GameState::MenuOverlay:
-			StopMusic(game);
+			game.audio.PauseMusic();
 			break;
 		case GameState::GameLoop:
 			game.menu.ClearLayers();
-			PlayMusic(game);
+			game.audio.PlayMusic(game.config.musicEnabled);
 			break;
 		default:
 			break;
@@ -137,7 +138,7 @@ namespace SnakeGame
 
 	void ResetGameLoop(Game &game)
 	{
-		StopMusic(game);
+		game.audio.StopMusic();
 		game.level.ResetState();
 		game.speed = static_cast<float>(game.config.difficulty);
 		game.snake.Reset(game.resources, game.level.GetSnakeSpawn(), game.level.GetSnakeSize(), game.level.GetMaxSnakeLength());
@@ -168,20 +169,20 @@ namespace SnakeGame
 				game.hud.Update(game.level.GetName(), game.score);
 				if (game.snake.GetLength() < game.level.GetMaxSnakeLength())
 					game.level.SpawnApple();
-				PlaySound(game, game.soundFX, game.resources.appleEaten);
+				game.audio.PlaySound(SoundID::AppleEaten, game.config.soundEnabled);
 			}
 			else
 			{
 				game.level.SetState(oldTailPosition, CellType::Empty);
 				if (game.level.GetState(headPosition) == CellType::Snake || game.level.GetState(headPosition) == CellType::Wall)
 				{
-					PlaySound(game, game.soundFX, game.resources.wall);
-					PlaySound(game, game.soundJingle, game.resources.gameOver);
+					game.audio.PlaySound(SoundID::Wall, game.config.soundEnabled);
+					game.audio.PlaySound(SoundID::GameOver, game.config.soundEnabled);
 					isDead = true;
 					if (game.score > 0)
 						game.leaderboard.AddEntry(game.config.playerName, game.score);
 
-					StopMusic(game);
+					game.audio.StopMusic();
 					StartMenuStateDelay(game, MenuState::GameOver, DelayType::GameOver);
 				}
 				else
@@ -213,34 +214,6 @@ namespace SnakeGame
 			break;
 		}
 		return 1;
-	}
-
-	void PlaySound(Game &game, sf::Sound &sound, const GameSound &gameSound)
-	{
-		if (game.config.soundEnabled)
-		{
-			sound.setVolume(gameSound.volume);
-			sound.setBuffer(gameSound.buffer);
-			sound.play();
-		}
-	}
-
-	void PlayMusic(Game &game)
-	{
-		if (game.config.musicEnabled)
-		{
-			game.resources.music.play();
-		}
-	}
-
-	void PauseMusic(Game &game)
-	{
-		game.resources.music.pause();
-	}
-
-	void StopMusic(Game &game)
-	{
-		game.resources.music.stop();
 	}
 
 	void StartGameStateDelay(Game &game, GameState nextGameState, DelayType type)
@@ -295,12 +268,12 @@ namespace SnakeGame
 				if (wholeNumber == 0)
 				{
 					game.hud.SetDelayText("Go!");
-					PlaySound(game, game.soundFX, game.resources.countdownGo);
+					game.audio.PlaySound(SoundID::CountdownGo, game.config.soundEnabled);
 				}
 				else
 				{
+					game.audio.PlaySound(SoundID::Countdown, game.config.soundEnabled);
 					game.hud.SetDelayText(std::to_string(wholeNumber));
-					PlaySound(game, game.soundFX, game.resources.countdown);
 				}
 			}
 			break;
@@ -390,5 +363,6 @@ namespace SnakeGame
 			break;
 		}
 		game.menu.ReloadUI(command.setSelector, command.loadButtons, command.loadMenu, command.previousMenu);
+		game.audio.PlaySound(command.sound, game.config.soundEnabled);
 	}
 }

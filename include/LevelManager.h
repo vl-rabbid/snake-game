@@ -22,7 +22,7 @@ namespace SnakeGame
         void Init(const Resources &resources);
         void Update(const float deltaTime);
         void Draw(sf::RenderTexture &texture) const;
-        void HandleInput(const sf::Event &event);
+        void HandleInput(const sf::Event &event, SoundID &sound);
         void LoadFromFiles();
 
         const LevelConfig &GetSelectedLevelConfig() const;

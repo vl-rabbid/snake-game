@@ -95,18 +95,18 @@ namespace SnakeGame
         switch (layers.back().GetState())
         {
         case MenuState::Leaderboard:
-            leaderboardManager.HandleInput(event);
+            leaderboardManager.HandleInput(event, command.sound);
             break;
         case MenuState::LevelSelect:
-            levelMangager.HandleInput(event);
+            levelMangager.HandleInput(event, command.sound);
             if (command.action == MenuAction::StartGame)
                 command.levelConfig = levelMangager.GetSelectedLevelConfig();
             break;
         case MenuState::GameOver:
-            leaderboardManager.HandleInput(event);
+            leaderboardManager.HandleInput(event, command.sound);
             break;
         case MenuState::SetPlayerName:
-            HandleTypingInput(event);
+            HandleTypingInput(event, command.sound);
             if (command.action == MenuAction::SavePlayerName)
                 command.inputString = inputString;
             break;
@@ -183,7 +183,7 @@ namespace SnakeGame
         }
     }
 
-    void MenuManager::HandleTypingInput(const sf::Event &event)
+    void MenuManager::HandleTypingInput(const sf::Event &event, SoundID &sound)
     {
         if (event.type == sf::Event::TextEntered)
         {
@@ -194,7 +194,7 @@ namespace SnakeGame
                 {
                     inputString.pop_back();
                     menuUi.SetImputLabel(inputString);
-                    // PlaySound(game, game.soundFX, game.resources.input);
+                    sound = SoundID::Input;
                     layers.back().SetInputItems(inputString);
                     menuUi.LoadButtons(layers.back());
                 }
@@ -203,7 +203,7 @@ namespace SnakeGame
             {
                 inputString += static_cast<char>(c);
                 menuUi.SetImputLabel(inputString);
-                // PlaySound(game, game.soundFX, game.resources.input);
+                sound = SoundID::Input;
                 layers.back().SetInputItems(inputString);
                 menuUi.LoadButtons(layers.back());
             }
