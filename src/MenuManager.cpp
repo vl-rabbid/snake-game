@@ -30,17 +30,17 @@ namespace SnakeGame
 
     void MenuManager::Draw(sf::RenderTexture &texture) const
     {
-        if (layers.back().GetType() == MenuType::FullMenu)
+        if (layers.back().GetType() == MenuType::SubMenu && layers.size() > 1)
         {
-            DrawMenu(layers.back(), texture);
+            menuUi.DrawWindowTint(texture);
+            DrawStates(layers[layers.size() - 2].GetState(), texture);
+            menuUi.Draw(texture);
         }
-        else if (layers.size() > 1)
+        else
         {
-            if (layers.back().GetType() == MenuType::SubMenu || layers.back().GetType() == MenuType::InputString)
-            {
-                DrawMenu(layers[layers.size() - 2], texture);
-                DrawMenu(layers.back(), texture);
-            }
+            menuUi.DrawWindowTint(texture);
+            DrawStates(layers.back().GetState(), texture);
+            menuUi.Draw(texture);
         }
     }
 
@@ -168,28 +168,20 @@ namespace SnakeGame
         return inputString;
     }
 
-    void MenuManager::DrawMenu(const Menu &menu, sf::RenderTexture &texture) const
+    void MenuManager::DrawStates(const MenuState &state, sf::RenderTexture &texture) const
     {
-        switch (menu.GetState())
+        switch (state)
         {
         case MenuState::LevelSelect:
-            menuUi.DrawWindowTint(texture);
             levelMangager.Draw(texture);
-            menuUi.Draw(texture);
             break;
         case MenuState::Leaderboard:
-            menuUi.DrawWindowTint(texture);
             leaderboardManager.Draw(texture);
-            menuUi.Draw(texture);
             break;
         case MenuState::GameOver:
-            menuUi.DrawWindowTint(texture);
             leaderboardManager.Draw(texture);
-            menuUi.Draw(texture);
             break;
         default:
-            menuUi.DrawWindowTint(texture);
-            menuUi.Draw(texture);
             break;
         }
     }

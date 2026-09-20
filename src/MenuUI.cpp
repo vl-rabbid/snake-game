@@ -141,12 +141,22 @@ namespace SnakeGame
         }
         else if (type == MenuType::SubMenu)
         {
+            texture.draw(titleShadow);
+            texture.draw(title);
+
+            DrawWindowTint(texture);
+
             texture.draw(subBackground);
             texture.draw(subTitleFrame);
             texture.draw(subTitleText);
         }
         else if (type == MenuType::InputString)
         {
+            texture.draw(titleShadow);
+            texture.draw(title);
+
+            DrawWindowTint(texture);
+
             texture.draw(inputBackground);
             texture.draw(subTitleFrame);
             texture.draw(subTitleText);

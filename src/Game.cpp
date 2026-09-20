@@ -380,8 +380,11 @@ namespace SnakeGame
 			game.audio.PlaySound(SoundID::UISelect, game.config.soundEnabled);
 			break;
 		case MenuAction::SavePlayerName:
-			game.config.playerName = game.menu.GetInputString();
-			SaveConfig(game.config);
+			if (game.config.playerName != game.menu.GetInputString())
+			{
+				game.config.playerName = game.menu.GetInputString();
+				SaveConfig(game.config);
+			}
 			game.menu.PreviousMenu();
 			game.audio.PlaySound(SoundID::UISelect, game.config.soundEnabled);
 			break;
@@ -391,7 +394,5 @@ namespace SnakeGame
 		default:
 			break;
 		}
-		// game.menu.ReloadUI(command.setSelector, command.loadButtons, command.loadMenu, command.previousMenu);
-		// game.audio.PlaySound(command.sound, game.config.soundEnabled);
 	}
 }
