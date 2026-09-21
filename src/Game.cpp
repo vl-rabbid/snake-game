@@ -1,265 +1,363 @@
 #include "Game.h"
 #include <cmath>
+#include <iostream>
 
 namespace SnakeGame
 {
-	ApplicationRequest GetApplicationRequest(Game &game)
-	{
-		ApplicationRequest request = game.applicationRequest;
-		game.applicationRequest = {ApplicationRequestType::None};
-		return request;
-	}
-
-	void InitGame(Game &game)
+	Game::Game()
 	{
 		int seed = (int)time(nullptr);
 		srand(seed);
 
-		InitResources(game.resources);
-		game.background.setTexture(game.resources.background);
-		InitConfig(game.config);
+		InitResources(resources);
+		InitConfig(config);
+		audio.Init();
+		menu.Init(resources);
+		SetState(GameState::Menu);
+		menu.SetState(MenuState::Main, config, leaderboard);
 
-		game.menu.Init(game.resources);
-		SetGameState(game, GameState::Menu);
-		game.menu.SetState(MenuState::Main, game.config, game.leaderboard);
-
-		game.hud.Init(game.resources);
-		game.audio.Init();
+		hud.Init(resources);
+		background.setTexture(resources.background);
 	}
 
-	void HandleGameImput(Game &game, const sf::Event &event)
+	void Game::Update(const float deltaTime)
+	{
+		switch (state)
+		{
+		case GameState::Menu:
+			menu.Update(deltaTime);
+			break;
+		case GameState::MenuOverlay:
+			menu.Update(deltaTime);
+			break;
+		case GameState::GameLoop:
+			UpdateGame(deltaTime);
+			break;
+		case GameState::Delay:
+			UpdateDelay(deltaTime);
+			break;
+		default:
+			break;
+		}
+	}
+
+	void Game::Draw(sf::RenderTexture &texture) const
+	{
+		texture.draw(background);
+		switch (state)
+		{
+		case GameState::Menu:
+			menu.Draw(texture);
+			break;
+		case GameState::MenuOverlay:
+			level.Draw(texture);
+			snake.Draw(texture);
+			hud.Draw(texture);
+			menu.Draw(texture);
+			break;
+		case GameState::GameLoop:
+			level.Draw(texture);
+			snake.Draw(texture);
+			hud.Draw(texture);
+			break;
+		case GameState::Delay:
+			level.Draw(texture);
+			snake.Draw(texture);
+			hud.Draw(texture);
+			hud.DrawDelay(texture);
+			break;
+		default:
+			break;
+		}
+	}
+
+	void Game::HandleInput(const sf::Event &event)
 	{
 		if (event.type == sf::Event::Closed)
 		{
-			game.applicationRequest = {ApplicationRequestType::ExitApplication};
+			request = {AppRequestType::ExitApplication};
 			return;
 		}
+
 		MenuCommand command;
-		switch (game.gameState)
+		switch (state)
 		{
 		case GameState::Menu:
-			command = game.menu.HandleInput(event);
-			HandleMenuCommand(game, command);
+			command = menu.HandleInput(event);
+			HandleMenuCommand(command);
 			break;
 		case GameState::MenuOverlay:
-			command = game.menu.HandleInput(event);
-			HandleMenuCommand(game, command);
+			command = menu.HandleInput(event);
+			HandleMenuCommand(command);
 			break;
 		case GameState::GameLoop:
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
 			{
-				SetGameState(game, GameState::MenuOverlay);
-				game.menu.SetState(MenuState::Pause, game.config, game.leaderboard);
+				SetState(GameState::MenuOverlay);
+				menu.SetState(MenuState::Pause, config, leaderboard);
 			}
-			game.snake.HandleInput(event);
+			snake.HandleInput(event);
 			break;
 		default:
 			break;
 		}
 	}
 
-	void UpdateGame(Game &game, const float deltaTime)
+	AppRequest Game::ConsumeAppRequest()
 	{
-		switch (game.gameState)
-		{
-		case GameState::Menu:
-			game.menu.Update(deltaTime);
-			break;
-		case GameState::MenuOverlay:
-			game.menu.Update(deltaTime);
-			break;
-		case GameState::GameLoop:
-			UpdateGameLoop(game, deltaTime);
-			break;
-		case GameState::Delay:
-			UpdateDelay(game, deltaTime);
-			break;
-		default:
-			break;
-		}
+		AppRequest appRequest = request;
+		request = {AppRequestType::None};
+		return appRequest;
 	}
 
-	void DrawGame(Game &game, sf::RenderTexture &texture)
+	float Game::GetWindowScale()
 	{
-		texture.draw(game.background);
-		switch (game.gameState)
-		{
-		case GameState::Menu:
-			game.menu.Draw(texture);
-			break;
-		case GameState::MenuOverlay:
-			game.level.Draw(texture);
-			game.snake.Draw(texture);
-			game.hud.Draw(texture);
-			game.menu.Draw(texture);
-			break;
-		case GameState::GameLoop:
-			game.level.Draw(texture);
-			game.snake.Draw(texture);
-			game.hud.Draw(texture);
-			break;
-		case GameState::Delay:
-			game.level.Draw(texture);
-			game.snake.Draw(texture);
-			game.hud.Draw(texture);
-			game.hud.DrawDelay(texture);
-			break;
-		default:
-			break;
-		}
+		return static_cast<float>(config.windowResolution);
 	}
 
-	void SetGameState(Game &game, const GameState &gameState)
+	void Game::SetState(const GameState &gameState)
 	{
 		switch (gameState)
 		{
 		case GameState::Menu:
-			game.audio.StopMusic();
+			audio.StopMusic();
 			break;
 		case GameState::MenuOverlay:
-			game.audio.PauseMusic();
+			audio.PauseMusic();
 			break;
 		case GameState::GameLoop:
-			game.menu.ClearLayers();
-			game.audio.PlayMusic(game.config.musicEnabled);
+			menu.ClearLayers();
+			audio.PlayMusic(config.musicEnabled);
 			break;
 		default:
 			break;
 		}
-		game.gameState = gameState;
+		state = gameState;
 	}
 
-	void StartGameLoop(Game &game, const LevelConfig &levelConfig)
+	void Game::StartGame(const LevelConfig &levelConfig)
 	{
-		game.level.Init(levelConfig, game.resources);
-		game.leaderboard.LoadFromFile(levelConfig);
-		ResetGameLoop(game);
+		level.Init(levelConfig, resources);
+		leaderboard.LoadFromFile(levelConfig);
+		ResetGame();
 	}
 
-	void ResetGameLoop(Game &game)
+	void Game::ResetGame()
 	{
-		game.audio.StopMusic();
-		game.level.ResetState();
-		game.speed = static_cast<float>(game.config.difficulty);
-		game.snake.Reset(game.resources, game.level.GetSnakeSpawn(), game.level.GetSnakeSize(), game.level.GetMaxSnakeLength());
-		game.level.SpawnApple();
-		game.score = 0;
-		game.hud.Update(game.level.GetName(), game.score);
+		audio.StopMusic();
+		level.ResetState();
+		speed = static_cast<float>(config.difficulty);
+		SetScoreMultiplier();
+		snake.Reset(resources, level.GetSnakeSpawn(), level.GetSnakeSize(), level.GetMaxSnakeLength());
+		level.SpawnApple();
+		score = 0;
+		hud.Update(level.GetName(), score);
 	}
 
-	void UpdateGameLoop(Game &game, const float deltaTime)
+	void Game::UpdateGame(const float deltaTime)
 	{
 		static float timer = 0.f;
-		float interval = 1.f / game.speed;
+		float interval = 1.f / speed;
 
 		timer += deltaTime;
 		if (timer >= interval)
 		{
 			bool isDead = false;
+			Position2D oldTailPosition = snake.GetTailPosition();
+			snake.UpdatePosition();
+			Position2D headPosition = snake.GetHeadPosition();
 
-			Position2D oldTailPosition = game.snake.GetTailPosition();
-			game.snake.UpdatePosition();
-			Position2D headPosition = game.snake.GetHeadPosition();
-
-			if (game.level.GetState(headPosition) == CellType::Apple)
+			if (level.GetState(headPosition) == CellType::Apple)
 			{
-				game.snake.Grow(game.resources);
-				game.level.SetState(headPosition, CellType::Snake);
-				game.score += GetScoreMultiplier(game.config.difficulty);
-				game.hud.Update(game.level.GetName(), game.score);
-				if (game.snake.GetLength() < game.level.GetMaxSnakeLength())
-					game.level.SpawnApple();
-				game.audio.PlaySound(SoundID::AppleEaten, game.config.soundEnabled);
+				snake.Grow(resources);
+				level.SetState(headPosition, CellType::Snake);
+				score += scoreMultiplier;
+				hud.Update(level.GetName(), score);
+				if (snake.GetLength() < level.GetMaxSnakeLength())
+					level.SpawnApple();
+				audio.PlaySound(SoundID::AppleEaten, config.soundEnabled);
 			}
 			else
 			{
-				game.level.SetState(oldTailPosition, CellType::Empty);
-				if (game.level.GetState(headPosition) == CellType::Snake || game.level.GetState(headPosition) == CellType::Wall)
+				level.SetState(oldTailPosition, CellType::Empty);
+				if (level.GetState(headPosition) == CellType::Snake || level.GetState(headPosition) == CellType::Wall)
 				{
-					game.audio.PlaySound(SoundID::Wall, game.config.soundEnabled);
-					game.audio.PlaySound(SoundID::GameOver, game.config.soundEnabled);
+					audio.PlaySound(SoundID::Wall, config.soundEnabled);
+					audio.PlaySound(SoundID::GameOver, config.soundEnabled);
 					isDead = true;
-					if (game.score > 0)
-						game.leaderboard.AddEntry(game.config.playerName, game.score);
+					if (score > 0)
+						leaderboard.AddEntry(config.playerName, score);
 
-					game.audio.StopMusic();
-					StartMenuStateDelay(game, MenuState::GameOver, DelayType::GameOver);
+					audio.StopMusic();
+					StartDelay(MenuState::GameOver, DelayType::GameOver);
 				}
 				else
 				{
-					game.level.SetState(headPosition, CellType::Snake);
+					level.SetState(headPosition, CellType::Snake);
 				}
 			}
-			bool isMouthOpen = CellsBetween(headPosition, game.level.GetApplePosition()) <= 2;
-			game.snake.UpdateSprites(isDead, isMouthOpen);
+			bool isMouthOpen = CellsBetween(headPosition, level.GetApplePosition()) <= 2;
+			snake.UpdateSprites(isDead, isMouthOpen);
 			timer -= interval;
 		}
 	}
 
-	int GetScoreMultiplier(GameDifficulty gameDifficulty)
+	void Game::SetScoreMultiplier()
 	{
-		switch (gameDifficulty)
+		switch (config.difficulty)
 		{
 		case GameDifficulty::VeryEasy:
-			return 2;
+			scoreMultiplier = 2;
+			break;
 		case GameDifficulty::Easy:
-			return 4;
+			scoreMultiplier = 4;
+			break;
 		case GameDifficulty::Normal:
-			return 6;
+			scoreMultiplier = 6;
+			break;
 		case GameDifficulty::Hard:
-			return 8;
+			scoreMultiplier = 8;
+			break;
 		case GameDifficulty::VeryHard:
-			return 10;
+			scoreMultiplier = 10;
+			break;
 		default:
 			break;
 		}
-		return 1;
 	}
 
-	void StartGameStateDelay(Game &game, GameState nextGameState, DelayType type)
+	void Game::HandleMenuCommand(const MenuCommand &command)
 	{
-		SetGameState(game, GameState::Delay);
-		game.delay.timer = 0.f;
-		game.delay.nextGameState = nextGameState;
-		game.delay.type = type;
+		switch (command.action)
+		{
+		case MenuAction::MenuMoveVertical:
+			menu.SetSelector();
+			audio.PlaySound(SoundID::UIMoveVertical, config.soundEnabled);
+			break;
+		case MenuAction::MenuMoveHorizontal:
+			audio.PlaySound(SoundID::UIMoveHorizontal, config.soundEnabled);
+			break;
+		case MenuAction::MenuInput:
+			audio.PlaySound(SoundID::Input, config.soundEnabled);
+			break;
+		case MenuAction::MenuPress:
+			menu.LoadButtons();
+			break;
+		case MenuAction::SwitchGameState:
+			SetState(static_cast<GameState>(command.actionTarget));
+			audio.PlaySound(SoundID::UISelect, config.soundEnabled);
+			break;
+		case MenuAction::SwitchMenuState:
+			if (static_cast<MenuState>(command.actionTarget) == MenuState::Main)
+				SetState(GameState::Menu);
+			menu.SetState(static_cast<MenuState>(command.actionTarget), config, leaderboard);
+			audio.PlaySound(SoundID::UISelect, config.soundEnabled);
+			break;
+		case MenuAction::StartGame:
+			StartGame(menu.GetSelectedLevelConfig());
+			StartDelay(GameState::GameLoop, DelayType::GameStart);
+			break;
+		case MenuAction::ResetGame:
+			ResetGame();
+			StartDelay(GameState::GameLoop, DelayType::GameStart);
+			break;
+		case MenuAction::ResumeGame:
+			StartDelay(GameState::GameLoop, DelayType::GameStart);
+			break;
+		case MenuAction::PreviousMenu:
+			if (menu.PreviousMenu())
+				audio.PlaySound(SoundID::UISelect, config.soundEnabled);
+			break;
+		case MenuAction::SetScreenScale:
+			config.windowResolution = static_cast<WindowResolution>(command.actionTarget);
+			SaveConfig(config);
+			request = {AppRequestType::SetWindowScale};
+			menu.SetMenuItems(config);
+			menu.PreviousMenu();
+			audio.PlaySound(SoundID::UISelect, config.soundEnabled);
+			break;
+		case MenuAction::SetDifficulty:
+			config.difficulty = static_cast<GameDifficulty>(command.actionTarget);
+			SaveConfig(config);
+			menu.SetMenuItems(config);
+			menu.PreviousMenu();
+			audio.PlaySound(SoundID::UISelect, config.soundEnabled);
+			break;
+		case MenuAction::ToggleSound:
+			config.soundEnabled = !config.soundEnabled;
+			SaveConfig(config);
+			menu.SetMenuItems(config);
+			menu.LoadButtons();
+			audio.PlaySound(SoundID::UISelect, config.soundEnabled);
+			break;
+		case MenuAction::ToggleMusic:
+			config.musicEnabled = !config.musicEnabled;
+			SaveConfig(config);
+			menu.SetMenuItems(config);
+			menu.LoadButtons();
+			audio.PlaySound(SoundID::UISelect, config.soundEnabled);
+			break;
+		case MenuAction::SavePlayerName:
+			if (config.playerName != menu.GetInputString())
+			{
+				config.playerName = menu.GetInputString();
+				SaveConfig(config);
+			}
+			menu.PreviousMenu();
+			audio.PlaySound(SoundID::UISelect, config.soundEnabled);
+			break;
+		case MenuAction::ExitApplication:
+			request = {AppRequestType::ExitApplication};
+			break;
+		default:
+			break;
+		}
+	}
+
+	void Game::StartDelay(const GameState &state, const DelayType &type)
+	{
+		SetState(GameState::Delay);
+		delay.timer = 0.f;
+		delay.nextGameState = state;
+		delay.type = type;
 		switch (type)
 		{
 		case DelayType::GameStart:
-			game.delay.duration = DELAY_COUNTDOWN;
+			delay.duration = DELAY_COUNTDOWN;
 			break;
 		case DelayType::GameOver:
-			game.delay.duration = DELAY_GAME_OVER;
+			delay.duration = DELAY_GAME_OVER;
 			break;
 		default:
 			break;
 		}
 	}
 
-	void StartMenuStateDelay(Game &game, MenuState nextMenuState, DelayType type)
+	void Game::StartDelay(const MenuState &state, const DelayType &type)
 	{
-		SetGameState(game, GameState::Delay);
-		game.delay.timer = 0.f;
-		game.delay.nextMenuState = nextMenuState;
-		game.delay.type = type;
+		SetState(GameState::Delay);
+		delay.timer = 0.f;
+		delay.nextMenuState = state;
+		delay.type = type;
 		switch (type)
 		{
 		case DelayType::GameStart:
-			game.delay.duration = DELAY_COUNTDOWN;
+			delay.duration = DELAY_COUNTDOWN;
 			break;
 		case DelayType::GameOver:
-			game.delay.duration = DELAY_GAME_OVER;
+			delay.duration = DELAY_GAME_OVER;
 			break;
 		default:
 			break;
 		}
 	}
 
-	void UpdateDelay(Game &game, const float deltaTime)
+	void Game::UpdateDelay(const float deltaTime)
 	{
-		float timeLeft = game.delay.duration - game.delay.timer;
+		float timeLeft = delay.duration - delay.timer;
 
 		static int wholeNumber = 0;
-		switch (game.delay.type)
+		switch (delay.type)
 		{
 		case DelayType::GameStart:
 			if ((int)std::round(timeLeft) != wholeNumber)
@@ -267,132 +365,39 @@ namespace SnakeGame
 				wholeNumber = (int)std::round(timeLeft);
 				if (wholeNumber == 0)
 				{
-					game.hud.SetDelayText("Go!");
-					game.audio.PlaySound(SoundID::CountdownGo, game.config.soundEnabled);
+					hud.SetDelayText("Go!");
+					audio.PlaySound(SoundID::CountdownGo, config.soundEnabled);
 				}
 				else
 				{
-					game.audio.PlaySound(SoundID::Countdown, game.config.soundEnabled);
-					game.hud.SetDelayText(std::to_string(wholeNumber));
+					hud.SetDelayText(std::to_string(wholeNumber));
+					audio.PlaySound(SoundID::Countdown, config.soundEnabled);
 				}
 			}
 			break;
 		case DelayType::GameOver:
-			game.hud.SetDelayText("GAME OVER!");
+			hud.SetDelayText("GAME OVER!");
 			break;
 		default:
 			break;
 		}
 
-		game.delay.timer += deltaTime;
-		if (game.delay.timer >= game.delay.duration)
+		delay.timer += deltaTime;
+		if (delay.timer >= delay.duration)
 		{
-			switch (game.delay.type)
+			switch (delay.type)
 			{
 			case DelayType::GameStart:
-				SetGameState(game, game.delay.nextGameState);
+				SetState(delay.nextGameState);
 				break;
 			case DelayType::GameOver:
-				SetGameState(game, GameState::MenuOverlay);
-				game.menu.SetState(game.delay.nextMenuState, game.config, game.leaderboard);
+				SetState(GameState::MenuOverlay);
+				menu.SetState(delay.nextMenuState, config, leaderboard);
 				break;
 			default:
 				break;
 			}
 			wholeNumber = 0;
-		}
-	}
-
-	float GetGameWindowScale(Game &game)
-	{
-		return static_cast<float>(game.config.windowResolution);
-	}
-
-	void HandleMenuCommand(Game &game, MenuCommand &command)
-	{
-		switch (command.action)
-		{
-		case MenuAction::MenuMoveVertical:
-			game.menu.SetSelector();
-			game.audio.PlaySound(SoundID::UIMoveVertical, game.config.soundEnabled);
-			break;
-		case MenuAction::MenuMoveHorizontal:
-			game.audio.PlaySound(SoundID::UIMoveHorizontal, game.config.soundEnabled);
-			break;
-		case MenuAction::MenuInput:
-			game.audio.PlaySound(SoundID::Input, game.config.soundEnabled);
-			break;
-		case MenuAction::MenuPress:
-			game.menu.LoadButtons();
-			break;
-		case MenuAction::SwitchGameState:
-			SetGameState(game, static_cast<GameState>(command.actionTarget));
-			game.audio.PlaySound(SoundID::UISelect, game.config.soundEnabled);
-			break;
-		case MenuAction::SwitchMenuState:
-			if (static_cast<MenuState>(command.actionTarget) == MenuState::Main)
-				SetGameState(game, GameState::Menu);
-			game.menu.SetState(static_cast<MenuState>(command.actionTarget), game.config, game.leaderboard);
-			game.audio.PlaySound(SoundID::UISelect, game.config.soundEnabled);
-			break;
-		case MenuAction::StartGame:
-			StartGameLoop(game, game.menu.GetSelectedLevelConfig());
-			StartGameStateDelay(game, GameState::GameLoop, DelayType::GameStart);
-			break;
-		case MenuAction::ResetGame:
-			ResetGameLoop(game);
-			StartGameStateDelay(game, GameState::GameLoop, DelayType::GameStart);
-			break;
-		case MenuAction::ResumeGame:
-			StartGameStateDelay(game, GameState::GameLoop, DelayType::GameStart);
-			break;
-		case MenuAction::PreviousMenu:
-			if (game.menu.PreviousMenu())
-				game.audio.PlaySound(SoundID::UISelect, game.config.soundEnabled);
-			break;
-		case MenuAction::SetScreenScale:
-			game.config.windowResolution = static_cast<WindowResolution>(command.actionTarget);
-			SaveConfig(game.config);
-			game.applicationRequest = {ApplicationRequestType::SetWindowScale};
-			game.menu.SetMenuItems(game.config);
-			game.menu.PreviousMenu();
-			game.audio.PlaySound(SoundID::UISelect, game.config.soundEnabled);
-			break;
-		case MenuAction::SetDifficulty:
-			game.config.difficulty = static_cast<GameDifficulty>(command.actionTarget);
-			SaveConfig(game.config);
-			game.menu.SetMenuItems(game.config);
-			game.menu.PreviousMenu();
-			game.audio.PlaySound(SoundID::UISelect, game.config.soundEnabled);
-			break;
-		case MenuAction::ToggleSound:
-			game.config.soundEnabled = !game.config.soundEnabled;
-			SaveConfig(game.config);
-			game.menu.SetMenuItems(game.config);
-			game.menu.LoadButtons();
-			game.audio.PlaySound(SoundID::UISelect, game.config.soundEnabled);
-			break;
-		case MenuAction::ToggleMusic:
-			game.config.musicEnabled = !game.config.musicEnabled;
-			SaveConfig(game.config);
-			game.menu.SetMenuItems(game.config);
-			game.menu.LoadButtons();
-			game.audio.PlaySound(SoundID::UISelect, game.config.soundEnabled);
-			break;
-		case MenuAction::SavePlayerName:
-			if (game.config.playerName != game.menu.GetInputString())
-			{
-				game.config.playerName = game.menu.GetInputString();
-				SaveConfig(game.config);
-			}
-			game.menu.PreviousMenu();
-			game.audio.PlaySound(SoundID::UISelect, game.config.soundEnabled);
-			break;
-		case MenuAction::ExitApplication:
-			game.applicationRequest = {ApplicationRequestType::ExitApplication};
-			break;
-		default:
-			break;
 		}
 	}
 }

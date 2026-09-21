@@ -56,5 +56,5 @@ namespace SnakeGame
         int firstDisplayedItem = 0;
     };
 
-    void InitMenues(std::map<MenuState, MenuConfig> &menus);
+    void InitMenus(std::map<MenuState, MenuConfig> &menus);
 }

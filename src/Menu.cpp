@@ -168,7 +168,7 @@ namespace SnakeGame
         return firstDisplayedItem;
     }
 
-    void InitMenues(std::map<MenuState, MenuConfig> &menus)
+    void InitMenus(std::map<MenuState, MenuConfig> &menus)
     {
         menus[MenuState::Main] =
             {

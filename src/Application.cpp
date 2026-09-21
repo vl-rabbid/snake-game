@@ -2,18 +2,9 @@
 
 namespace SnakeGame
 {
-    Application::Application()
-    {
-        InitGame(game);
-    }
-
-    Application::~Application()
-    {
-    }
-
     void Application::Run()
     {
-        float windowScale = GetGameWindowScale(game);
+        float windowScale = game.GetWindowScale();
         renderer.SetWindow(RENDER_WIDTH, RENDER_HEIGHT, windowScale, GAME_NAME);
 
         sf::Clock gameClock;
@@ -28,28 +19,28 @@ namespace SnakeGame
             sf::Event event;
             while (renderer.WindowPollEvent(event))
             {
-                HandleGameImput(game, event);
+                game.HandleInput(event);
             }
-            UpdateGame(game, deltaTime);
-            HandleApplicationRequest();
+            game.Update(deltaTime);
+            HandleAppRequest();
 
             renderer.Clear();
-            DrawGame(game, renderer.GetTexture());
+            game.Draw(renderer.GetTexture());
             renderer.Display();
         }
     }
 
-    void Application::HandleApplicationRequest()
+    void Application::HandleAppRequest()
     {
-        switch (GetApplicationRequest(game).type)
+        switch (game.ConsumeAppRequest().type)
         {
-        case ApplicationRequestType::None:
+        case AppRequestType::None:
             break;
-        case ApplicationRequestType::ExitApplication:
+        case AppRequestType::ExitApplication:
             isRunning = false;
             break;
-        case ApplicationRequestType::SetWindowScale:
-            renderer.SetWindowScale(GetGameWindowScale(game));
+        case AppRequestType::SetWindowScale:
+            renderer.SetWindowScale(game.GetWindowScale());
             break;
         default:
             break;

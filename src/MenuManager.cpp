@@ -4,7 +4,7 @@ namespace SnakeGame
 {
     void MenuManager::Init(Resources &resources)
     {
-        InitMenues(allMenus);
+        InitMenus(allMenus);
         levelMangager.Init(resources);
         leaderboardManager.Init(resources);
         menuUi.Init(resources);

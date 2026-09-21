@@ -8,51 +8,54 @@
 #include "Resources.h"
 #include "Config.h"
 #include "Leaderboard.h"
-#include "ApplicationRequest.h"
+#include "AppRequest.h"
 #include "Hud.h"
 #include "MenuManager.h"
 #include "AudioManager.h"
 
 namespace SnakeGame
 {
-	struct Game
+	class Game
 	{
-		ApplicationRequest applicationRequest;
-		Config config;
-		Resources resources;
-		AudioManager audio;
+	public:
+		Game();
 
+		void Update(const float deltaTime);
+		void Draw(sf::RenderTexture &texture) const;
+		void HandleInput(const sf::Event &event);
+
+		AppRequest ConsumeAppRequest();
+		float GetWindowScale();
+
+	private:
+		void SetState(const GameState &gameState);
+		void StartGame(const LevelConfig &levelConfig);
+		void ResetGame();
+		void UpdateGame(const float deltaTime);
+		void SetScoreMultiplier();
+
+		void HandleMenuCommand(const MenuCommand &command);
+
+		void StartDelay(const GameState &state, const DelayType &type);
+		void StartDelay(const MenuState &state, const DelayType &type);
+		void UpdateDelay(const float deltaTime);
+
+		Resources resources;
+		Config config;
+		AudioManager audio;
 		MenuManager menu;
 
-		sf::Sprite background;
-		GameState gameState;
+		GameState state;
 		Delay delay;
+		sf::Sprite background;
 		Level level;
 		Snake snake;
 		float speed;
 		int score;
+		int scoreMultiplier;
 		Leaderboard leaderboard;
 		Hud hud;
+
+		AppRequest request;
 	};
-
-	ApplicationRequest GetApplicationRequest(Game &game);
-	void InitGame(Game &game);
-	void HandleGameImput(Game &game, const sf::Event &event);
-	void UpdateGame(Game &game, const float deltaTime);
-	void DrawGame(Game &game, sf::RenderTexture &texture);
-
-	void SetGameState(Game &game, const GameState &gameState);
-
-	void StartGameLoop(Game &game, const LevelConfig &levelConfig);
-	void ResetGameLoop(Game &game);
-	void UpdateGameLoop(Game &game, const float deltaTime);
-	int GetScoreMultiplier(GameDifficulty gameDifficulty);
-
-	void StartGameStateDelay(Game &game, GameState nextGameState, DelayType type);
-	void StartMenuStateDelay(Game &game, MenuState nextMenuState, DelayType type);
-	void UpdateDelay(Game &game, const float deltaTime);
-
-	float GetGameWindowScale(Game &game);
-
-	void HandleMenuCommand(Game &game, MenuCommand &command);
 }
